@@ -5,6 +5,7 @@ NutriTrack Core es un sistema de base de datos nutricional que estima gramos usa
 - Jose Gabriel Quintero Ortiz
 - Jose Miguel Restrepo
 - Angel Miguel Pirela Bueno
+- Samuel David Pinto Ortiz
 - Irina Danaeth Plata Suárez
 
   # Fecha de Entrega
