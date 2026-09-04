@@ -18,3 +18,6 @@ NutriTrack Core es un sistema de base de datos nutricional que estima gramos usa
   3. Diagrama EER
   4. Esquema Relacional
   5. Diccionario de datos
+
+  #Tag
+  Entrega 1 - Corte 1 BD 2026
