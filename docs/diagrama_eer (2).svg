@@ -1,257 +1,733 @@
-<svg width="1650" height="1200" viewBox="0 0 1650 1200" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo1NTUzYmFmMC05ZWY3LTQ1MjctOTg0Yi04Mjk0M2UwMjQ5ZGQAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaPeW0v5jLMUu3suQRBPx1LsAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDpkYWM5MjY0Mi1iMGM4LTQ3NDItOTY2NS00MWY0NmExYTJlNmZscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNogktADjnQ9CaF0RoUfJykJAAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggcuNn4pyk1mnYhne2n1rqCJhzZItyfxth1zo77kAXPXekZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaOhtqy1FGpTAyvFdxi6+ZO4AAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCAy1RxAOLwG/IYAygIH/PU0ksPlgtlBMALdVoTNoA7FEWRuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBjFZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjU1NTNiYWYwLTllZjctNDUyNy05ODRiLTgyOTQzZTAyNDlkZC9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOmUwMGU1MDg4LTNmMjAtNGY4ZS1hMTgwLWJhNTljMjUwNGVjMnJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCBy42finKTWadiGd7afWuoImHNki3J/G2HXOjvuQBc9d6JjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFgg8DOcq559l2qokpbWegC1d6Whhhryl/5Yj/E8dFRsl86iY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFgg8mNKdo7AwrBbq+ToFz/bY47QmwRQCe+RL6L3wCndxA10Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQHupOwV1No7p4s4WNYYAtuCSOoytE+MWOEBOjKDVlag6DOOfvz36xcY3QbeLEBWxT2XgvZzSY239AnjT42YXyG4=</c2pa:manifest></metadata>
-  <rect x="0" y="0" width="1650" height="1200" fill="#FFFFFF"/>
-  <text x="825" y="16" text-anchor="middle" font-size="14.5" font-weight="bold" fill="#111111">Diagrama EER — alineado al Diccionario de Datos Inicial (Usuario, CondicionMedica, Alimento, RegistroConsumo, PlanDieta, RutinaEjercicio, Ejercicio, Historial_IMC)</text>
-
-  <!-- ============ USUARIO ============ -->
-  <g>
-    <rect x="685" y="24" width="280" height="180" rx="6" fill="#FFFFFF" stroke="#2c3e50" stroke-width="1.5"/>
-    <text x="825" y="46" text-anchor="middle" font-size="14" font-weight="bold" fill="#111111">USUARIO</text>
-    <line x1="697" y1="54" x2="953" y2="54" stroke="#2c3e50" stroke-width="0.7"/>
-    <text x="701" y="72" font-size="12" text-decoration="underline" fill="#111111">id_usuario (PK)</text>
-    <text x="701" y="88" font-size="12" fill="#111111">nombre, email (AK)</text>
-    <text x="701" y="104" font-size="12" fill="#111111">contraseña_hash</text>
-    <text x="701" y="120" font-size="12" fill="#111111">peso_kg, altura_cm (actual)</text>
-    <text x="701" y="136" font-size="12" fill="#111111">fecha_nacimiento, sexo</text>
-    <text x="701" y="152" font-size="12" fill="#111111">fecha_registro</text>
-  </g>
-
-  <!-- spine -->
-  <line x1="825" y1="204" x2="825" y2="215" stroke="#555555" stroke-width="1"/>
-  <line x1="120" y1="215" x2="1530" y2="215" stroke="#555555" stroke-width="1"/>
-  <line x1="120" y1="215" x2="120" y2="225" stroke="#555555" stroke-width="1"/>
-  <line x1="400" y1="215" x2="400" y2="225" stroke="#555555" stroke-width="1"/>
-  <line x1="1250" y1="215" x2="1250" y2="225" stroke="#555555" stroke-width="1"/>
-  <line x1="1530" y1="215" x2="1530" y2="225" stroke="#555555" stroke-width="1"/>
-
-  <!-- ====== Diamantes nivel 1 ====== -->
-  <!-- tiene (identificadora, doble rombo) -->
-  <g>
-    <polygon points="120,225 195,260 120,295 45,260" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <polygon points="120,233 185,260 120,287 55,260" fill="none" stroke="#854f0b" stroke-width="1"/>
-    <text x="120" y="264" text-anchor="middle" font-size="11" fill="#412402">tiene</text>
-  </g>
-  <!-- padece (M:N con atributos) -->
-  <g>
-    <polygon points="400,225 475,260 400,295 325,260" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <text x="400" y="264" text-anchor="middle" font-size="11" fill="#412402">padece</text>
-  </g>
-  <!-- registra -->
-  <g>
-    <polygon points="825,225 900,260 825,295 750,260" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <text x="825" y="264" text-anchor="middle" font-size="11" fill="#412402">registra</text>
-  </g>
-  <!-- genera (dieta) -->
-  <g>
-    <polygon points="1250,225 1325,260 1250,295 1175,260" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <text x="1250" y="264" text-anchor="middle" font-size="11" fill="#412402">genera</text>
-  </g>
-  <!-- genera (rutina) -->
-  <g>
-    <polygon points="1530,225 1605,260 1530,295 1455,260" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <text x="1530" y="264" text-anchor="middle" font-size="11" fill="#412402">genera</text>
-  </g>
-
-  <!-- cardinalidades lado Usuario -->
-  <text x="830" y="212" font-size="10.5" fill="#333333">(0,N)</text>
-  <text x="130" y="220" font-size="10.5" fill="#333333">(0,N)</text>
-  <text x="410" y="220" font-size="10.5" fill="#333333">(0,N)</text>
-  <text x="1260" y="220" font-size="10.5" fill="#333333">(0,N)</text>
-  <text x="1540" y="220" font-size="10.5" fill="#333333">(0,N)</text>
-
-  <!-- conectores rombo -> entidad nivel 2 -->
-  <line x1="120" y1="295" x2="120" y2="320" stroke="#555555" stroke-width="1"/>
-  <line x1="400" y1="295" x2="400" y2="320" stroke="#555555" stroke-width="1"/>
-  <line x1="825" y1="295" x2="825" y2="320" stroke="#555555" stroke-width="1"/>
-  <line x1="1250" y1="295" x2="1250" y2="320" stroke="#555555" stroke-width="1"/>
-  <line x1="1530" y1="295" x2="1530" y2="320" stroke="#555555" stroke-width="1"/>
-  <text x="95" y="314" font-size="10.5" fill="#333333">(1,1)</text>
-  <text x="405" y="314" font-size="10.5" fill="#333333">(0,N)</text>
-  <text x="800" y="314" font-size="10.5" fill="#333333">(1,1)</text>
-  <text x="1225" y="314" font-size="10.5" fill="#333333">(1,1)</text>
-  <text x="1505" y="314" font-size="10.5" fill="#333333">(1,1)</text>
-
-  <!-- anotación de atributos de la relación M:N "padece" -> Usuario_Condicion -->
-  <line x1="475" y1="260" x2="495" y2="255" stroke="#854f0b" stroke-width="0.8" stroke-dasharray="2,2"/>
-  <text x="498" y="252" font-size="10" font-style="italic" fill="#5a3a00">→ Usuario_Condicion</text>
-  <text x="498" y="266" font-size="10" font-style="italic" fill="#5a3a00">(fecha_diagnostico, observaciones)</text>
-
-  <!-- ============ ENTIDADES NIVEL 2 ============ -->
-  <!-- HISTORIAL_IMC (débil) -->
-  <g>
-    <rect x="5" y="320" width="230" height="130" rx="6" fill="#FFFFFF" stroke="#2c3e50" stroke-width="1.5"/>
-    <rect x="11" y="326" width="218" height="118" rx="4" fill="none" stroke="#2c3e50" stroke-width="1"/>
-    <text x="120" y="344" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#111111">HISTORIAL_IMC</text>
-    <line x1="22" y1="352" x2="218" y2="352" stroke="#2c3e50" stroke-width="0.6"/>
-    <text x="26" y="368" font-size="11.5" text-decoration="underline" fill="#111111">id_historial (PK)</text>
-    <text x="26" y="384" font-size="11.5" fill="#111111">id_usuario (FK)</text>
-    <text x="26" y="400" font-size="11.5" fill="#111111">peso_kg, altura_cm</text>
-    <text x="26" y="416" font-size="11.5" fill="#111111">fecha_registro</text>
-  </g>
-
-  <!-- CONDICIONMEDICA (catálogo) -->
-  <g>
-    <rect x="295" y="320" width="210" height="110" rx="6" fill="#EAF3DE" stroke="#3b6d11" stroke-width="1.5"/>
-    <text x="400" y="342" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#173404">CONDICIONMEDICA</text>
-    <line x1="307" y1="350" x2="493" y2="350" stroke="#3b6d11" stroke-width="0.6"/>
-    <text x="311" y="366" font-size="11.5" text-decoration="underline" fill="#173404">id_condicion (PK)</text>
-    <text x="311" y="382" font-size="11.5" fill="#173404">nombre</text>
-    <text x="311" y="398" font-size="11.5" fill="#173404">descripcion</text>
-  </g>
-
-  <!-- REGISTROCONSUMO -->
-  <g>
-    <rect x="700" y="320" width="250" height="150" rx="6" fill="#FFFFFF" stroke="#2c3e50" stroke-width="1.5"/>
-    <text x="825" y="342" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#111111">REGISTROCONSUMO</text>
-    <line x1="712" y1="350" x2="938" y2="350" stroke="#2c3e50" stroke-width="0.6"/>
-    <text x="716" y="366" font-size="11.5" text-decoration="underline" fill="#111111">id_registro (PK)</text>
-    <text x="716" y="382" font-size="11.5" fill="#111111">imagen_ref</text>
-    <text x="716" y="398" font-size="11.5" fill="#111111">nivel_estimacion</text>
-    <text x="716" y="414" font-size="11.5" fill="#111111">gramos_estimados, fecha_hora</text>
-  </g>
-
-  <!-- PLANDIETA -->
-  <g>
-    <rect x="1145" y="320" width="210" height="130" rx="6" fill="#FFFFFF" stroke="#2c3e50" stroke-width="1.5"/>
-    <text x="1250" y="342" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#111111">PLANDIETA</text>
-    <line x1="1157" y1="350" x2="1343" y2="350" stroke="#2c3e50" stroke-width="0.6"/>
-    <text x="1161" y="366" font-size="11.5" text-decoration="underline" fill="#111111">id_plan (PK)</text>
-    <text x="1161" y="382" font-size="11.5" fill="#111111">fecha_generacion</text>
-    <text x="1161" y="398" font-size="11.5" fill="#111111">calorias_objetivo</text>
-    <text x="1161" y="414" font-size="11.5" fill="#111111">activo</text>
-  </g>
-
-  <!-- RUTINAEJERCICIO -->
-  <g>
-    <rect x="1420" y="320" width="220" height="130" rx="6" fill="#FFFFFF" stroke="#2c3e50" stroke-width="1.5"/>
-    <text x="1530" y="342" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#111111">RUTINAEJERCICIO</text>
-    <line x1="1432" y1="350" x2="1628" y2="350" stroke="#2c3e50" stroke-width="0.6"/>
-    <text x="1436" y="366" font-size="11.5" text-decoration="underline" fill="#111111">id_rutina (PK)</text>
-    <text x="1436" y="382" font-size="11.5" fill="#111111">fecha_generacion</text>
-    <text x="1436" y="398" font-size="11.5" fill="#111111">nivel_intensidad</text>
-    <text x="1436" y="414" font-size="11.5" fill="#111111">activa</text>
-  </g>
-
-  <!-- ============ NIVEL 3: relaciones hacia catálogos ============ -->
-  <line x1="825" y1="470" x2="825" y2="480" stroke="#555555" stroke-width="1"/>
-  <text x="800" y="478" font-size="10.5" fill="#333333">(1,1)</text>
-  <g>
-    <polygon points="825,480 900,515 825,550 750,515" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <text x="825" y="519" text-anchor="middle" font-size="10" fill="#412402">corresponde_a</text>
-  </g>
-
-  <line x1="1250" y1="450" x2="1250" y2="480" stroke="#555555" stroke-width="1"/>
-  <text x="1255" y="470" font-size="10.5" fill="#333333">(1,N)</text>
-  <g>
-    <polygon points="1250,480 1325,515 1250,550 1175,515" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <text x="1250" y="519" text-anchor="middle" font-size="11" fill="#412402">incluye</text>
-  </g>
-  <text x="905" y="500" font-size="10" font-style="italic" fill="#5a3a00">→ PlanDieta_Alimento</text>
-  <text x="905" y="514" font-size="10" font-style="italic" fill="#5a3a00">(cantidad_g, momento_comida)</text>
-
-  <line x1="1530" y1="450" x2="1530" y2="480" stroke="#555555" stroke-width="1"/>
-  <text x="1535" y="470" font-size="10.5" fill="#333333">(1,N)</text>
-  <g>
-    <polygon points="1530,480 1605,515 1530,550 1455,515" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <text x="1530" y="519" text-anchor="middle" font-size="11" fill="#412402">incluye</text>
-  </g>
-  <text x="1160" y="560" font-size="10" font-style="italic" fill="#5a3a00">→ RutinaEjercicio_Ejercicio (series, repeticiones)</text>
-  <line x1="1455" y1="530" x2="1440" y2="558" stroke="#854f0b" stroke-width="0.8" stroke-dasharray="2,2"/>
-
-  <!-- conectores hacia catálogos nivel 4 -->
-  <path d="M825,550 L825,575 L1035,600" fill="none" stroke="#555555" stroke-width="1"/>
-  <text x="900" y="580" font-size="10.5" fill="#333333">(0,N)</text>
-  <path d="M1250,550 L1250,575 L1035,600" fill="none" stroke="#555555" stroke-width="1"/>
-  <text x="1150" y="580" font-size="10.5" fill="#333333">(0,N)</text>
-  <line x1="1530" y1="550" x2="1530" y2="600" stroke="#555555" stroke-width="1"/>
-  <text x="1535" y="590" font-size="10.5" fill="#333333">(0,N)</text>
-
-  <!-- ============ CATÁLOGOS NIVEL 4 ============ -->
-  <g>
-    <rect x="920" y="600" width="230" height="140" rx="6" fill="#EAF3DE" stroke="#3b6d11" stroke-width="1.5"/>
-    <text x="1035" y="622" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#173404">ALIMENTO</text>
-    <line x1="932" y1="630" x2="1138" y2="630" stroke="#3b6d11" stroke-width="0.6"/>
-    <text x="936" y="646" font-size="11.5" text-decoration="underline" fill="#173404">id_alimento (PK)</text>
-    <text x="936" y="662" font-size="11.5" fill="#173404">nombre</text>
-    <text x="936" y="678" font-size="11.5" fill="#173404">densidad_g_cm3</text>
-    <text x="936" y="694" font-size="11.5" fill="#173404">calorias/proteinas/carbs/grasas_100g</text>
-  </g>
-
-  <g>
-    <rect x="1425" y="600" width="210" height="110" rx="6" fill="#EAF3DE" stroke="#3b6d11" stroke-width="1.5"/>
-    <text x="1530" y="622" text-anchor="middle" font-size="13.5" font-weight="bold" fill="#173404">EJERCICIO</text>
-    <line x1="1437" y1="630" x2="1623" y2="630" stroke="#3b6d11" stroke-width="0.6"/>
-    <text x="1441" y="646" font-size="11.5" text-decoration="underline" fill="#173404">id_ejercicio (PK)</text>
-    <text x="1441" y="662" font-size="11.5" fill="#173404">nombre, grupo_muscular</text>
-    <text x="1441" y="678" font-size="11.5" fill="#173404">bajo_impacto</text>
-  </g>
-
-  <!-- ============ NUEVO: RutinaEjercicio también "nace" de Historial_IMC, CondicionMedica y PlanDieta ============ -->
-  <text x="1650" y="0" font-size="0" fill="none"/>
-  <g>
-    <!-- corredor de RutinaEjercicio hacia el bus inferior -->
-    <path d="M1420,432 L1410,440 L1410,860" fill="none" stroke="#555555" stroke-width="1"/>
-    <!-- bus horizontal -->
-    <line x1="120" y1="860" x2="1410" y2="860" stroke="#555555" stroke-width="1"/>
-
-    <!-- se_basa_en (Historial_IMC) -->
-    <line x1="120" y1="450" x2="120" y2="745" stroke="#555555" stroke-width="1"/>
-    <text x="125" y="470" font-size="10.5" fill="#333333">(0,N)</text>
-    <polygon points="120,745 195,780 120,815 45,780" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <text x="120" y="784" text-anchor="middle" font-size="10" fill="#412402">se_basa_en</text>
-    <line x1="120" y1="815" x2="120" y2="860" stroke="#555555" stroke-width="1"/>
-    <text x="125" y="852" font-size="10.5" fill="#333333">(1,1)</text>
-
-    <!-- considera (CondicionMedica), M:N con atributo -->
-    <line x1="400" y1="430" x2="400" y2="745" stroke="#555555" stroke-width="1"/>
-    <text x="405" y="450" font-size="10.5" fill="#333333">(0,N)</text>
-    <polygon points="400,745 475,780 400,815 325,780" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <text x="400" y="784" text-anchor="middle" font-size="10" fill="#412402">considera</text>
-    <line x1="400" y1="815" x2="400" y2="860" stroke="#555555" stroke-width="1"/>
-    <text x="405" y="852" font-size="10.5" fill="#333333">(0,N)</text>
-    <text x="485" y="775" font-size="10" font-style="italic" fill="#5a3a00">→ RutinaEjercicio_Condicion</text>
-    <text x="485" y="789" font-size="10" font-style="italic" fill="#5a3a00">(restriccion_aplicada)</text>
-
-    <!-- se_coordina_con (PlanDieta) -->
-    <path d="M1355,450 L1300,745" fill="none" stroke="#555555" stroke-width="1"/>
-    <text x="1305" y="470" font-size="10.5" fill="#333333">(0,N)</text>
-    <polygon points="1300,745 1375,780 1300,815 1225,780" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.5"/>
-    <text x="1300" y="784" text-anchor="middle" font-size="9.5" fill="#412402">se_coordina_con</text>
-    <line x1="1300" y1="815" x2="1300" y2="860" stroke="#555555" stroke-width="1"/>
-    <text x="1225" y="852" font-size="10.5" fill="#333333">(0,1)</text>
-  </g>
-
-  <!-- ============ LEYENDA ============ -->
-  <g transform="translate(0,190)">
-    <rect x="10" y="765" width="1630" height="225" rx="6" fill="#FAFAFA" stroke="#999999" stroke-width="1"/>
-    <text x="24" y="785" font-size="12.5" font-weight="bold" fill="#111111">Leyenda (notación Chen) — adaptado al Diccionario de Datos Inicial</text>
-
-    <rect x="24" y="795" width="26" height="18" fill="#FFFFFF" stroke="#2c3e50" stroke-width="1.5"/>
-    <text x="56" y="809" font-size="11" fill="#111111">Entidad fuerte</text>
-
-    <rect x="180" y="795" width="26" height="18" fill="#FFFFFF" stroke="#2c3e50" stroke-width="1.5"/>
-    <rect x="183" y="798" width="20" height="12" fill="none" stroke="#2c3e50" stroke-width="0.8"/>
-    <text x="212" y="809" font-size="11" fill="#111111">Entidad débil</text>
-
-    <rect x="360" y="795" width="26" height="18" fill="#EAF3DE" stroke="#3b6d11" stroke-width="1.2"/>
-    <text x="392" y="809" font-size="11" fill="#111111">Entidad catálogo</text>
-
-    <polygon points="560,795 580,804 560,813 540,804" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.2"/>
-    <text x="592" y="809" font-size="11" fill="#111111">Relación (M:N con atributos → tabla asociativa)</text>
-
-    <polygon points="960,795 980,804 960,813 940,804" fill="#FAEEDA" stroke="#854f0b" stroke-width="1.2"/>
-    <polygon points="960,798 976,804 960,810 944,804" fill="none" stroke="#854f0b" stroke-width="0.8"/>
-    <text x="992" y="809" font-size="11" fill="#111111">Relación identificadora</text>
-
-    <text x="24" y="833" font-size="11" text-decoration="underline" fill="#111111">Subrayado</text>
-    <text x="118" y="833" font-size="11" fill="#111111">= clave primaria.</text>
-    <text x="24" y="849" font-size="11" fill="#111111">(min,max) junto a cada línea = cardinalidad/participación del lado indicado.</text>
-    <text x="24" y="865" font-size="11" fill="#111111">Usuario_Condicion, PlanDieta_Alimento y RutinaEjercicio_Ejercicio son relaciones N:M con atributos propios (no entidades débiles):</text>
-    <text x="24" y="879" font-size="11" fill="#111111">al traducir el EER al modelo relacional, cada una se convierte en la tabla asociativa homónima del diccionario, con PK compuesta por ambas FK.</text>
-    <text x="24" y="895" font-size="11" fill="#111111">HISTORIAL_IMC se mantiene como entidad débil (no existe sin un Usuario) aunque el diccionario le dé un id_historial propio por conveniencia.</text>
-    <text x="24" y="911" font-size="11" fill="#111111">No se fuerza especialización en CONDICIONMEDICA: es un catálogo homogéneo compartido entre usuarios, sin atributos que varíen por subtipo.</text>
-    <text x="24" y="927" font-size="11" font-weight="bold" fill="#111111">Nuevo (pedido del negocio): RUTINAEJERCICIO también nace de HISTORIAL_IMC, CONDICIONMEDICA y PLANDIETA — no solo de USUARIO y EJERCICIO.</text>
-    <text x="24" y="943" font-size="11" fill="#111111">se_basa_en: la rutina usa el último peso/IMC registrado. considera (M:N): qué condiciones médicas se tuvieron en cuenta y qué restricción aplicó (ej. "bajo impacto").</text>
-    <text x="24" y="959" font-size="11" fill="#111111">se_coordina_con: referencia opcional al plan de dieta vigente. ALIMENTO y REGISTROCONSUMO no se conectan de forma directa: ya son alcanzables</text>
-    <text x="24" y="975" font-size="11" fill="#111111">desde RUTINAEJERCICIO vía USUARIO/PLANDIETA; una FK directa ahí no tendría una cardinalidad de negocio clara (ver aclaración en el diccionario de datos).</text>
-  </g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.43.0 (0)
+ -->
+<!-- Title: NutriTrackCoreEER Pages: 1 -->
+<svg width="1801pt" height="1626pt"
+ viewBox="0.00 0.00 1801.00 1626.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1622)">
+<title>NutriTrackCoreEER</title>
+<!-- U&#45;&#45;RCOND -->
+<g id="edge47" class="edge">
+<title>U&#45;&#45;RCOND</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M367.74,-825C394.68,-825 424.32,-825 450.39,-825"/>
+</g>
+<!-- U&#45;&#45;RREG -->
+<g id="edge49" class="edge">
+<title>U&#45;&#45;RREG</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M296.79,-859.3C338.53,-975.75 474.33,-1354.62 512.46,-1460.99"/>
+</g>
+<!-- U&#45;&#45;RPLAN -->
+<g id="edge51" class="edge">
+<title>U&#45;&#45;RPLAN</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M309.52,-859.06C357.74,-924.7 462.47,-1067.27 504.5,-1124.5"/>
+</g>
+<!-- U&#45;&#45;RRUT -->
+<g id="edge53" class="edge">
+<title>U&#45;&#45;RRUT</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M309.52,-790.94C357.74,-725.3 462.47,-582.73 504.5,-525.5"/>
+</g>
+<!-- U&#45;&#45;RHIST -->
+<g id="edge55" class="edge">
+<title>U&#45;&#45;RHIST</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M296.79,-790.7C338.53,-674.25 474.33,-295.38 512.46,-189.01"/>
+</g>
+<!-- U&#45;&#45;UA1 -->
+<g id="edge1" class="edge">
+<title>U&#45;&#45;UA1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M254.69,-859.22C209.09,-911.58 123.42,-1009.95 86.34,-1052.51"/>
+</g>
+<!-- U&#45;&#45;UA2 -->
+<g id="edge2" class="edge">
+<title>U&#45;&#45;UA2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M244.88,-859.12C199.94,-897.81 128.16,-959.62 91.57,-991.13"/>
+</g>
+<!-- U&#45;&#45;UA3 -->
+<g id="edge3" class="edge">
+<title>U&#45;&#45;UA3</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M225.19,-859.05C185.1,-882.06 133.69,-911.58 100.91,-930.39"/>
+</g>
+<!-- U&#45;&#45;UA4 -->
+<g id="edge4" class="edge">
+<title>U&#45;&#45;UA4</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M201.3,-848.88C173.37,-856.9 143.1,-865.59 118.53,-872.64"/>
+</g>
+<!-- U&#45;&#45;UA5 -->
+<g id="edge5" class="edge">
+<title>U&#45;&#45;UA5</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M201.3,-825C180.14,-825 157.65,-825 137.3,-825"/>
+</g>
+<!-- U&#45;&#45;UA6 -->
+<g id="edge6" class="edge">
+<title>U&#45;&#45;UA6</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M201.3,-801.12C173.37,-793.1 143.1,-784.41 118.53,-777.36"/>
+</g>
+<!-- U&#45;&#45;UA7 -->
+<g id="edge7" class="edge">
+<title>U&#45;&#45;UA7</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M225.19,-790.95C185.1,-767.94 133.69,-738.42 100.91,-719.61"/>
+</g>
+<!-- U&#45;&#45;UA8 -->
+<g id="edge8" class="edge">
+<title>U&#45;&#45;UA8</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M244.88,-790.88C199.94,-752.19 128.16,-690.38 91.57,-658.87"/>
+</g>
+<!-- U&#45;&#45;UA9 -->
+<g id="edge9" class="edge">
+<title>U&#45;&#45;UA9</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M254.69,-790.78C209.09,-738.42 123.42,-640.05 86.34,-597.49"/>
+</g>
+<!-- EREG&#45;&#45;RREF -->
+<g id="edge57" class="edge">
+<title>EREG&#45;&#45;RREF</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M842.53,-1489C926.35,-1489 1054.51,-1489 1134.25,-1489"/>
+<text text-anchor="middle" x="867.26" y="-1494.63" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(1,1)</text>
+</g>
+<!-- EREG&#45;&#45;RC1 -->
+<g id="edge15" class="edge">
+<title>EREG&#45;&#45;RC1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M759.5,-1523.17C759.5,-1540.48 759.5,-1560.93 759.5,-1575.92"/>
+</g>
+<!-- EREG&#45;&#45;RC2 -->
+<g id="edge16" class="edge">
+<title>EREG&#45;&#45;RC2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M721.66,-1454.6C683.45,-1419.86 625.75,-1367.41 594.5,-1339"/>
+</g>
+<!-- EREG&#45;&#45;RC3 -->
+<g id="edge17" class="edge">
+<title>EREG&#45;&#45;RC3</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M750.8,-1454.6C742.11,-1420.25 729.04,-1368.58 721.8,-1339.96"/>
+</g>
+<!-- EREG&#45;&#45;RC4 -->
+<g id="edge18" class="edge">
+<title>EREG&#45;&#45;RC4</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M782.77,-1454.6C806.01,-1420.25 840.96,-1368.58 860.32,-1339.96"/>
+</g>
+<!-- EREG&#45;&#45;RC5 -->
+<g id="edge19" class="edge">
+<title>EREG&#45;&#45;RC5</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M814.62,-1454.8C871.35,-1419.61 957.66,-1366.06 1003.09,-1337.87"/>
+</g>
+<!-- EPLAN&#45;&#45;RINC -->
+<g id="edge59" class="edge">
+<title>EPLAN&#45;&#45;RINC</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M842.53,-1149C925.72,-1149 1052.58,-1149 1132.45,-1149"/>
+<text text-anchor="middle" x="867.26" y="-1154.63" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(1,N)</text>
+</g>
+<!-- EPLAN&#45;&#45;PD1 -->
+<g id="edge20" class="edge">
+<title>EPLAN&#45;&#45;PD1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M717.18,-1114.75C683.77,-1087.71 638.34,-1050.95 610.79,-1028.65"/>
+</g>
+<!-- EPLAN&#45;&#45;PD2 -->
+<g id="edge21" class="edge">
+<title>EPLAN&#45;&#45;PD2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M756.08,-1114.75C753.44,-1088.36 749.87,-1052.71 747.63,-1030.28"/>
+</g>
+<!-- EPLAN&#45;&#45;PD3 -->
+<g id="edge22" class="edge">
+<title>EPLAN&#45;&#45;PD3</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M798.4,-1114.75C828.92,-1087.88 870.36,-1051.39 895.72,-1029.06"/>
+</g>
+<!-- EPLAN&#45;&#45;PD4 -->
+<g id="edge23" class="edge">
+<title>EPLAN&#45;&#45;PD4</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M833.23,-1114.93C893.67,-1087.01 976.76,-1048.62 1024.53,-1026.55"/>
+</g>
+<!-- ERUT&#45;&#45;RCOMP -->
+<g id="edge61" class="edge">
+<title>ERUT&#45;&#45;RCOMP</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M842.53,-501C923.32,-501 1045.3,-501 1125.42,-501"/>
+<text text-anchor="middle" x="867.26" y="-506.63" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(1,N)</text>
+</g>
+<!-- ERUT&#45;&#45;RU1 -->
+<g id="edge24" class="edge">
+<title>ERUT&#45;&#45;RU1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M717.18,-466.75C683.77,-439.71 638.34,-402.95 610.79,-380.65"/>
+</g>
+<!-- ERUT&#45;&#45;RU2 -->
+<g id="edge25" class="edge">
+<title>ERUT&#45;&#45;RU2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M756.08,-466.75C753.44,-440.36 749.87,-404.71 747.63,-382.28"/>
+</g>
+<!-- ERUT&#45;&#45;RU3 -->
+<g id="edge26" class="edge">
+<title>ERUT&#45;&#45;RU3</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M798.4,-466.75C828.92,-439.88 870.36,-403.39 895.72,-381.06"/>
+</g>
+<!-- ERUT&#45;&#45;RU4 -->
+<g id="edge27" class="edge">
+<title>ERUT&#45;&#45;RU4</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M833.23,-466.93C893.67,-439.01 976.76,-400.62 1024.53,-378.55"/>
+</g>
+<!-- EHIST&#45;&#45;HI1 -->
+<g id="edge28" class="edge">
+<title>EHIST&#45;&#45;HI1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M717.18,-126.75C683.77,-99.71 638.34,-62.95 610.79,-40.65"/>
+</g>
+<!-- EHIST&#45;&#45;HI2 -->
+<g id="edge29" class="edge">
+<title>EHIST&#45;&#45;HI2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M756.08,-126.75C753.44,-100.36 749.87,-64.71 747.63,-42.28"/>
+</g>
+<!-- EHIST&#45;&#45;HI3 -->
+<g id="edge30" class="edge">
+<title>EHIST&#45;&#45;HI3</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M791.3,-126.75C816.11,-100.04 849.73,-63.83 870.5,-41.46"/>
+</g>
+<!-- EHIST&#45;&#45;HI4 -->
+<g id="edge31" class="edge">
+<title>EHIST&#45;&#45;HI4</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M826.18,-126.93C880.35,-99.25 954.66,-61.28 998.03,-39.12"/>
+</g>
+<!-- ECOND&#45;&#45;CA1 -->
+<g id="edge12" class="edge">
+<title>ECOND&#45;&#45;CA1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M842.71,-847.62C898.3,-862.73 969.67,-882.13 1017.13,-895.04"/>
+</g>
+<!-- ECOND&#45;&#45;CA2 -->
+<g id="edge13" class="edge">
+<title>ECOND&#45;&#45;CA2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M842.71,-825C891.87,-825 953.36,-825 999.75,-825"/>
+</g>
+<!-- ECOND&#45;&#45;CA3 -->
+<g id="edge14" class="edge">
+<title>ECOND&#45;&#45;CA3</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M842.71,-802.38C898.3,-787.27 969.67,-767.87 1017.13,-754.96"/>
+</g>
+<!-- EALI&#45;&#45;AL1 -->
+<g id="edge36" class="edge">
+<title>EALI&#45;&#45;AL1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1505.43,-1353.23C1558.72,-1398.91 1651.37,-1478.31 1694.36,-1515.16"/>
+</g>
+<!-- EALI&#45;&#45;AL2 -->
+<g id="edge37" class="edge">
+<title>EALI&#45;&#45;AL2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1525.22,-1353.13C1575.14,-1381.65 1644.47,-1421.27 1684.8,-1444.31"/>
+</g>
+<!-- EALI&#45;&#45;AL3 -->
+<g id="edge38" class="edge">
+<title>EALI&#45;&#45;AL3</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1548.71,-1342.78C1587.85,-1353.96 1633.24,-1366.93 1667.08,-1376.6"/>
+</g>
+<!-- EALI&#45;&#45;AL4 -->
+<g id="edge39" class="edge">
+<title>EALI&#45;&#45;AL4</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1548.71,-1319C1581.11,-1319 1617.8,-1319 1648.67,-1319"/>
+</g>
+<!-- EALI&#45;&#45;AL5 -->
+<g id="edge40" class="edge">
+<title>EALI&#45;&#45;AL5</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1548.71,-1295.22C1587.85,-1284.04 1633.24,-1271.07 1667.08,-1261.4"/>
+</g>
+<!-- EALI&#45;&#45;AL6 -->
+<g id="edge41" class="edge">
+<title>EALI&#45;&#45;AL6</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1525.22,-1284.87C1575,-1256.43 1644.07,-1216.96 1684.45,-1193.89"/>
+</g>
+<!-- EALI&#45;&#45;AL7 -->
+<g id="edge42" class="edge">
+<title>EALI&#45;&#45;AL7</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1505.43,-1284.77C1558.72,-1239.09 1651.37,-1159.69 1694.36,-1122.84"/>
+</g>
+<!-- EEJE&#45;&#45;EJ1 -->
+<g id="edge43" class="edge">
+<title>EEJE&#45;&#45;EJ1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1544.89,-535.02C1589.04,-553.94 1642.07,-576.67 1677.6,-591.9"/>
+</g>
+<!-- EEJE&#45;&#45;EJ2 -->
+<g id="edge44" class="edge">
+<title>EEJE&#45;&#45;EJ2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1548.71,-512.89C1583.41,-517.84 1623.01,-523.5 1655.13,-528.09"/>
+</g>
+<!-- EEJE&#45;&#45;EJ3 -->
+<g id="edge45" class="edge">
+<title>EEJE&#45;&#45;EJ3</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1548.71,-489.11C1583.41,-484.16 1623.01,-478.5 1655.13,-473.91"/>
+</g>
+<!-- EEJE&#45;&#45;EJ4 -->
+<g id="edge46" class="edge">
+<title>EEJE&#45;&#45;EJ4</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1544.89,-466.98C1589.04,-448.06 1642.07,-425.33 1677.6,-410.1"/>
+</g>
+<!-- RCOND&#45;&#45;ECOND -->
+<g id="edge48" class="edge">
+<title>RCOND&#45;&#45;ECOND</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M594.57,-825C620.31,-825 649.52,-825 676.13,-825"/>
+<text text-anchor="middle" x="651.41" y="-814.57" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(0,N)</text>
+</g>
+<!-- RCOND&#45;&#45;RA1 -->
+<g id="edge10" class="edge">
+<title>RCOND&#45;&#45;RA1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M541.45,-800.69C561.7,-774.71 593.44,-733.98 612.48,-709.55"/>
+</g>
+<!-- RCOND&#45;&#45;RA2 -->
+<g id="edge11" class="edge">
+<title>RCOND&#45;&#45;RA2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M559.37,-809.13C619.2,-783.38 736.95,-732.71 798.65,-706.15"/>
+</g>
+<!-- RREG&#45;&#45;EREG -->
+<g id="edge50" class="edge">
+<title>RREG&#45;&#45;EREG</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M594.57,-1489C620.31,-1489 649.52,-1489 676.13,-1489"/>
+<text text-anchor="middle" x="651.41" y="-1478.57" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(1,1)</text>
+</g>
+<!-- RPLAN&#45;&#45;EPLAN -->
+<g id="edge52" class="edge">
+<title>RPLAN&#45;&#45;EPLAN</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M594.57,-1149C620.31,-1149 649.52,-1149 676.13,-1149"/>
+<text text-anchor="middle" x="651.41" y="-1138.57" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(1,1)</text>
+</g>
+<!-- RRUT&#45;&#45;ERUT -->
+<g id="edge54" class="edge">
+<title>RRUT&#45;&#45;ERUT</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M594.57,-501C620.31,-501 649.52,-501 676.13,-501"/>
+<text text-anchor="middle" x="651.41" y="-490.57" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(1,1)</text>
+</g>
+<!-- RHIST&#45;&#45;EHIST -->
+<g id="edge56" class="edge">
+<title>RHIST&#45;&#45;EHIST</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M594.57,-161C620.31,-161 649.52,-161 676.13,-161"/>
+<text text-anchor="middle" x="651.41" y="-150.57" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(1,1)</text>
+</g>
+<!-- RREF&#45;&#45;EALI -->
+<g id="edge58" class="edge">
+<title>RREF&#45;&#45;EALI</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M1235.96,-1469.66C1279.05,-1441.38 1359.92,-1388.3 1413.25,-1353.29"/>
+<text text-anchor="middle" x="1388.17" y="-1357.75" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(0,N)</text>
+</g>
+<!-- RINC&#45;&#45;EALI -->
+<g id="edge60" class="edge">
+<title>RINC&#45;&#45;EALI</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M1236.21,-1168.5C1279.39,-1196.85 1360.14,-1249.85 1413.36,-1284.78"/>
+<text text-anchor="middle" x="1397.1" y="-1262.09" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(0,N)</text>
+</g>
+<!-- RINC&#45;&#45;IA1 -->
+<g id="edge32" class="edge">
+<title>RINC&#45;&#45;IA1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1220.98,-1122.67C1235.8,-1095.74 1258.5,-1054.45 1272.09,-1029.75"/>
+</g>
+<!-- RINC&#45;&#45;IA2 -->
+<g id="edge33" class="edge">
+<title>RINC&#45;&#45;IA2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1237.79,-1130.12C1282.19,-1103.32 1363,-1054.56 1407.34,-1027.8"/>
+</g>
+<!-- RCOMP&#45;&#45;EEJE -->
+<g id="edge62" class="edge">
+<title>RCOMP&#45;&#45;EEJE</title>
+<path fill="none" stroke="#16202b" stroke-width="1.5" d="M1287.74,-501C1317.85,-501 1352.03,-501 1382.32,-501"/>
+<text text-anchor="middle" x="1357.59" y="-490.57" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(0,N)</text>
+</g>
+<!-- RCOMP&#45;&#45;CO1 -->
+<g id="edge34" class="edge">
+<title>RCOMP&#45;&#45;CO1</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1221.16,-474.34C1235.91,-447.52 1258.35,-406.72 1271.91,-382.08"/>
+</g>
+<!-- RCOMP&#45;&#45;CO2 -->
+<g id="edge35" class="edge">
+<title>RCOMP&#45;&#45;CO2</title>
+<path fill="none" stroke="#6b7785" stroke-width="1.1" d="M1239.25,-481.24C1283.96,-454.25 1363.56,-406.22 1407.4,-379.77"/>
+</g>
+<!-- U -->
+<g id="node1" class="node">
+<title>U</title>
+<polygon fill="#ffffff" stroke="#16202b" stroke-width="3" points="367.5,-859 201.5,-859 201.5,-791 367.5,-791 367.5,-859"/>
+<text text-anchor="middle" x="284.5" y="-821.6" font-family="DejaVu Sans" font-size="13.00" fill="#16202b">Usuario</text>
+</g>
+<!-- EREG -->
+<g id="node2" class="node">
+<title>EREG</title>
+<polygon fill="#e7ecf7" stroke="#3a5697" stroke-width="2" points="842.5,-1523 676.5,-1523 676.5,-1455 842.5,-1455 842.5,-1523"/>
+<text text-anchor="middle" x="759.5" y="-1485.6" font-family="DejaVu Sans" font-size="13.00" fill="#16202b">RegistroConsumo</text>
+</g>
+<!-- EPLAN -->
+<g id="node3" class="node">
+<title>EPLAN</title>
+<polygon fill="#e7ecf7" stroke="#3a5697" stroke-width="2" points="842.5,-1183 676.5,-1183 676.5,-1115 842.5,-1115 842.5,-1183"/>
+<text text-anchor="middle" x="759.5" y="-1145.6" font-family="DejaVu Sans" font-size="13.00" fill="#16202b">PlanDieta</text>
+</g>
+<!-- ERUT -->
+<g id="node4" class="node">
+<title>ERUT</title>
+<polygon fill="#e7ecf7" stroke="#3a5697" stroke-width="2" points="842.5,-535 676.5,-535 676.5,-467 842.5,-467 842.5,-535"/>
+<text text-anchor="middle" x="759.5" y="-497.6" font-family="DejaVu Sans" font-size="13.00" fill="#16202b">RutinaEjercicio</text>
+</g>
+<!-- EHIST -->
+<g id="node5" class="node">
+<title>EHIST</title>
+<polygon fill="#e7ecf7" stroke="#3a5697" stroke-width="2" points="842.5,-195 676.5,-195 676.5,-127 842.5,-127 842.5,-195"/>
+<text text-anchor="middle" x="759.5" y="-157.6" font-family="DejaVu Sans" font-size="13.00" fill="#16202b">Historial_IMC</text>
+</g>
+<!-- ECOND -->
+<g id="node6" class="node">
+<title>ECOND</title>
+<polygon fill="#dcebe7" stroke="#0e6e6b" stroke-width="2" points="842.5,-859 676.5,-859 676.5,-791 842.5,-791 842.5,-859"/>
+<text text-anchor="middle" x="759.5" y="-821.6" font-family="DejaVu Sans" font-size="13.00" fill="#16202b">CondicionMedica</text>
+</g>
+<!-- EALI -->
+<g id="node7" class="node">
+<title>EALI</title>
+<polygon fill="#dcebe7" stroke="#0e6e6b" stroke-width="2" points="1548.5,-1353 1382.5,-1353 1382.5,-1285 1548.5,-1285 1548.5,-1353"/>
+<text text-anchor="middle" x="1465.5" y="-1315.6" font-family="DejaVu Sans" font-size="13.00" fill="#16202b">Alimento</text>
+</g>
+<!-- EEJE -->
+<g id="node8" class="node">
+<title>EEJE</title>
+<polygon fill="#dcebe7" stroke="#0e6e6b" stroke-width="2" points="1548.5,-535 1382.5,-535 1382.5,-467 1548.5,-467 1548.5,-535"/>
+<text text-anchor="middle" x="1465.5" y="-497.6" font-family="DejaVu Sans" font-size="13.00" fill="#16202b">Ejercicio</text>
+</g>
+<!-- RCOND -->
+<g id="node9" class="node">
+<title>RCOND</title>
+<polygon fill="#ffffff" stroke="#16202b" stroke-width="1.6" points="522.5,-857.5 450.5,-825 522.5,-792.5 594.5,-825 522.5,-857.5"/>
+<text text-anchor="start" x="508.5" y="-826.7" font-family="DejaVu Sans" font-size="11.00" fill="#16202b">tiene</text>
+<text text-anchor="start" x="484.5" y="-818.1" font-family="DejaVu Sans" font-size="8.00" fill="#16202b">Usuario_Condicion</text>
+</g>
+<!-- RREG -->
+<g id="node10" class="node">
+<title>RREG</title>
+<polygon fill="#ffffff" stroke="#16202b" stroke-width="1.6" points="522.5,-1521.5 450.5,-1489 522.5,-1456.5 594.5,-1489 522.5,-1521.5"/>
+<text text-anchor="middle" x="522.5" y="-1486.2" font-family="DejaVu Sans" font-size="11.00" fill="#16202b">registra</text>
+</g>
+<!-- RPLAN -->
+<g id="node11" class="node">
+<title>RPLAN</title>
+<polygon fill="#ffffff" stroke="#16202b" stroke-width="1.6" points="522.5,-1181.5 450.5,-1149 522.5,-1116.5 594.5,-1149 522.5,-1181.5"/>
+<text text-anchor="middle" x="522.5" y="-1146.2" font-family="DejaVu Sans" font-size="11.00" fill="#16202b">sigue</text>
+</g>
+<!-- RRUT -->
+<g id="node12" class="node">
+<title>RRUT</title>
+<polygon fill="#ffffff" stroke="#16202b" stroke-width="1.6" points="522.5,-533.5 450.5,-501 522.5,-468.5 594.5,-501 522.5,-533.5"/>
+<text text-anchor="middle" x="522.5" y="-498.2" font-family="DejaVu Sans" font-size="11.00" fill="#16202b">realiza</text>
+</g>
+<!-- RHIST -->
+<g id="node13" class="node">
+<title>RHIST</title>
+<polygon fill="#ffffff" stroke="#16202b" stroke-width="1.6" points="522.5,-193.5 450.5,-161 522.5,-128.5 594.5,-161 522.5,-193.5"/>
+<text text-anchor="middle" x="522.5" y="-158.2" font-family="DejaVu Sans" font-size="11.00" fill="#16202b">mide</text>
+</g>
+<!-- RREF -->
+<g id="node14" class="node">
+<title>RREF</title>
+<polygon fill="#ffffff" stroke="#16202b" stroke-width="1.6" points="1206.5,-1521.5 1134.5,-1489 1206.5,-1456.5 1278.5,-1489 1206.5,-1521.5"/>
+<text text-anchor="middle" x="1206.5" y="-1486.2" font-family="DejaVu Sans" font-size="11.00" fill="#16202b">refiere_a</text>
+</g>
+<!-- RINC -->
+<g id="node15" class="node">
+<title>RINC</title>
+<polygon fill="#ffffff" stroke="#16202b" stroke-width="1.6" points="1206.5,-1181.5 1132.8,-1149 1206.5,-1116.5 1280.2,-1149 1206.5,-1181.5"/>
+<text text-anchor="start" x="1186.5" y="-1150.7" font-family="DejaVu Sans" font-size="11.00" fill="#16202b">incluye</text>
+<text text-anchor="start" x="1167" y="-1142.1" font-family="DejaVu Sans" font-size="8.00" fill="#16202b">PlanDieta_Alimento</text>
+</g>
+<!-- RCOMP -->
+<g id="node16" class="node">
+<title>RCOMP</title>
+<polygon fill="#ffffff" stroke="#16202b" stroke-width="1.6" points="1206.5,-533.5 1125.48,-501 1206.5,-468.5 1287.52,-501 1206.5,-533.5"/>
+<text text-anchor="start" x="1181" y="-502.2" font-family="DejaVu Sans" font-size="11.00" fill="#16202b">compone</text>
+<text text-anchor="start" x="1162" y="-494.4" font-family="DejaVu Sans" font-size="7.00" fill="#16202b">RutinaEjercicio_Ejercicio</text>
+</g>
+<!-- UA1 -->
+<g id="node17" class="node">
+<title>UA1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="68.5" cy="-1073" rx="68.5" ry="21"/>
+<text text-anchor="start" x="41" y="-1071.6" font-family="DejaVu Sans" text-decoration="underline" font-size="10.50" fill="#16202b">id_usuario</text>
+</g>
+<!-- UA2 -->
+<g id="node18" class="node">
+<title>UA2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="68.5" cy="-1011" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="68.5" y="-1008.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">nombre</text>
+</g>
+<!-- UA3 -->
+<g id="node19" class="node">
+<title>UA3</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="68.5" cy="-949" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="68.5" y="-946.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">email</text>
+</g>
+<!-- UA4 -->
+<g id="node20" class="node">
+<title>UA4</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="68.5" cy="-887" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="68.5" y="-884.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">contraseña_hash</text>
+</g>
+<!-- UA5 -->
+<g id="node21" class="node">
+<title>UA5</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="68.5" cy="-825" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="68.5" y="-822.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">fecha_nacimiento</text>
+</g>
+<!-- UA6 -->
+<g id="node22" class="node">
+<title>UA6</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="68.5" cy="-763" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="68.5" y="-760.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">sexo</text>
+</g>
+<!-- UA7 -->
+<g id="node23" class="node">
+<title>UA7</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="68.5" cy="-701" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="68.5" y="-698.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">peso_kg</text>
+</g>
+<!-- UA8 -->
+<g id="node24" class="node">
+<title>UA8</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="68.5" cy="-639" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="68.5" y="-636.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">altura_cm</text>
+</g>
+<!-- UA9 -->
+<g id="node25" class="node">
+<title>UA9</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="68.5" cy="-577" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="68.5" y="-574.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">fecha_registro</text>
+</g>
+<!-- RA1 -->
+<g id="node26" class="node">
+<title>RA1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="628.5" cy="-689" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="628.5" y="-686.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">fecha_diagnostico</text>
+</g>
+<!-- RA2 -->
+<g id="node27" class="node">
+<title>RA2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="838.5" cy="-689" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="838.5" y="-686.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">observaciones</text>
+</g>
+<!-- CA1 -->
+<g id="node28" class="node">
+<title>CA1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1068.5" cy="-909" rx="68.5" ry="21"/>
+<text text-anchor="start" x="1035" y="-907.6" font-family="DejaVu Sans" text-decoration="underline" font-size="10.50" fill="#16202b">id_condicion</text>
+</g>
+<!-- CA2 -->
+<g id="node29" class="node">
+<title>CA2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1068.5" cy="-825" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1068.5" y="-822.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">nombre</text>
+</g>
+<!-- CA3 -->
+<g id="node30" class="node">
+<title>CA3</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1068.5" cy="-741" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1068.5" y="-738.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">descripcion</text>
+</g>
+<!-- RC1 -->
+<g id="node31" class="node">
+<title>RC1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="759.5" cy="-1597" rx="68.5" ry="21"/>
+<text text-anchor="start" x="732" y="-1595.6" font-family="DejaVu Sans" text-decoration="underline" font-size="10.50" fill="#16202b">id_registro</text>
+</g>
+<!-- RC2 -->
+<g id="node32" class="node">
+<title>RC2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="572.5" cy="-1319" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="572.5" y="-1316.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">imagen_ref</text>
+</g>
+<!-- RC3 -->
+<g id="node33" class="node">
+<title>RC3</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="716.5" cy="-1319" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="716.5" y="-1316.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">nivel_estimacion</text>
+</g>
+<!-- RC4 -->
+<g id="node34" class="node">
+<title>RC4</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="874.5" cy="-1319" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="874.5" y="-1316.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">gramos_estimados</text>
+</g>
+<!-- RC5 -->
+<g id="node35" class="node">
+<title>RC5</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1033.5" cy="-1319" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1033.5" y="-1316.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">fecha_hora</text>
+</g>
+<!-- PD1 -->
+<g id="node36" class="node">
+<title>PD1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="586.5" cy="-1009" rx="68.5" ry="21"/>
+<text text-anchor="start" x="567" y="-1007.6" font-family="DejaVu Sans" text-decoration="underline" font-size="10.50" fill="#16202b">id_plan</text>
+</g>
+<!-- PD2 -->
+<g id="node37" class="node">
+<title>PD2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="745.5" cy="-1009" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="745.5" y="-1006.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">fecha_generacion</text>
+</g>
+<!-- PD3 -->
+<g id="node38" class="node">
+<title>PD3</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="918.5" cy="-1009" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="918.5" y="-1006.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">calorias_objetivo</text>
+</g>
+<!-- PD4 -->
+<g id="node39" class="node">
+<title>PD4</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1062.5" cy="-1009" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1062.5" y="-1006.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">activo</text>
+</g>
+<!-- RU1 -->
+<g id="node40" class="node">
+<title>RU1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="586.5" cy="-361" rx="68.5" ry="21"/>
+<text text-anchor="start" x="563" y="-359.6" font-family="DejaVu Sans" text-decoration="underline" font-size="10.50" fill="#16202b">id_rutina</text>
+</g>
+<!-- RU2 -->
+<g id="node41" class="node">
+<title>RU2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="745.5" cy="-361" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="745.5" y="-358.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">fecha_generacion</text>
+</g>
+<!-- RU3 -->
+<g id="node42" class="node">
+<title>RU3</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="918.5" cy="-361" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="918.5" y="-358.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">nivel_intensidad</text>
+</g>
+<!-- RU4 -->
+<g id="node43" class="node">
+<title>RU4</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1062.5" cy="-361" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1062.5" y="-358.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">activa</text>
+</g>
+<!-- HI1 -->
+<g id="node44" class="node">
+<title>HI1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="586.5" cy="-21" rx="68.5" ry="21"/>
+<text text-anchor="start" x="557.5" y="-19.6" font-family="DejaVu Sans" text-decoration="underline" font-size="10.50" fill="#16202b">id_historial</text>
+</g>
+<!-- HI2 -->
+<g id="node45" class="node">
+<title>HI2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="745.5" cy="-21" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="745.5" y="-18.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">peso_kg</text>
+</g>
+<!-- HI3 -->
+<g id="node46" class="node">
+<title>HI3</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="889.5" cy="-21" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="889.5" y="-18.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">altura_cm</text>
+</g>
+<!-- HI4 -->
+<g id="node47" class="node">
+<title>HI4</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1033.5" cy="-21" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1033.5" y="-18.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">fecha_registro</text>
+</g>
+<!-- IA1 -->
+<g id="node48" class="node">
+<title>IA1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1283.5" cy="-1009" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1283.5" y="-1006.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">cantidad_g</text>
+</g>
+<!-- IA2 -->
+<g id="node49" class="node">
+<title>IA2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1438.5" cy="-1009" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1438.5" y="-1006.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">momento_comida</text>
+</g>
+<!-- CO1 -->
+<g id="node50" class="node">
+<title>CO1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1283.5" cy="-361" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1283.5" y="-358.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">series</text>
+</g>
+<!-- CO2 -->
+<g id="node51" class="node">
+<title>CO2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1438.5" cy="-361" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1438.5" y="-358.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">repeticiones</text>
+</g>
+<!-- AL1 -->
+<g id="node52" class="node">
+<title>AL1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-1535" rx="68.5" ry="21"/>
+<text text-anchor="start" x="1686" y="-1533.6" font-family="DejaVu Sans" text-decoration="underline" font-size="10.50" fill="#16202b">id_alimento</text>
+</g>
+<!-- AL2 -->
+<g id="node53" class="node">
+<title>AL2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-1463" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1717.5" y="-1460.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">nombre</text>
+</g>
+<!-- AL3 -->
+<g id="node54" class="node">
+<title>AL3</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-1391" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1717.5" y="-1388.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">densidad_g_cm3</text>
+</g>
+<!-- AL4 -->
+<g id="node55" class="node">
+<title>AL4</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-1319" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1717.5" y="-1316.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">calorias_100g</text>
+</g>
+<!-- AL5 -->
+<g id="node56" class="node">
+<title>AL5</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-1247" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1717.5" y="-1244.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">proteinas_100g</text>
+</g>
+<!-- AL6 -->
+<g id="node57" class="node">
+<title>AL6</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-1175" rx="75.5" ry="21"/>
+<text text-anchor="middle" x="1717.5" y="-1172.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">carbohidratos_100g</text>
+</g>
+<!-- AL7 -->
+<g id="node58" class="node">
+<title>AL7</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-1103" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1717.5" y="-1100.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">grasas_100g</text>
+</g>
+<!-- EJ1 -->
+<g id="node59" class="node">
+<title>EJ1</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-609" rx="68.5" ry="21"/>
+<text text-anchor="start" x="1687" y="-607.6" font-family="DejaVu Sans" text-decoration="underline" font-size="10.50" fill="#16202b">id_ejercicio</text>
+</g>
+<!-- EJ2 -->
+<g id="node60" class="node">
+<title>EJ2</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-537" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1717.5" y="-534.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">nombre</text>
+</g>
+<!-- EJ3 -->
+<g id="node61" class="node">
+<title>EJ3</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-465" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1717.5" y="-462.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">grupo_muscular</text>
+</g>
+<!-- EJ4 -->
+<g id="node62" class="node">
+<title>EJ4</title>
+<ellipse fill="#ffffff" stroke="#6b7785" stroke-width="1.2" cx="1717.5" cy="-393" rx="68.5" ry="21"/>
+<text text-anchor="middle" x="1717.5" y="-390.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">bajo_impacto</text>
+</g>
+<!-- LREG -->
+<g id="node63" class="node">
+<title>LREG</title>
+<text text-anchor="middle" x="414.5" y="-1113.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(0,N)</text>
+</g>
+<!-- LPLAN -->
+<g id="node64" class="node">
+<title>LPLAN</title>
+<text text-anchor="middle" x="410.5" y="-954.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(0,N)</text>
+</g>
+<!-- LCOND -->
+<g id="node65" class="node">
+<title>LCOND</title>
+<text text-anchor="middle" x="428.5" y="-840.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(0,N)</text>
+</g>
+<!-- LRUT -->
+<g id="node66" class="node">
+<title>LRUT</title>
+<text text-anchor="middle" x="410.5" y="-690.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(0,N)</text>
+</g>
+<!-- LHIST -->
+<g id="node67" class="node">
+<title>LHIST</title>
+<text text-anchor="middle" x="414.5" y="-531.6" font-family="DejaVu Sans" font-size="10.50" fill="#16202b">(0,N)</text>
+</g>
+</g>
 </svg>
