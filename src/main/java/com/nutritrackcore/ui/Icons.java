@@ -103,6 +103,21 @@ public final class Icons {
                 new Line2D.Double(21, 12, 9, 12)));
     }
 
+    /** Flecha circular (generar de nuevo). */
+    public static Icon refresh(int size, Color color) {
+        return new LineIcon(size, color, 2.2f, List.of(
+                new Arc2D.Double(3, 3, 18, 18, 40, 290, Arc2D.OPEN),
+                polyline(21, 3, 21, 9, 15, 9)));
+    }
+
+    /** Círculo con signo de admiración (aviso). */
+    public static Icon alert(int size, Color color) {
+        return new LineIcon(size, color, 2f, List.of(
+                new Ellipse2D.Double(3, 3, 18, 18),
+                new Line2D.Double(12, 8, 12, 13),
+                new Line2D.Double(12, 16, 12, 16.01)));
+    }
+
     /** Flecha hacia la izquierda. */
     public static Icon arrowLeft(int size, Color color) {
         return new LineIcon(size, color, 2.2f, List.of(

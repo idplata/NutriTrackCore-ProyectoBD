@@ -54,7 +54,7 @@ import javax.swing.SwingConstants;
  * Los datos se vuelven a leer de los servicios cada vez que se muestra la
  * pantalla ({@link #refresh()}).
  */
-public class HomePanel extends JPanel {
+public class HomePanel extends JPanel implements Refreshable {
 
     private static final Locale ES_CO = Locale.forLanguageTag("es-CO");
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM", ES_CO);
@@ -95,7 +95,7 @@ public class HomePanel extends JPanel {
         }
     }
 
-    /** Vuelve a leer los datos del usuario y redibuja la pantalla. */
+    @Override
     public void refresh() {
         content.removeAll();
         if (!services.session().hasSession()) {
