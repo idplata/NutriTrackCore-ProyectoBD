@@ -36,14 +36,29 @@ public class BrandPanel extends JPanel {
 
     private final Image background;
 
+    /** Color por defecto del círculo detrás de cada ícono. */
+    private static final Color FEATURE_BADGE = new Color(52, 214, 181, 40);
+
     /**
      * Un punto destacado: ícono, título y descripción corta.
      *
-     * @param icon        ícono que va en el círculo de la izquierda
+     * @param icon        ícono que va a la izquierda
      * @param title       título en negrita
      * @param description texto secundario
+     * @param badgeFill   color del círculo detrás del ícono, o {@code null} si el
+     *                    ícono ya trae su propio fondo (como los pasos del registro)
      */
-    public record Feature(Icon icon, String title, String description) {
+    public record Feature(Icon icon, String title, String description, Color badgeFill) {
+
+        /** Punto destacado con el círculo verde suave por defecto. */
+        public Feature(Icon icon, String title, String description) {
+            this(icon, title, description, FEATURE_BADGE);
+        }
+
+        /** Punto destacado de un asistente por pasos (círculo numerado). */
+        public static Feature step(int number, Icons.StepState state, String title, String description) {
+            return new Feature(Icons.step(number, state, 40), title, description, null);
+        }
     }
 
     /**
@@ -90,6 +105,15 @@ public class BrandPanel extends JPanel {
     @Override
     public Dimension getMinimumSize() {
         return new Dimension(420, 600);
+    }
+
+    /**
+     * Ancho base fijo (no depende del largo del titular), para que la foto
+     * ocupe exactamente lo mismo en el inicio de sesión y en el registro.
+     */
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(560, Math.max(600, super.getPreferredSize().height));
     }
 
     @Override
@@ -145,7 +169,7 @@ public class BrandPanel extends JPanel {
 
     private JPanel createFeature(Feature feature) {
         JPanel row = transparentRow(16);
-        row.add(new RoundBadge(48, 48, new Color(52, 214, 181, 40), feature.icon()));
+        row.add(new RoundBadge(48, 48, feature.badgeFill(), feature.icon()));
 
         JPanel texts = new JPanel();
         texts.setOpaque(false);
@@ -205,8 +229,10 @@ public class BrandPanel extends JPanel {
             Graphics2D g2 = (Graphics2D) g.create();
             try {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(fill);
-                g2.fillRoundRect(0, 0, size, size, arc, arc);
+                if (fill != null) {
+                    g2.setColor(fill);
+                    g2.fillRoundRect(0, 0, size, size, arc, arc);
+                }
                 if (icon != null) {
                     icon.paintIcon(this, g2, (size - icon.getIconWidth()) / 2, (size - icon.getIconHeight()) / 2);
                 }
