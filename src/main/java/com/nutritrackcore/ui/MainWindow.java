@@ -1,7 +1,6 @@
 package com.nutritrackcore.ui;
 
 import com.nutritrackcore.model.User;
-import com.nutritrackcore.services.AuthenticationService;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import javax.swing.JFrame;
@@ -21,43 +20,42 @@ public class MainWindow extends JFrame {
     public static final String LOGIN = "login";
     /** Nombre de la pantalla de registro. */
     public static final String REGISTER = "register";
-    /** Nombre de la pantalla que se ve después de iniciar sesión. */
-    public static final String HOME = "home";
+    /** Nombre de la aplicación con el menú lateral (después de iniciar sesión). */
+    public static final String APP = "app";
 
     private final CardLayout cards = new CardLayout();
     private final JPanel content = new JPanel(cards);
 
-    private final AuthenticationService authenticationService;
+    private final AppServices services;
     private final LoginPanel loginPanel;
-    private final PlaceholderPanel homePanel;
+    private final UserRegistrationPanel registrationPanel;
+    private final AppShellPanel appShell;
 
     /**
      * Crea la ventana con sus pantallas.
      *
-     * @param authenticationService servicio de registro e inicio de sesión
+     * @param services servicios de la aplicación
      */
-    public MainWindow(AuthenticationService authenticationService) {
+    public MainWindow(AppServices services) {
         super("NutriTrack");
-        this.authenticationService = authenticationService;
+        this.services = services;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1100, 700));
         setSize(1280, 800);
         setLocationRelativeTo(null);
 
-        loginPanel = new LoginPanel(authenticationService, this::onLoggedIn, () -> showPanel(REGISTER));
-
-        // Provisionales mientras se construyen las pantallas reales.
-        PlaceholderPanel registerPanel = new PlaceholderPanel("Crear cuenta",
-                "La pantalla de registro está en construcción.", "Volver a iniciar sesión",
-                () -> showPanel(LOGIN));
-        homePanel = new PlaceholderPanel("¡Hola!",
-                "Iniciaste sesión correctamente. El menú principal está en construcción.", "Cerrar sesión",
-                this::logout);
+        registrationPanel = new UserRegistrationPanel(services.authentication(), this::onRegistered,
+                this::backToLogin);
+        loginPanel = new LoginPanel(services.authentication(), this::onLoggedIn, () -> {
+            registrationPanel.reset();
+            showPanel(REGISTER);
+        });
+        appShell = new AppShellPanel(services, this::logout);
 
         content.add(loginPanel, LOGIN);
-        content.add(registerPanel, REGISTER);
-        content.add(homePanel, HOME);
+        content.add(registrationPanel, REGISTER);
+        content.add(appShell, APP);
         setContentPane(content);
         showPanel(LOGIN);
     }
@@ -65,27 +63,33 @@ public class MainWindow extends JFrame {
     /**
      * Muestra una de las pantallas.
      *
-     * @param name {@link #LOGIN}, {@link #REGISTER} o {@link #HOME}
+     * @param name {@link #LOGIN}, {@link #REGISTER} o {@link #APP}
      */
     public void showPanel(String name) {
         cards.show(content, name);
     }
 
+    private void backToLogin() {
+        showPanel(LOGIN);
+        loginPanel.reset();
+    }
+
+    private void onRegistered(String email) {
+        showPanel(LOGIN);
+        loginPanel.prefillEmail(email);
+    }
+
     private void onLoggedIn(User user) {
-        homePanel.setTitle("¡Hola, " + firstName(user.getName()) + "!");
-        showPanel(HOME);
+        appShell.open(user);
+        showPanel(APP);
     }
 
     private void logout() {
-        authenticationService.logout();
-        loginPanel.reset();
-        showPanel(LOGIN);
-    }
-
-    private static String firstName(String fullName) {
-        if (fullName == null || fullName.isBlank()) {
-            return "";
+        if (!Messages.confirm(this, "¿Quieres cerrar sesión?")) {
+            return;
         }
-        return fullName.trim().split("\\s+")[0];
+        services.authentication().logout();
+        showPanel(LOGIN);
+        loginPanel.reset();
     }
 }
