@@ -3,6 +3,9 @@ package com.nutritrackcore.ui;
 import com.nutritrackcore.model.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 /**
@@ -33,6 +36,7 @@ public class AppShellPanel extends JPanel {
     private final JPanel content = new JPanel(sections);
     private final SidebarPanel sidebar;
     private final HomePanel homePanel;
+    private final Map<String, JComponent> screens = new HashMap<>();
 
     /**
      * Crea la estructura.
@@ -45,13 +49,13 @@ public class AppShellPanel extends JPanel {
         sidebar = new SidebarPanel(this::showSection, onLogout);
         homePanel = new HomePanel(services, this::showSection);
 
-        content.add(homePanel, HOME);
-        content.add(placeholder("Mi perfil"), PROFILE);
-        content.add(placeholder("Condiciones médicas"), CONDITIONS);
-        content.add(placeholder("Registrar consumo"), CONSUMPTION);
-        content.add(placeholder("Mi dieta"), DIET);
-        content.add(placeholder("Mi rutina"), ROUTINE);
-        content.add(placeholder("Mi progreso"), PROGRESS);
+        addSection(HOME, homePanel);
+        addSection(PROFILE, placeholder("Mi perfil"));
+        addSection(CONDITIONS, new ConditionsPanel(services, this::showSection));
+        addSection(CONSUMPTION, placeholder("Registrar consumo"));
+        addSection(DIET, new DietPanel(services, this::showSection));
+        addSection(ROUTINE, new RoutinePanel(services, this::showSection));
+        addSection(PROGRESS, placeholder("Mi progreso"));
 
         add(sidebar, BorderLayout.WEST);
         add(content, BorderLayout.CENTER);
@@ -74,10 +78,15 @@ public class AppShellPanel extends JPanel {
      */
     public void showSection(String section) {
         sidebar.select(section);
-        if (HOME.equals(section)) {
-            homePanel.refresh();
+        if (screens.get(section) instanceof Refreshable screen) {
+            screen.refresh();                      // cada pantalla relee sus datos al abrirse
         }
         sections.show(content, section);
+    }
+
+    private void addSection(String name, JComponent screen) {
+        screens.put(name, screen);
+        content.add(screen, name);
     }
 
     private PlaceholderPanel placeholder(String title) {
