@@ -1,0 +1,7 @@
+#id_condicion|nombre|descripcion|activa
+1|Diabetes tipo 2|El cuerpo no usa bien la insulina y sube el azúcar en la sangre|true
+2|Hipotiroidismo|La tiroides produce menos hormona de lo normal|true
+3|Hipertiroidismo|La tiroides produce más hormona de lo normal|true
+4|Sobrepeso|IMC entre 25 y 29,9|true
+5|Hipertensión|Presión arterial alta de forma sostenida|true
+6|Colesterol alto|Niveles elevados de colesterol en la sangre|true
