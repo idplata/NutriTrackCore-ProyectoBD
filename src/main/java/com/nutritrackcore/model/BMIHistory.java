@@ -38,13 +38,6 @@ public class BMIHistory {
     
     public LocalDateTime getRegisterDate() { return registerDate; }
     public void setRegisterDate(LocalDateTime registerDate) { this.registerDate = registerDate; }
-    
-    public double getBMI(){
-        return BMI.calculate(weightKg, heightCm);
-    }
-    
-    public BMIClasification getClasification(){
-        return BMI.classify(getBMI());
-    }
+     
     
 }
