@@ -45,22 +45,4 @@ public class Food {
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
 
-    // Domain methods required by the architecture
-    public NutritionalIntake calculateIntake(double grams) {
-        double factor = grams / 100.0;
-        return new NutritionalIntake(
-            calories100g * factor,
-            (proteins100g != null ? proteins100g : 0.0) * factor,
-            (carbohydrates100g != null ? carbohydrates100g : 0.0) * factor,
-            (fats100g != null ? fats100g : 0.0) * factor
-        );
-    }
-
-    public boolean hasDensity() {
-        return densityGCm3 != null && densityGCm3 > 0;
-    }
-
-    public double gramsFromVolume(double cm3) {
-        return hasDensity() ? cm3 * densityGCm3 : 0.0;
-    }
-}
+   }
