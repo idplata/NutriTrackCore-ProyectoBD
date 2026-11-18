@@ -39,19 +39,7 @@ public class DietPlan {
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
-    public void deactivate() { this.active = false; }
-
-    // Creator Method
-    public void addFood(int foodId, double quantityG, MealTime meal) {
-        // Validate that the food is not repeated (composite PK)
-        for (DietPlanFood line : lines) {
-            if (line.getFoodId() == foodId) {
-                throw new IllegalArgumentException("Esta comida ya está en el plan.");
-            }
-        }
-        this.lines.add(new DietPlanFood(this.planId, foodId, quantityG, meal));
-    }
-
+   
     public List<DietPlanFood> getLines() {
         return Collections.unmodifiableList(lines);
     }

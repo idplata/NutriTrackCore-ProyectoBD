@@ -41,7 +41,4 @@ public class ConsumptionRecord {
     public LocalDateTime getDateTime() { return dateTime; }
     public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
 
-    public boolean isEstimatedByImage() {
-        return imageRef != null && !imageRef.isEmpty();
-    }
 }
