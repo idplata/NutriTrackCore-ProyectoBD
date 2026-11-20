@@ -24,10 +24,10 @@ public class DietPlan {
          VEGANA(
             "Sin productos de origen animal",
             EnumSet.of(
-               Food.FoodPyramid.FRUTAS_Y_VERDURAS,
-               Food.FoodPyramid.CARBOHIDRATOS,
-               Food.FoodPyramid.GRASA_SALUDABLES,
-               Food.FoodPyramid.ARROZ       
+               FoodPyramid.FRUTAS_Y_VERDURAS,
+               FoodPyramid.CARBOHIDRATOS,
+               FoodPyramid.GRASA_SALUDABLES,
+               FoodPyramid.ARROZ       
             )
         ),
         VEGETARIANA(
@@ -45,7 +45,15 @@ public class DietPlan {
         ),
         CELIACA(
             "Libre de gluten",
-            EnumSet.allOf(FoodPyramid.class)
+            EnumSet.of(
+                FoodPyramid.ARROZ,
+                FoodPyramid.DULCES,
+                FoodPyramid.ULTRAPROCESADOS,
+                FoodPyramid.FRUTAS_Y_VERDURAS,
+                FoodPyramid.GRASA_SALUDABLES,
+                FoodPyramid.PROTEINAS_Y_LACTEOS
+            )
+                
         ),
         FLEXITARIANA(
             "Base vegetariana con consumo ocasional de carnes o pescados",
