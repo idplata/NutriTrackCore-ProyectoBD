@@ -9,18 +9,46 @@ public class Food {
     private Double carbohydrates100g;
     private Double fats100g;
     private boolean active;
+    private FoodPyramid grupe;
 
     public Food() {}
+    public enum FoodPyramid{
+    
+        DULCES_Y_ULTRAPROCESADOS(1, "AZUCARES, GRASAS Y CARNES ROJAS"),
+        GRASA_SALUDABLES(2, "ACEITES VEGETALES, FRUTOS SECOS Y AGUACATE"),
+        PROTEINAS_Y_LACTEOS(3, "CARNES BLANCAS, LACTEOS, PESCADO Y HUEVO"),
+        FRUTAS_Y_VERDURAS(4, "FRUTAS, VERDURAS Y HORTALIZAS"),
+        CARBOHIDRATOS(5, "CEREALES, PAN, ARROZ Y PASTA");
+        
+        private final int PyramidLevel;
+        private String description;
+        
+        FoodPyramid( int PyramidLevel,String description){
+            this.PyramidLevel = PyramidLevel;
+            this.description = description;
+        }
+        
+        public int getPyramidLevel(){
+            return PyramidLevel;
+        }
+        
+        public String getDescription(){
+            return description;
+        }
+        
+    }
 
-    public Food(String name, double calories100g, Double proteins100g, Double carbohydrates100g, Double fats100g) {
+    public Food(String name, double calories100g, Double proteins100g, Double carbohydrates100g, Double fats100g, FoodPyramid grupe) {
         this.name = name;
         this.calories100g = calories100g;
         this.proteins100g = proteins100g;
         this.carbohydrates100g = carbohydrates100g;
         this.fats100g = fats100g;
         this.active = true;
+        this.grupe = grupe;
     }
-
+    
+    
     public int getFoodId() { return foodId; }
     public void setFoodId(int foodId) { this.foodId = foodId; }
 
