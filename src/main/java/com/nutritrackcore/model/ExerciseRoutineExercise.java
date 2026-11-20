@@ -1,18 +1,16 @@
 package com.nutritrackcore.model;
 
-public class ExerciseRoutineExercise {
+public abstract class ExerciseRoutineExercise {
     private int routineId;
     private int exerciseId;
     private int sets;
-    private int repetitions;
 
     public ExerciseRoutineExercise() {}
 
-    public ExerciseRoutineExercise(int routineId, int exerciseId, int sets, int repetitions) {
+    public ExerciseRoutineExercise(int routineId, int exerciseId, int sets) {
         this.routineId = routineId;
         this.exerciseId = exerciseId;
         this.sets = sets;
-        this.repetitions = repetitions;
     }
 
     public int getRoutineId() { return routineId; }
@@ -24,6 +22,4 @@ public class ExerciseRoutineExercise {
     public int getSets() { return sets; }
     public void setSets(int sets) { this.sets = sets; }
 
-    public int getRepetitions() { return repetitions; }
-    public void setRepetitions(int repetitions) { this.repetitions = repetitions; }
 }
