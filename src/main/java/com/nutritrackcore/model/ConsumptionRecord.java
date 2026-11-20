@@ -26,8 +26,8 @@ public class ConsumptionRecord {
     public Double getEstimationLevel() { return estimationLevel; }
     public void setEstimationLevel(Double estimationLevel) { this.estimationLevel = estimationLevel; }
 
-    public double getEstimatedGrams() { return estimatedCalories; }
-    public void setEstimatedGrams(double estimatedGrams) { this.estimatedCalories = estimatedCalories; }
+    public double getEstimatedCalories() { return estimatedCalories; }
+    public void setEstimatedCalories(double estimatedGrams) { this.estimatedCalories = estimatedCalories; }
 
     public LocalDateTime getDateTime() { return dateTime; }
     public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
