@@ -68,12 +68,4 @@ public class User {
         }
         return Period.between(birthDate, LocalDate.now()).getYears();
     }
-    public double calculateBMI(){
-        return BMI.calculate(weightKg, heightCm);
-    }
-    
-    public BMIClasification classifyBmi(){
-    
-        return BMI.classify(calculateBMI());
-    }
 }
