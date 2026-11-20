@@ -14,11 +14,14 @@ public class DietPlan {
     private double targetCalories;
     private boolean active;
     private List<DietPlanFood> lines;
-    
+    private DietType dietType;
+
 
     public DietPlan() {
         this.lines = new ArrayList<>();
     }
+
+    
     
     public enum DietType{
          VEGANA(
@@ -36,7 +39,8 @@ public class DietPlan {
                 FoodPyramid.FRUTAS_Y_VERDURAS,
                 FoodPyramid.CARBOHIDRATOS,
                 FoodPyramid.GRASA_SALUDABLES,
-                FoodPyramid.PROTEINAS_Y_LACTEOS
+                FoodPyramid.PROTEINAS_Y_LACTEOS,
+                FoodPyramid.ARROZ  
             )
         ),
         OMNIVORA(
@@ -77,13 +81,18 @@ public class DietPlan {
         }
     }
     
-    public DietPlan(int userId, LocalDate generationDate, double targetCalories) {
-        this.userId = userId;
-        this.generationDate = generationDate;
-        this.targetCalories = targetCalories;
-        this.active = true;
-        this.lines = new ArrayList<>();
-    }
+    
+
+    public DietPlan(int userId, LocalDate generationDate, double targetCalories, DietType dietType) {
+     this.userId = userId;
+     this.generationDate = generationDate;
+     this.targetCalories = targetCalories;
+     this.dietType = dietType;
+     this.active = true;
+     this.lines = new ArrayList<>();
+ }
+    
+    
 
     public int getPlanId() { return planId; }
     public void setPlanId(int planId) { this.planId = planId; }
@@ -106,5 +115,13 @@ public class DietPlan {
     
     public void setLines(List<DietPlanFood> lines) {
         this.lines = lines;
+    }
+    
+    public DietType getDietType() {
+        return dietType;
+    }
+
+    public void setDietType(DietType dietType) {
+        this.dietType = dietType;
     }
 }
