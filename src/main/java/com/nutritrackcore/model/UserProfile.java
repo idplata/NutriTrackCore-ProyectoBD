@@ -19,7 +19,6 @@ public class UserProfile {
     private String trainingLocation;
     private String dietType;
     private int mealsPerDay;
-    private String budget;
     private LocalDate updatedAt;
 
     public UserProfile() {}
@@ -36,7 +35,6 @@ public class UserProfile {
         this.trainingLocation = trainingLocation;
         this.dietType = dietType;
         this.mealsPerDay = mealsPerDay;
-        this.budget = budget;
         this.updatedAt = updatedAt;
     }
 
@@ -66,10 +64,7 @@ public class UserProfile {
     
     public int getMealsPerDay() { return mealsPerDay; }
     public void setMealsPerDay(int mealsPerDay) { this.mealsPerDay = mealsPerDay; }
-    
-    public String getBudget() { return budget; }
-    public void setBudget(String budget) { this.budget = budget; }
-    
+        
     public LocalDate getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDate updatedAt) { this.updatedAt = updatedAt; }
     
