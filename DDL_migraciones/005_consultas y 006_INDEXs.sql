@@ -1,21 +1,18 @@
--- 005_banco_consultas.sql
--- Banco de consultas de NutriTrack Core (punto 5 de la guía).
--- Cada consulta indica la pregunta de negocio que responde y el requisito que cubre.
-
-
+-- 005 banco de consultas de NutriTrack Core
+-- Actualizado al DDL corregido: energía en kcal, consumo en encabezado + detalle
+-- (RegistroConsumo + RegistroConsumo_Alimento) y fechas como timestamp.
 
 
 -- Q1. REUNIÓN DE 4 TABLAS
 -- Pregunta: ¿qué alimentos, en qué cantidad y con cuántas kcal tiene cada
 --           comida del plan de dieta activo de un usuario?
 -- Tablas: PlanDieta, PlanDieta_Alimento, Alimento, TipoComida
-
 SELECT p.id_plan,
        tc.orden_dia,
-       tc.nombre                                          AS comida,
-       a.nombre                                           AS alimento,
+       tc.nombre                                      AS comida,
+       a.nombre                                       AS alimento,
        pda.cantidad_g,
-       ROUND(pda.cantidad_g * a.calorias_100g / 100, 1)   AS kcal
+       ROUND(pda.cantidad_g * a.kcal_100g / 100, 1)   AS kcal
 FROM PlanDieta p
 JOIN PlanDieta_Alimento pda ON pda.id_plan = p.id_plan
 JOIN Alimento a             ON a.id_alimento = pda.id_alimento
@@ -25,17 +22,16 @@ WHERE p.activo
 ORDER BY tc.orden_dia, a.nombre;
 
 
-
 -- Q2. REUNIÓN DE 4 TABLAS
 -- Pregunta: ¿qué reglas clínicas (límites de nutrientes, solo bajo impacto)
 --           aplican a cada usuario según sus condiciones médicas?
 -- Tablas: Usuario, Usuario_Condicion, CondicionMedica, ReglaCondicion
-
-SELECT u.nombre              AS usuario,
-       cm.nombre             AS condicion,
+-- Las reglas de rutina (solo_bajo_impacto) no tienen nutriente ni valor: se muestran como 'No aplica'.
+SELECT u.nombre                                      AS usuario,
+       cm.nombre                                     AS condicion,
        r.tipo_regla,
-       r.nutriente,
-       r.valor_limite,
+       COALESCE(r.nutriente, 'No aplica')            AS nutriente,
+       COALESCE(r.valor_limite::text, 'No aplica')   AS valor_limite,
        r.descripcion
 FROM Usuario u
 JOIN Usuario_Condicion uc ON uc.id_usuario = u.id_usuario
@@ -44,12 +40,10 @@ JOIN ReglaCondicion r     ON r.id_condicion = cm.id_condicion
 ORDER BY u.nombre, cm.nombre, r.tipo_regla;
 
 
-
 -- Q3. REUNIÓN EXTERNA, patrón "LOS QUE NO TIENEN"
 -- Pregunta: ¿qué usuarios no han registrado ningún consumo de alimentos?
 --           (candidatos a recordatorio de la app)
 -- Tablas: Usuario, RegistroConsumo
--- 
 SELECT u.id_usuario, u.nombre, u.email
 FROM Usuario u
 LEFT JOIN RegistroConsumo r ON r.id_usuario = u.id_usuario
@@ -57,8 +51,6 @@ WHERE r.id_registro IS NULL
 ORDER BY u.nombre;
 
 -- Variante: ¿qué usuarios no tienen una rutina de ejercicio activa?
--- (la condición "activa" va en el ON; si va en el WHERE, la reunión externa
---  se comporta como interna y se pierden los usuarios sin ninguna rutina)
 SELECT u.id_usuario, u.nombre
 FROM Usuario u
 LEFT JOIN RutinaEjercicio re ON re.id_usuario = u.id_usuario AND re.activa
@@ -66,12 +58,10 @@ WHERE re.id_rutina IS NULL
 ORDER BY u.nombre;
 
 
--- 
 -- Q4. AGREGACIÓN CON GROUP BY Y HAVING
 -- Pregunta: ¿qué rutinas tienen un cumplimiento menor al 50 % de sus sesiones
 --           completadas? (el usuario las abandona; hay que ajustarlas)
 -- Tablas: SeguimientoRutina, RutinaEjercicio, Usuario
--- 
 SELECT u.nombre                                              AS usuario,
        s.id_rutina,
        COUNT(*)                                              AS sesiones,
@@ -86,13 +76,11 @@ HAVING 100.0 * COUNT(*) FILTER (WHERE s.completada) / COUNT(*) < 50
 ORDER BY pct_cumplimiento;
 
 
--- 
 -- Q5. CTE
 -- Pregunta: ¿cuánto cambió el peso de cada usuario entre su primera y su
 --           última medición? (solo usuarios con 2 o más mediciones)
 -- Tablas: Historial_IMC, Usuario
--- Nota: fecha_registro es date; id_historial desempata mediciones del mismo día.
--- 
+-- Nota: fecha_registro es timestamp; id_historial desempata mediciones simultáneas.
 WITH ordenado AS (
     SELECT id_usuario,
            peso_kg,
@@ -114,19 +102,14 @@ HAVING COUNT(*) > 1
 ORDER BY cambio_kg;
 
 
--- 
--- Q6. REUNIÓN DE 6 TABLAS (consulta de seguridad)
+-- Q6. REUNIÓN DE 7 TABLAS (consulta de seguridad)
 -- Pregunta: ¿algún plan de dieta activo incluye un alimento que provoca una
 --           alergia que el usuario declaró? El resultado esperado es 0 filas;
 --           cualquier fila es un riesgo de salud.
 -- Tablas: PlanDieta, Usuario, PlanDieta_Alimento, Alergia_Alimento,
 --         Usuario_Alergia, Alergia, Alimento
--- 
-SELECT u.id_usuario,
-       u.nombre      AS usuario,
-       al.nombre     AS alergia,
-       ua.severidad,
-       a.nombre      AS alimento_peligroso
+SELECT u.id_usuario, u.nombre AS usuario, al.nombre AS alergia,
+       ua.severidad, a.nombre AS alimento_peligroso
 FROM PlanDieta p
 JOIN Usuario u              ON u.id_usuario = p.id_usuario
 JOIN PlanDieta_Alimento pda ON pda.id_plan = p.id_plan
@@ -139,21 +122,24 @@ WHERE p.activo
 ORDER BY u.nombre, al.nombre;
 
 
--- 
 -- Q7. SUBCONSULTA
 -- Pregunta: ¿qué usuarios con una condición que exige "solo bajo impacto"
 --           tienen en su rutina activa ejercicios que NO son de bajo impacto?
 --           (la personalización no está respetando la regla clínica)
 -- Tablas: RutinaEjercicio, Usuario, RutinaEjercicio_Ejercicio, Ejercicio,
 --         y subconsulta sobre Usuario_Condicion y ReglaCondicion
--- 
+-- Si se separan los ejercicios en dos tablas (repeticiones y tiempo), reemplazar
+-- RutinaEjercicio_Ejercicio por:
+--   (SELECT id_rutina, id_ejercicio FROM RutinaEjercicio_Repeticiones
+--    UNION ALL
+--    SELECT id_rutina, id_ejercicio FROM RutinaEjercicio_Tiempo)
 SELECT DISTINCT u.nombre      AS usuario,
                 re.id_rutina,
                 e.nombre      AS ejercicio_no_apto
 FROM RutinaEjercicio re
-JOIN Usuario u                    ON u.id_usuario = re.id_usuario
+JOIN Usuario u                     ON u.id_usuario = re.id_usuario
 JOIN RutinaEjercicio_Ejercicio ree ON ree.id_rutina = re.id_rutina
-JOIN Ejercicio e                  ON e.id_ejercicio = ree.id_ejercicio
+JOIN Ejercicio e                   ON e.id_ejercicio = ree.id_ejercicio
 WHERE re.activa
   AND NOT e.bajo_impacto
   AND re.id_usuario IN (
@@ -165,45 +151,44 @@ WHERE re.activa
 ORDER BY u.nombre, re.id_rutina;
 
 
--- 
 -- Q8. AGREGACIÓN CON REUNIÓN
 -- Pregunta: ¿cuántas kcal consumió cada usuario hoy frente a la meta
---           calórica de su plan activo?
--- Tablas: RegistroConsumo, Alimento, Usuario, PlanDieta
--- Nota: fecha_hora es date, por eso se compara por día.
--- 
+--           de su plan activo?
+-- Tablas: RegistroConsumo, Usuario, PlanDieta
+-- Usa kcal_estimadas del encabezado (el servicio la calcula al registrar).
 SELECT u.nombre,
-       ROUND(SUM(r.gramos_estimados * a.calorias_100g / 100), 1)   AS kcal_consumidas,
-       p.calorias_objetivo,
-       ROUND(SUM(r.gramos_estimados * a.calorias_100g / 100)
-             - p.calorias_objetivo, 1)                             AS diferencia
+       ROUND(SUM(r.kcal_estimadas), 1)                     AS kcal_consumidas,
+       p.kcal_objetivo,
+       ROUND(SUM(r.kcal_estimadas) - p.kcal_objetivo, 1)   AS diferencia
 FROM RegistroConsumo r
-JOIN Alimento a  ON a.id_alimento = r.id_alimento
 JOIN Usuario u   ON u.id_usuario = r.id_usuario
 JOIN PlanDieta p ON p.id_usuario = u.id_usuario AND p.activo
-WHERE r.fecha_hora = current_date
-GROUP BY u.id_usuario, u.nombre, p.calorias_objetivo
+WHERE r.fecha_hora >= current_date
+  AND r.fecha_hora <  current_date + 1
+GROUP BY u.id_usuario, u.nombre, p.kcal_objetivo
 ORDER BY diferencia DESC;
 
--- Q8-bis. Misma consulta para UN usuario y UN día. Es la que se usa en el
--- punto 6 (índices) con EXPLAIN ANALYZE antes y después de crear
+-- Q8-bis. Detalle de lo que comió UN usuario en UN día (alimento por alimento).
+-- Es la que se usa en el punto 6 (índices) con EXPLAIN ANALYZE antes y después de crear
 -- idx_consumo_usuario_fecha ON RegistroConsumo (id_usuario, fecha_hora).
 EXPLAIN ANALYZE
-SELECT r.id_registro, a.nombre,
-       r.gramos_estimados,
-       ROUND(r.gramos_estimados * a.calorias_100g / 100, 1) AS kcal
+SELECT r.id_registro,
+       r.fecha_hora,
+       a.nombre                                              AS alimento,
+       l.gramos_estimados,
+       ROUND(l.gramos_estimados * a.kcal_100g / 100, 1)      AS kcal
 FROM RegistroConsumo r
-JOIN Alimento a ON a.id_alimento = r.id_alimento
-WHERE r.id_usuario = 42
-  AND r.fecha_hora = DATE '2026-10-28';
+JOIN RegistroConsumo_Alimento l ON l.id_registro = r.id_registro
+JOIN Alimento a                 ON a.id_alimento = l.id_alimento
+WHERE r.id_usuario = 1
+  AND r.fecha_hora >= current_date - 3
+  AND r.fecha_hora <  current_date - 2;
 
 
--- 
 -- Q9. VISTA CREADA Y CONSULTADA
 -- Pregunta: ¿cuál es el IMC actual y la clasificación de cada usuario?
 -- El IMC no se almacena (se calcula): la vista concentra la fórmula en un
 -- solo lugar y las demás consultas la reutilizan.
--- 
 CREATE OR REPLACE VIEW v_imc_actual AS
 SELECT u.id_usuario,
        u.nombre,
@@ -228,22 +213,30 @@ WHERE v.clasificacion IN ('Sobrepeso', 'Obesidad')
 ORDER BY v.imc DESC;
 
 
+-- 006 índices
 
+-- Consumo: la tabla que más crece (consultas por usuario y día)
+CREATE INDEX IF NOT EXISTS idx_consumo_usuario_fecha     ON RegistroConsumo (id_usuario, fecha_hora);
+CREATE INDEX IF NOT EXISTS idx_consumoalim_registro      ON RegistroConsumo_Alimento (id_registro);
+CREATE INDEX IF NOT EXISTS idx_consumoalim_alimento      ON RegistroConsumo_Alimento (id_alimento);
 
--- 006_indices.sql
+-- Seguimiento, historial y planes
+CREATE INDEX IF NOT EXISTS idx_seguimiento_rutina        ON SeguimientoRutina (id_rutina);
+CREATE INDEX IF NOT EXISTS idx_historial_usuario_fecha   ON Historial_IMC (id_usuario, fecha_registro, id_historial);
+CREATE INDEX IF NOT EXISTS idx_pda_plan                  ON PlanDieta_Alimento (id_plan);
 
--- RegistroConsumo: la que más crece. Cubre Q3, Q8 y Q8-bis
-CREATE INDEX IF NOT EXISTS idx_consumo_usuario_fecha
-ON RegistroConsumo (id_usuario, fecha_hora);
+-- Claves foráneas sin índice (PostgreSQL no las indexa automáticamente)
+CREATE INDEX IF NOT EXISTS idx_regla_condicion           ON ReglaCondicion (id_condicion);
+CREATE INDEX IF NOT EXISTS idx_plan_usuario              ON PlanDieta (id_usuario);
+CREATE INDEX IF NOT EXISTS idx_rutina_usuario            ON RutinaEjercicio (id_usuario);
+CREATE INDEX IF NOT EXISTS idx_rutina_historial          ON RutinaEjercicio (id_historial_base);
+CREATE INDEX IF NOT EXISTS idx_rutina_plan               ON RutinaEjercicio (id_plan_dieta);
+CREATE INDEX IF NOT EXISTS idx_usuariocond_condicion     ON Usuario_Condicion (id_condicion);
+CREATE INDEX IF NOT EXISTS idx_usuarioalergia_alergia    ON Usuario_Alergia (id_alergia);
+CREATE INDEX IF NOT EXISTS idx_alergiaalim_alimento      ON Alergia_Alimento (id_alimento);
+CREATE INDEX IF NOT EXISTS idx_excluido_alimento         ON Usuario_AlimentoExcluido (id_alimento);
+CREATE INDEX IF NOT EXISTS idx_pda_alimento              ON PlanDieta_Alimento (id_alimento);
+CREATE INDEX IF NOT EXISTS idx_pda_tipo_comida           ON PlanDieta_Alimento (id_tipo_comida);
+CREATE INDEX IF NOT EXISTS idx_rutinaej_ejercicio        ON RutinaEjercicio_Ejercicio (id_ejercicio);
+CREATE INDEX IF NOT EXISTS idx_rutinacond_condicion      ON RutinaEjercicio_Condicion (id_condicion);
 
--- SeguimientoRutina: Q4 (agrupa y une por rutina)
-CREATE INDEX IF NOT EXISTS idx_seguimiento_rutina
-ON SeguimientoRutina (id_rutina);
-
--- Historial_IMC: Q5 (particiona por usuario y ordena por fecha)
-CREATE INDEX IF NOT EXISTS idx_historial_usuario_fecha
-ON Historial_IMC (id_usuario, fecha_registro, id_historial);
-
--- PlanDieta_Alimento: Q1 y Q6 (unir plan con sus alimentos)
-CREATE INDEX IF NOT EXISTS idx_pda_plan
-ON PlanDieta_Alimento (id_plan);

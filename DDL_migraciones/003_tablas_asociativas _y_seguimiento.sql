@@ -52,16 +52,40 @@ CREATE TABLE PlanDieta_Alimento (
     primary key (id_plan, id_alimento, id_tipo_comida)
 );
 
-CREATE TABLE RutinaEjercicio_Ejercicio (
+-- Ejercicios por repeticiones (ExerciseByReps)
+CREATE TABLE RutinaEjercicio_Repeticiones (
     id_rutina int not null
         references RutinaEjercicio (id_rutina) on delete cascade,
-    id_ejercicio  int not null
+    id_ejercicio int not null
         references Ejercicio (id_ejercicio) on delete restrict,
     series int not null
-        constraint rutinaejercicio_series_positiva check (series > 0),
+        constraint rutinarep_series_positiva check (series > 0),
     repeticiones int not null
-        constraint rutinaejercicio_repeticiones_positivas check (repeticiones > 0),
+        constraint rutinarep_repeticiones_positivas check (repeticiones > 0),
     primary key (id_rutina, id_ejercicio)
+);
+
+-- Ejercicios por tiempo (ExerciseByTime)
+CREATE TABLE RutinaEjercicio_Tiempo (
+    id_rutina int not null
+        references RutinaEjercicio (id_rutina) on delete cascade,
+    id_ejercicio int not null
+        references Ejercicio (id_ejercicio) on delete restrict,
+    series int not null
+        constraint rutinatiempo_series_positiva check (series > 0),
+    duracion_segundos int not null
+        constraint rutinatiempo_duracion_positiva check (duracion_segundos > 0),
+    primary key (id_rutina, id_ejercicio)
+);
+
+-- Condiciones médicas que se tuvieron en cuenta al generar una rutina.
+CREATE TABLE RutinaEjercicio_Condicion (
+    id_rutina int not null
+        references RutinaEjercicio (id_rutina) on delete cascade,
+    id_condicion int not null
+        references CondicionMedica (id_condicion) on delete restrict,
+    restriccion_aplicada varchar(100) not null,
+    primary key (id_rutina, id_condicion)
 );
 
 CREATE TABLE SeguimientoRutina (
