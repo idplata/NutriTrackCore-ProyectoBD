@@ -45,13 +45,8 @@ CREATE TABLE Alimento (
         constraint alimento_nombre_unico unique,
     densidad_g_cm3 numeric(5,3)
         constraint alimento_densidad_positiva check (densidad_g_cm3 > 0),
-<<<<<<< HEAD
-    Kcal_100g  numeric(6,2) not null
-        constraint alimento_calorias_positiva check (kcal_100g >= 0),
-=======
     calorias_100g  numeric(6,2) not null
         constraint alimento_calorias_positiva check (calorias_100g >= 0),
->>>>>>> 4d55cff (fix: correccion de errores en la base de datos)
     proteinas_100g numeric(5,2)
         constraint alimento_proteinas_poitivo check (proteinas_100g >= 0),
     carbohidratos_100g  numeric(5,2)
