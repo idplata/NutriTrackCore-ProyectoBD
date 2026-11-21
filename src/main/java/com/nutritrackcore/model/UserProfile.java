@@ -5,7 +5,7 @@
 package com.nutritrackcore.model;
 import java.time.LocalDate;
 /**
- *aa
+ *
  * @author irind
  */
 public class UserProfile {
