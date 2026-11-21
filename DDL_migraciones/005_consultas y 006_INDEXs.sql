@@ -12,7 +12,7 @@ SELECT p.id_plan,
        tc.nombre                                      AS comida,
        a.nombre                                       AS alimento,
        pda.cantidad_g,
-       ROUND(pda.cantidad_g * a.calorias_100g / 100, 1)   AS kcal
+       ROUND(pda.cantidad_g * a.kcal_100g / 100, 1)   AS kcal
 FROM PlanDieta p
 JOIN PlanDieta_Alimento pda ON pda.id_plan = p.id_plan
 JOIN Alimento a             ON a.id_alimento = pda.id_alimento
@@ -51,6 +51,7 @@ WHERE r.id_registro IS NULL
 ORDER BY u.nombre;
 
 -- Variante: ¿qué usuarios no tienen una rutina de ejercicio activa?
+
 SELECT u.id_usuario, u.nombre
 FROM Usuario u
 LEFT JOIN RutinaEjercicio re ON re.id_usuario = u.id_usuario AND re.activa
@@ -73,7 +74,7 @@ JOIN RutinaEjercicio re ON re.id_rutina = s.id_rutina
 JOIN Usuario u          ON u.id_usuario = re.id_usuario
 GROUP BY u.id_usuario, u.nombre, s.id_rutina
 HAVING 100.0 * COUNT(*) FILTER (WHERE s.completada) / COUNT(*) < 50
-ORDER BY pct_cumplimiento;
+ORDER BY pct_cumplimiento;<<<
 
 
 -- Q5. CTE
@@ -108,6 +109,9 @@ ORDER BY cambio_kg;
 --           cualquier fila es un riesgo de salud.
 -- Tablas: PlanDieta, Usuario, PlanDieta_Alimento, Alergia_Alimento,
 --         Usuario_Alergia, Alergia, Alimento
+-- 
+
+
 SELECT u.id_usuario, u.nombre AS usuario, al.nombre AS alergia,
        ua.severidad, a.nombre AS alimento_peligroso
 FROM PlanDieta p
@@ -122,26 +126,22 @@ WHERE p.activo
 ORDER BY u.nombre, al.nombre;
 
 
+
+-- 
 -- Q7. SUBCONSULTA
 -- Pregunta: ¿qué usuarios con una condición que exige "solo bajo impacto"
 --           tienen en su rutina activa ejercicios que NO son de bajo impacto?
 --           (la personalización no está respetando la regla clínica)
--- Tablas: RutinaEjercicio, Usuario, RutinaEjercicio_Repeticiones/_Tiempo, Ejercicio,
+-- Tablas: RutinaEjercicio, Usuario, RutinaEjercicio_Ejercicio, Ejercicio,
 --         y subconsulta sobre Usuario_Condicion y ReglaCondicion
--- Si se separan los ejercicios en dos tablas (repeticiones y tiempo), reemplazar
--- RutinaEjercicio_Ejercicio por:
---   (SELECT id_rutina, id_ejercicio FROM RutinaEjercicio_Repeticiones
---    UNION ALL
---    SELECT id_rutina, id_ejercicio FROM RutinaEjercicio_Tiempo)
+-- 
+
 SELECT DISTINCT u.nombre      AS usuario,
                 re.id_rutina,
                 e.nombre      AS ejercicio_no_apto
 FROM RutinaEjercicio re
 JOIN Usuario u                     ON u.id_usuario = re.id_usuario
-JOIN (SELECT id_rutina, id_ejercicio FROM RutinaEjercicio_Repeticiones
-      UNION ALL
-      SELECT id_rutina, id_ejercicio FROM RutinaEjercicio_Tiempo) ree
-                                   ON ree.id_rutina = re.id_rutina
+JOIN RutinaEjercicio_Ejercicio ree ON ree.id_rutina = re.id_rutina
 JOIN Ejercicio e                   ON e.id_ejercicio = ree.id_ejercicio
 WHERE re.activa
   AND NOT e.bajo_impacto
@@ -168,7 +168,7 @@ JOIN Usuario u   ON u.id_usuario = r.id_usuario
 JOIN PlanDieta p ON p.id_usuario = u.id_usuario AND p.activo
 WHERE r.fecha_hora >= current_date
   AND r.fecha_hora <  current_date + 1
-GROUP BY u.id_usuario, u.nombre, p.kcal_objetivo
+GROUP BY u.id_usuario, u.nombre, p.calorias_objetivo
 ORDER BY diferencia DESC;
 
 -- Q8-bis. Detalle de lo que comió UN usuario en UN día (alimento por alimento).
@@ -179,10 +179,9 @@ SELECT r.id_registro,
        r.fecha_hora,
        a.nombre                                              AS alimento,
        l.gramos_estimados,
-       ROUND(l.gramos_estimados * a.calorias_100g / 100, 1)      AS kcal
+       ROUND(l.gramos_estimados * a.kcal_100g / 100, 1)      AS kcal
 FROM RegistroConsumo r
-JOIN RegistroConsumo_Alimento l ON l.id_registro = r.id_registro
-JOIN Alimento a                 ON a.id_alimento = l.id_alimento
+JOIN Alimento a ON a.id_alimento = r.id_alimento
 WHERE r.id_usuario = 1
   AND r.fecha_hora >= current_date - 3
   AND r.fecha_hora <  current_date - 2;
@@ -240,7 +239,30 @@ CREATE INDEX IF NOT EXISTS idx_alergiaalim_alimento      ON Alergia_Alimento (id
 CREATE INDEX IF NOT EXISTS idx_excluido_alimento         ON Usuario_AlimentoExcluido (id_alimento);
 CREATE INDEX IF NOT EXISTS idx_pda_alimento              ON PlanDieta_Alimento (id_alimento);
 CREATE INDEX IF NOT EXISTS idx_pda_tipo_comida           ON PlanDieta_Alimento (id_tipo_comida);
-CREATE INDEX IF NOT EXISTS idx_rutinarep_ejercicio       ON RutinaEjercicio_Repeticiones (id_ejercicio);
-CREATE INDEX IF NOT EXISTS idx_rutinatiempo_ejercicio    ON RutinaEjercicio_Tiempo (id_ejercicio);
+CREATE INDEX IF NOT EXISTS idx_rutinaej_ejercicio        ON RutinaEjercicio_Ejercicio (id_ejercicio);
 CREATE INDEX IF NOT EXISTS idx_rutinacond_condicion      ON RutinaEjercicio_Condicion (id_condicion);
 
+-- SeguimientoRutina: Q4 (agrupa y une por rutina)
+CREATE INDEX IF NOT EXISTS idx_seguimiento_rutina
+ON SeguimientoRutina (id_rutina);
+
+-- Historial_IMC: Q5 (particiona por usuario y ordena por fecha)
+CREATE INDEX IF NOT EXISTS idx_historial_usuario_fecha
+ON Historial_IMC (id_usuario, fecha_registro, id_historial);
+
+-- PlanDieta_Alimento: Q1 y Q6 (unir plan con sus alimentos)
+CREATE INDEX IF NOT EXISTS idx_pda_plan
+ON PlanDieta_Alimento (id_plan);
+
+-- Claves foráneas sin índice (Postgres no las indexa automáticamente)
+CREATE INDEX IF NOT EXISTS idx_regla_condicion        ON ReglaCondicion (id_condicion);
+CREATE INDEX IF NOT EXISTS idx_consumo_alimento       ON RegistroConsumo (id_alimento);
+CREATE INDEX IF NOT EXISTS idx_plan_usuario           ON PlanDieta (id_usuario);
+CREATE INDEX IF NOT EXISTS idx_rutina_usuario         ON RutinaEjercicio (id_usuario);
+CREATE INDEX IF NOT EXISTS idx_usuariocond_condicion  ON Usuario_Condicion (id_condicion);
+CREATE INDEX IF NOT EXISTS idx_usuarioalergia_alergia ON Usuario_Alergia (id_alergia);
+CREATE INDEX IF NOT EXISTS idx_alergiaalim_alimento   ON Alergia_Alimento (id_alimento);
+CREATE INDEX IF NOT EXISTS idx_excluido_alimento      ON Usuario_AlimentoExcluido (id_alimento);
+CREATE INDEX IF NOT EXISTS idx_pda_alimento           ON PlanDieta_Alimento (id_alimento);
+CREATE INDEX IF NOT EXISTS idx_pda_tipo_comida        ON PlanDieta_Alimento (id_tipo_comida);
+CREATE INDEX IF NOT EXISTS idx_rutinaej_ejercicio     ON RutinaEjercicio_Ejercicio (id_ejercicio);
