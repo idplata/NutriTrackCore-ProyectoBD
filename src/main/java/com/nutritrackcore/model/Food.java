@@ -12,6 +12,8 @@ public class Food {
     private FoodPyramid grupe;
 
     public Food() {}
+
+   
     public enum FoodPyramid{
     
         DULCES(1, "AZUCARES"),
@@ -76,4 +78,11 @@ public class Food {
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
 
+     public FoodPyramid getGrupe() {
+        return grupe;
+    }
+
+    public void setGrupe(FoodPyramid grupe) {
+        this.grupe = grupe;
+    }
    }
