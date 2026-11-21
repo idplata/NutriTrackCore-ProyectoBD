@@ -85,7 +85,11 @@ CREATE TABLE Historial_IMC (
         constraint historial_peso_positivo check (peso_kg > 0),
     altura_cm numeric(5,2) not null
         constraint historial_altura_positiva check (altura_cm > 0),
+<<<<<<< HEAD
     fecha_registro date not null default now()
+=======
+    fecha_registro timestamp not null default now()
+>>>>>>> 4d55cff (fix: correccion de errores en la base de datos)
 );
 
 CREATE TABLE RutinaEjercicio (
@@ -101,4 +105,7 @@ CREATE TABLE RutinaEjercicio (
     id_plan_dieta int
         references PlanDieta (id_plan) on delete set null
 );
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4d55cff (fix: correccion de errores en la base de datos)

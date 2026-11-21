@@ -18,13 +18,13 @@ BEGIN;
 -- =====================================================================
 
 INSERT INTO Usuario (nombre, email, contrasena_hash, peso_kg, altura_cm,
-                     fecha_nacimiento, sexo, fecha_aceptacion_datos, version_politica) VALUES
-('Laura Martínez', 'laura.martinez@correo-demo.test', 'hash_ficticio_0001', 68.50, 165.00, '1990-04-12', 'F', current_date - 120, 'v1.0'),
-('Carlos Pérez',   'carlos.perez@correo-demo.test',   'hash_ficticio_0002', 92.00, 175.00, '1978-09-03', 'M', current_date - 100, 'v1.0'),
-('Andrea Gómez',   'andrea.gomez@correo-demo.test',   'hash_ficticio_0003', 55.00, 160.00, '1995-01-25', 'F', current_date - 90,  'v1.0'),
-('Julián Rojas',   'julian.rojas@correo-demo.test',   'hash_ficticio_0004', 78.20, 180.00, '2001-06-30', 'M', current_date - 60,  'v1.1'),
-('Marta Ríos',     'marta.rios@correo-demo.test',     'hash_ficticio_0005', 81.40, 158.00, '1962-11-18', 'F', current_date - 45,  'v1.1'),
-('Álex Vargas',    'alex.vargas@correo-demo.test',    'hash_ficticio_0006', 70.00, 172.00, '1999-03-09', 'O', current_date - 1,   'v1.1');
+                     fecha_nacimiento, sexo) VALUES
+('Laura Martínez', 'laura.martinez@correo-demo.test', 'hash_ficticio_0001', 68.50, 165.00, '1990-04-12', 'F'),
+('Carlos Pérez',   'carlos.perez@correo-demo.test',   'hash_ficticio_0002', 92.00, 175.00, '1978-09-03', 'M'),
+('Andrea Gómez',   'andrea.gomez@correo-demo.test',   'hash_ficticio_0003', 55.00, 160.00, '1995-01-25', 'F'),
+('Julián Rojas',   'julian.rojas@correo-demo.test',   'hash_ficticio_0004', 78.20, 180.00, '2001-06-30', 'M'),
+('Marta Ríos',     'marta.rios@correo-demo.test',     'hash_ficticio_0005', 81.40, 158.00, '1962-11-18', 'F'),
+('Álex Vargas',    'alex.vargas@correo-demo.test',    'hash_ficticio_0006', 70.00, 172.00, '1999-03-09', 'O');
 
 INSERT INTO CondicionMedica (nombre, descripcion) VALUES
 ('Diabetes tipo 2',        'Alteración del metabolismo de la glucosa'),
@@ -40,21 +40,21 @@ INSERT INTO Alergia (nombre, descripcion) VALUES
 ('Huevo',          'Alergia a las proteínas del huevo'),
 ('Mariscos',       'Alergia a crustáceos y moluscos');
 
-INSERT INTO Alimento (nombre, densidad_g_cm3, calorias_100g, proteinas_100g, carbohidratos_100g, grasas_100g) VALUES
-('Arroz blanco cocido',        0.850, 130.00,  2.70, 28.00,  0.30),
-('Pechuga de pollo a la plancha', 1.050, 165.00, 31.00,  0.00,  3.60),
-('Huevo cocido',               1.030, 155.00, 13.00,  1.10, 11.00),
-('Leche entera',               1.030,  61.00,  3.20,  4.80,  3.30),
-('Pan de trigo',               0.300, 265.00,  9.00, 49.00,  3.20),
-('Lentejas cocidas',           0.800, 116.00,  9.00, 20.00,  0.40),
-('Aguacate',                   0.950, 160.00,  2.00,  9.00, 15.00),
-('Manzana',                    0.800,  52.00,  0.30, 14.00,  0.20),
-('Avena en hojuelas',          0.350, 389.00, 17.00, 66.00,  7.00),
-('Almendras',                  0.600, 579.00, 21.00, 22.00, 50.00),
-('Salmón al horno',            1.050, 206.00, 22.00,  0.00, 12.00),
-('Brócoli cocido',             0.600,  35.00,  2.40,  7.00,  0.40),
-('Tofu firme',                 NULL,  144.00, 17.00,  3.00,  9.00),
-('Yuca cocida',                0.900, 160.00,  1.40, 38.00,  0.30);
+INSERT INTO Alimento (nombre, densidad_g_cm3, calorias_100g, proteinas_100g, carbohidratos_100g, grasas_100g, grupo) VALUES
+('Arroz blanco cocido',        0.850, 130.00,  2.70, 28.00,  0.30, 'ARROZ'),
+('Pechuga de pollo a la plancha', 1.050, 165.00, 31.00,  0.00,  3.60, 'PROTEINAS_Y_LACTEOS'),
+('Huevo cocido',               1.030, 155.00, 13.00,  1.10, 11.00, 'PROTEINAS_Y_LACTEOS'),
+('Leche entera',               1.030,  61.00,  3.20,  4.80,  3.30, 'PROTEINAS_Y_LACTEOS'),
+('Pan de trigo',               0.300, 265.00,  9.00, 49.00,  3.20, 'CARBOHIDRATOS'),
+('Lentejas cocidas',           0.800, 116.00,  9.00, 20.00,  0.40, 'PROTEINAS_Y_LACTEOS'),
+('Aguacate',                   0.950, 160.00,  2.00,  9.00, 15.00, 'GRASA_SALUDABLES'),
+('Manzana',                    0.800,  52.00,  0.30, 14.00,  0.20, 'FRUTAS_Y_VERDURAS'),
+('Avena en hojuelas',          0.350, 389.00, 17.00, 66.00,  7.00, 'CARBOHIDRATOS'),
+('Almendras',                  0.600, 579.00, 21.00, 22.00, 50.00, 'GRASA_SALUDABLES'),
+('Salmón al horno',            1.050, 206.00, 22.00,  0.00, 12.00, 'PROTEINAS_Y_LACTEOS'),
+('Brócoli cocido',             0.600,  35.00,  2.40,  7.00,  0.40, 'FRUTAS_Y_VERDURAS'),
+('Tofu firme',                 NULL,  144.00, 17.00,  3.00,  9.00, 'PROTEINAS_Y_LACTEOS'),
+('Yuca cocida',                0.900, 160.00,  1.40, 38.00,  0.30, 'CARBOHIDRATOS');
 
 INSERT INTO TipoComida (nombre, orden_dia) VALUES
 ('Desayuno',       1),
@@ -64,15 +64,15 @@ INSERT INTO TipoComida (nombre, orden_dia) VALUES
 ('Cena',           5);
 
 INSERT INTO Ejercicio (nombre, grupo_muscular, bajo_impacto) VALUES
-('Caminata rápida',            'cardio',          true),
-('Sentadilla',                 'piernas',         false),
-('Flexiones de brazos',        'pecho',           false),
-('Natación',                   'cuerpo completo', true),
-('Bicicleta estática',         'piernas',         true),
-('Plancha abdominal',          'core',            true),
-('Press de banca',             'pecho',           false),
-('Remo con mancuerna',         'espalda',         true),
-('Burpees',                    'cuerpo completo', false);
+('Caminata rápida',            'CARDIO',          true),
+('Sentadilla',                 'PIERNAS',         false),
+('Flexiones de brazos',        'PECHO',           false),
+('Natación',                   'CUERPO_COMPLETO', true),
+('Bicicleta estática',         'PIERNAS',         true),
+('Plancha abdominal',          'CORE',            true),
+('Press de banca',             'PECHO',           false),
+('Remo con mancuerna',         'ESPALDA',         true),
+('Burpees',                    'CUERPO_COMPLETO', false);
 
 -- =====================================================================
 -- 002: tablas dependientes
@@ -81,12 +81,12 @@ INSERT INTO Ejercicio (nombre, grupo_muscular, bajo_impacto) VALUES
 -- El usuario 6 (recién registrado) no tiene perfil: caso "sin relación".
 INSERT INTO PerfilUsuario (id_usuario, nivel_actividad, experiencia_ejercicio, objetivo_peso,
                            dias_entrenamiento_semana, minutos_por_sesion, lugar_entrenamiento,
-                           tipo_dieta, comidas_al_dia, presupuesto) VALUES
-(1, 'ligero',     'principiante', 'bajar',    3, 45, 'casa',     'normal',      4, 'medio'),
-(2, 'sedentario', 'principiante', 'bajar',    3, 30, 'casa',     'normal',      3, 'bajo'),
-(3, 'moderado',   'intermedio',   'mantener', 4, 60, 'gimnasio', 'vegetariana', 5, 'medio'),
-(4, 'muy_activo', 'avanzado',     'subir',    6, 90, 'gimnasio', 'normal',      5, 'alto'),
-(5, 'ligero',     'principiante', 'mantener', 2, 30, 'casa',     'normal',      4, 'bajo');
+                           tipo_dieta, comidas_al_dia) VALUES
+(1, 'ligero',     'principiante', 'bajar',    3, 45, 'casa',     'OMNIVORA',    4),
+(2, 'sedentario', 'principiante', 'bajar',    3, 30, 'casa',     'OMNIVORA',    3),
+(3, 'moderado',   'intermedio',   'mantener', 4, 60, 'gimnasio', 'VEGETARIANA', 4),
+(4, 'muy_activo', 'avanzado',     'subir',    6, 90, 'gimnasio', 'OMNIVORA',    4),
+(5, 'ligero',     'principiante', 'mantener', 2, 30, 'casa',     'OMNIVORA',    4);
 
 -- La insuficiencia renal tiene regla pero ningún usuario; la diabetes tiene dos reglas.
 INSERT INTO ReglaCondicion (id_condicion, tipo_regla, nutriente, valor_limite, descripcion) VALUES
@@ -97,32 +97,13 @@ INSERT INTO ReglaCondicion (id_condicion, tipo_regla, nutriente, valor_limite, d
 (4, 'solo_bajo_impacto',  NULL,             NULL, 'Solo ejercicios de bajo impacto articular'),
 (5, 'maximo_nutriente',  'proteinas',      50.00, 'Limitar proteínas a 50 g diarios');
 
-INSERT INTO PlanDieta (id_usuario, fecha_generacion, calorias_objetivo, activo) VALUES
+INSERT INTO PlanDieta (id_usuario, fecha_generacion, kcal_objetivo, activo) VALUES
 (1, current_date - 30, 1700.00, false),
 (1, current_date - 2,  1650.00, true),
 (2, current_date - 5,  1800.00, true),
 (3, current_date - 7,  2000.00, true),
 (4, current_date - 3,  3000.00, true),
 (5, current_date - 10, 1700.00, true);
-
-INSERT INTO RutinaEjercicio (id_usuario, fecha_generacion, nivel_intensidad, activa) VALUES
-(1, current_date - 2,  'bajo',     true),
-(2, current_date - 5,  'bajo',     true),
-(3, current_date - 7,  'moderado', true),
-(4, current_date - 3,  'alto',     true),
-(5, current_date - 10, 'bajo',     true),
-(1, current_date - 60, 'bajo',     false);
-
-INSERT INTO RegistroConsumo (id_usuario, id_alimento, imagen, nivel_estimacion, gramos_estimados, fecha_hora) VALUES
-(1, 1, 'img/u1_almuerzo_0001.jpg', 92.50, 180.00, current_date - 3),
-(1, 2, 'img/u1_almuerzo_0001.jpg', 88.00, 150.00, current_date - 3),
-(1, 8, 'img/u1_snack_0002.jpg',    95.00, 120.00, current_date - 2),
-(2, 1, 'img/u2_cena_0001.jpg',     85.40, 250.00, current_date - 4),
-(2, 6, 'img/u2_cena_0001.jpg',     80.00, 200.00, current_date - 4),
-(3, 13,'img/u3_almuerzo_0001.jpg', 90.00, 150.00, current_date - 1),
-(4, 2, 'img/u4_cena_0001.jpg',     93.00, 300.00, current_date - 1),
-(4, 9, 'img/u4_desayuno_0001.jpg', 87.00,  80.00, current_date - 2),
-(5, 3, 'img/u5_desayuno_0001.jpg', 91.00, 100.00, current_date - 6);
 
 INSERT INTO Historial_IMC (id_usuario, peso_kg, altura_cm, fecha_registro) VALUES
 (1, 72.00, 165.00, current_date - 90),
@@ -136,6 +117,37 @@ INSERT INTO Historial_IMC (id_usuario, peso_kg, altura_cm, fecha_registro) VALUE
 (4, 78.20, 180.00, current_date - 3),
 (5, 84.00, 158.00, current_date - 40),
 (5, 81.40, 158.00, current_date - 10);
+
+-- id_historial_base: la medición más reciente del usuario al generar la rutina
+INSERT INTO RutinaEjercicio (id_usuario, fecha_generacion, nivel_intensidad, activa, id_historial_base) VALUES
+(1, current_date - 2,  'bajo',     true, 3),
+(2, current_date - 5,  'bajo',     true, 6),
+(3, current_date - 7,  'moderado', true, 7),
+(4, current_date - 3,  'alto',     true, 9),
+(5, current_date - 10, 'bajo',     true, 11),
+(1, current_date - 60, 'bajo',     false, 1);
+
+-- Encabezado: kcal_estimadas = suma de gramos x kcal/100 g de cada alimento; nivel_estimacion entre 0 y 1.
+INSERT INTO RegistroConsumo (id_usuario, kcal_estimadas, nivel_estimacion, fecha_hora) VALUES
+(1, 481.50, 0.900, current_date - 3),   -- 1: Laura, almuerzo
+(1,  62.40, 0.950, current_date - 2),   -- 2: Laura, snack
+(2, 557.00, 0.830, current_date - 4),   -- 3: Carlos, cena
+(3, 216.00, 0.900, current_date - 1),   -- 4: Andrea, almuerzo
+(4, 495.00, 0.930, current_date - 1),   -- 5: Julián, cena
+(4, 311.20, 0.870, current_date - 2),   -- 6: Julián, desayuno
+(5, 155.00, 0.910, current_date - 6);   -- 7: Marta, desayuno
+
+-- Detalle: un registro puede tener varios alimentos.
+INSERT INTO RegistroConsumo_Alimento (id_registro, id_alimento, gramos_estimados) VALUES
+(1, 1, 180.00), (1, 2, 150.00),
+(2, 8, 120.00),
+(3, 1, 250.00), (3, 6, 200.00),
+(4, 13, 150.00),
+(5, 2, 300.00),
+(6, 9,  80.00),
+(7, 3, 100.00);
+
+
 
 -- =====================================================================
 -- 003: tablas asociativas y seguimiento
@@ -191,13 +203,31 @@ INSERT INTO PlanDieta_Alimento (id_plan, id_alimento, id_tipo_comida, cantidad_g
 (6, 2, 3, 120.00), (6, 12, 3, 100.00);
 
 -- Ejercicio 9 (Burpees) sin rutina. La rutina 5 (artrosis) solo tiene bajo impacto.
-INSERT INTO RutinaEjercicio_Ejercicio (id_rutina, id_ejercicio, series, repeticiones) VALUES
-(1, 1, 3, 10), (1, 2, 3, 12), (1, 6, 3, 20),
-(2, 1, 3, 15), (2, 5, 3, 15), (2, 6, 2, 20),
-(3, 2, 4, 12), (3, 3, 3, 12), (3, 6, 3, 30), (3, 8, 3, 10),
-(4, 7, 5,  5), (4, 2, 5,  8), (4, 3, 4, 15), (4, 8, 4, 10), (4, 6, 4, 45),
-(5, 1, 3, 15), (5, 4, 3, 10), (5, 5, 3, 15), (5, 6, 2, 20), (5, 8, 3, 10),
+INSERT INTO RutinaEjercicio_Repeticiones (id_rutina, id_ejercicio, series, repeticiones) VALUES
+(1, 1, 3, 10),
+(1, 2, 3, 12),
+(2, 1, 3, 15),
+(2, 5, 3, 15),
+(3, 2, 4, 12),
+(3, 3, 3, 12),
+(3, 8, 3, 10),
+(4, 7, 5, 5),
+(4, 2, 5, 8),
+(4, 3, 4, 15),
+(4, 8, 4, 10),
+(5, 1, 3, 15),
+(5, 4, 3, 10),
+(5, 5, 3, 15),
+(5, 8, 3, 10),
 (6, 1, 2, 10);
+
+-- Plancha abdominal (ejercicio 6) es por tiempo: el tercer valor son segundos.
+INSERT INTO RutinaEjercicio_Tiempo (id_rutina, id_ejercicio, series, duracion_segundos) VALUES
+(1, 6, 3, 20),
+(2, 6, 2, 20),
+(3, 6, 3, 30),
+(4, 6, 4, 45),
+(5, 6, 2, 20);
 
 -- La rutina 6 (inactiva) no tiene sesiones registradas.
 INSERT INTO SeguimientoRutina (id_rutina, fecha_sesion, duracion_min, completada, observaciones) VALUES
@@ -219,13 +249,13 @@ COMMIT;
 -- =====================================================================
 
 -- 1) CHECK: correo sin arroba
--- INSERT INTO Usuario (nombre, email, contrasena_hash, peso_kg, altura_cm, fecha_nacimiento, sexo, fecha_aceptacion_datos, version_politica)
--- VALUES ('Prueba', 'correo-sin-arroba', 'x', 70, 170, '1990-01-01', 'M', current_date, 'v1.1');
+-- INSERT INTO Usuario (nombre, email, contrasena_hash, peso_kg, altura_cm, fecha_nacimiento, sexo)
+-- VALUES ('Prueba', 'correo-sin-arroba', 'x', 70, 170, '1990-01-01', 'M');
 -- ERROR: new row for relation "usuario" violates check constraint "usuario_email_formato_arroba"
 
 -- 2) UNIQUE: correo repetido
--- INSERT INTO Usuario (nombre, email, contrasena_hash, peso_kg, altura_cm, fecha_nacimiento, sexo, fecha_aceptacion_datos, version_politica)
--- VALUES ('Otra Laura', 'laura.martinez@correo-demo.test', 'x', 70, 170, '1990-01-01', 'F', current_date, 'v1.1');
+-- INSERT INTO Usuario (nombre, email, contrasena_hash, peso_kg, altura_cm, fecha_nacimiento, sexo)
+-- VALUES ('Otra Laura', 'laura.martinez@correo-demo.test', 'x', 70, 170, '1990-01-01', 'F');
 -- ERROR: duplicate key value violates unique constraint "usuario_email_unico"
 
 -- 3) CHECK: severidad fuera del dominio
@@ -242,7 +272,7 @@ COMMIT;
 
 -- 6) ON DELETE RESTRICT: borrar un alimento que está en un plan
 -- DELETE FROM Alimento WHERE id_alimento = 1;
--- ERROR: update or delete on table "alimento" violates foreign key constraint "registroconsumo_id_alimento_fkey" on table "registroconsumo"
+-- ERROR: update or delete on table "alimento" violates foreign key constraint "plandieta_alimento_id_alimento_fkey" on table "plandieta_alimento"
 
 -- 7) ON DELETE CASCADE (no es error: demuestra el borrado en cascada)
 -- BEGIN; DELETE FROM Usuario WHERE id_usuario = 5;
