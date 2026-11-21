@@ -1,14 +1,11 @@
 package com.nutritrackcore.repository.txt;
 
 import com.nutritrackcore.exceptions.PersistenceExceptions;
-import com.nutritrackcore.model.ExerciseByReps;
-import com.nutritrackcore.model.ExerciseByTime;
 import com.nutritrackcore.model.ExerciseRoutine;
 import com.nutritrackcore.model.ExerciseRoutineCondition;
 import com.nutritrackcore.model.ExerciseRoutineExercise;
 import com.nutritrackcore.model.IntensityLevel;
 import com.nutritrackcore.repository.ExerciseRoutineRepository;
-import java.time.Duration;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,23 +15,18 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Implementación de {@link ExerciseRoutineRepository} sobre cuatro archivos:
- * rutinas, ejercicios por repeticiones, ejercicios por tiempo y condiciones
- * consideradas (igual que las tablas {@code RutinaEjercicio},
- * {@code RutinaEjercicio_Repeticiones}, {@code RutinaEjercicio_Tiempo} y
- * {@code RutinaEjercicio_Condicion}).
+ * Implementación de {@link ExerciseRoutineRepository} sobre tres archivos:
+ * {@code rutinas_ejercicio.txt}, {@code rutina_ejercicio_ejercicio.txt} y
+ * {@code rutina_ejercicio_condicion.txt}.
  * <p>
  * Formatos de línea:
  * <ul>
  *   <li>Rutina: {@code id_rutina|id_usuario|fecha_generacion|nivel_intensidad|activa|id_historial_base|id_plan_dieta}.</li>
- *   <li>Ejercicio por repeticiones ({@link ExerciseByReps}): {@code id_rutina|id_ejercicio|series|repeticiones}.</li>
- *   <li>Ejercicio por tiempo ({@link ExerciseByTime}): {@code id_rutina|id_ejercicio|series|duracion_segundos}.</li>
+ *   <li>Ejercicio de la rutina: {@code id_rutina|id_ejercicio|series|repeticiones}.</li>
  *   <li>Condición considerada: {@code id_rutina|id_condicion|restriccion_aplicada}.</li>
  * </ul>
  * Al leer, cada rutina recibe sus ejercicios y condiciones agrupándolos por
- * {@code id_rutina}; al escribir, se reescriben los cuatro archivos completos.
- * {@link ExerciseRoutineExercise} es abstracta, así que cada línea se guarda en
- * el archivo de su subclase y al leer se reconstruye la subclase correcta.
+ * {@code id_rutina}; al escribir, se reescriben los tres archivos completos.
  */
 public class ExerciseRoutineRepositoryTxt implements ExerciseRoutineRepository {
 
@@ -42,13 +34,9 @@ public class ExerciseRoutineRepositoryTxt implements ExerciseRoutineRepository {
     public static final String ROUTINES_HEADER =
             "#id_rutina|id_usuario|fecha_generacion|nivel_intensidad|activa|id_historial_base|id_plan_dieta";
 
-    /** Cabecera del archivo de ejercicios por repeticiones. */
-    public static final String REPS_HEADER =
+    /** Cabecera del archivo {@code rutina_ejercicio_ejercicio.txt}. */
+    public static final String EXERCISES_HEADER =
             "#id_rutina|id_ejercicio|series|repeticiones";
-
-    /** Cabecera del archivo de ejercicios por tiempo. */
-    public static final String TIME_HEADER =
-            "#id_rutina|id_ejercicio|series|duracion_segundos";
 
     /** Cabecera del archivo {@code rutina_ejercicio_condicion.txt}. */
     public static final String CONDITIONS_HEADER =
@@ -65,28 +53,22 @@ public class ExerciseRoutineRepositoryTxt implements ExerciseRoutineRepository {
     /** Acceso al archivo .txt de rutinas. */
     private final TxtFile routinesFile;
 
-    /** Acceso al archivo .txt de los ejercicios por repeticiones. */
-    private final TxtFile repsFile;
-
-    /** Acceso al archivo .txt de los ejercicios por tiempo. */
-    private final TxtFile timeFile;
+    /** Acceso al archivo .txt de los ejercicios de cada rutina. */
+    private final TxtFile exercisesFile;
 
     /** Acceso al archivo .txt de las condiciones médicas consideradas en cada rutina. */
     private final TxtFile conditionsFile;
 
     /**
-     * Crea el repositorio sobre cuatro archivos ya preparados.
+     * Crea el repositorio sobre tres archivos ya preparados.
      *
-     * @param routinesFile   archivo de rutinas
-     * @param repsFile       archivo de ejercicios por repeticiones
-     * @param timeFile       archivo de ejercicios por tiempo
-     * @param conditionsFile archivo de condiciones consideradas
+     * @param routinesFile   archivo {@code rutinas_ejercicio.txt}
+     * @param exercisesFile  archivo {@code rutina_ejercicio_ejercicio.txt}
+     * @param conditionsFile archivo {@code rutina_ejercicio_condicion.txt}
      */
-    public ExerciseRoutineRepositoryTxt(TxtFile routinesFile, TxtFile repsFile, TxtFile timeFile,
-                                        TxtFile conditionsFile) {
+    public ExerciseRoutineRepositoryTxt(TxtFile routinesFile, TxtFile exercisesFile, TxtFile conditionsFile) {
         this.routinesFile = routinesFile;
-        this.repsFile = repsFile;
-        this.timeFile = timeFile;
+        this.exercisesFile = exercisesFile;
         this.conditionsFile = conditionsFile;
     }
 
@@ -185,10 +167,10 @@ public class ExerciseRoutineRepositoryTxt implements ExerciseRoutineRepository {
         }
     }
 
-    // ---------- lectura y escritura de los cuatro archivos ----------
+    // ---------- lectura y escritura de los tres archivos ----------
 
     /**
-     * Lee los cuatro archivos y arma las rutinas completas. Primero agrupa los
+     * Lee los tres archivos y arma las rutinas completas. Primero agrupa los
      * ejercicios y las condiciones por {@code id_rutina} y luego se los asigna a
      * cada rutina. Las filas cuya rutina no existe (huérfanas) se ignoran.
      *
@@ -198,12 +180,8 @@ public class ExerciseRoutineRepositoryTxt implements ExerciseRoutineRepository {
      */
     private List<ExerciseRoutine> readAll() throws PersistenceExceptions {
         Map<Integer, List<ExerciseRoutineExercise>> exercisesByRoutine = new HashMap<>();
-        for (String text : repsFile.readLines()) {
-            ExerciseRoutineExercise e = repsFromText(text);
-            exercisesByRoutine.computeIfAbsent(e.getRoutineId(), k -> new ArrayList<>()).add(e);
-        }
-        for (String text : timeFile.readLines()) {
-            ExerciseRoutineExercise e = timeFromText(text);
+        for (String text : exercisesFile.readLines()) {
+            ExerciseRoutineExercise e = exerciseFromText(text);
             exercisesByRoutine.computeIfAbsent(e.getRoutineId(), k -> new ArrayList<>()).add(e);
         }
         Map<Integer, List<ExerciseRoutineCondition>> conditionsByRoutine = new HashMap<>();
@@ -222,7 +200,7 @@ public class ExerciseRoutineRepositoryTxt implements ExerciseRoutineRepository {
     }
 
     /**
-     * Escribe primero el archivo de rutinas y después los otros tres, y arma todo el texto
+     * Escribe primero rutinas_ejercicio.txt y después los otros dos, y arma todo el texto
      * antes de tocar ningún archivo. Cada archivo se reemplaza de forma segura; si algo se
      * corta entre ellos, quedan filas huérfanas que se descartan en la siguiente escritura.
      * <p>
@@ -236,22 +214,14 @@ public class ExerciseRoutineRepositoryTxt implements ExerciseRoutineRepository {
      */
     private void writeAll(List<ExerciseRoutine> routines) throws PersistenceExceptions {
         List<String> routineTexts = new ArrayList<>();
-        List<String> repsTexts = new ArrayList<>();
-        List<String> timeTexts = new ArrayList<>();
+        List<String> exerciseTexts = new ArrayList<>();
         List<String> conditionTexts = new ArrayList<>();
         try {
             for (ExerciseRoutine r : routines) {
                 routineTexts.add(routineToText(r));
                 for (ExerciseRoutineExercise e : r.getLines()) {
                     e.setRoutineId(r.getRoutineId());           // las líneas creadas antes del save traen routineId 0
-                    if (e instanceof ExerciseByReps reps) {          // cada subclase va a su archivo
-                        repsTexts.add(repsToText(reps));
-                    } else if (e instanceof ExerciseByTime time) {
-                        timeTexts.add(timeToText(time));
-                    } else {
-                        throw new IllegalArgumentException("Tipo de ejercicio de rutina no soportado: "
-                                + e.getClass().getSimpleName());
-                    }
+                    exerciseTexts.add(exerciseToText(e));
                 }
                 for (ExerciseRoutineCondition c : r.getConsideredConditions()) {
                     c.setRoutineId(r.getRoutineId());
@@ -262,8 +232,7 @@ public class ExerciseRoutineRepositoryTxt implements ExerciseRoutineRepository {
             throw new PersistenceExceptions("No se puede guardar: " + e.getMessage(), e);
         }
         routinesFile.rewrite(routineTexts);
-        repsFile.rewrite(repsTexts);
-        timeFile.rewrite(timeTexts);
+        exercisesFile.rewrite(exerciseTexts);
         conditionsFile.rewrite(conditionTexts);
     }
 
@@ -288,37 +257,19 @@ public class ExerciseRoutineRepositoryTxt implements ExerciseRoutineRepository {
     }
 
     /**
-     * Convierte un ejercicio por repeticiones en una línea de su archivo.
+     * Convierte un ejercicio de rutina en una línea de
+     * {@code rutina_ejercicio_ejercicio.txt}.
      *
-     * @param e ejercicio por repeticiones a convertir
+     * @param e ejercicio de la rutina a convertir
      * @return la línea con los cuatro campos separados por {@code "|"}
      * @throws IllegalArgumentException si algún campo contiene {@code "|"} o saltos de línea
      */
-    private String repsToText(ExerciseByReps e) {
+    private String exerciseToText(ExerciseRoutineExercise e) {
         return TxtFormat.join(
                 String.valueOf(e.getRoutineId()),
                 String.valueOf(e.getExerciseId()),
                 String.valueOf(e.getSets()),
-                String.valueOf(e.getReps()));
-    }
-
-    /**
-     * Convierte un ejercicio por tiempo en una línea de su archivo. La duración
-     * se guarda en segundos, igual que la columna {@code duracion_segundos}.
-     *
-     * @param e ejercicio por tiempo a convertir
-     * @return la línea con los cuatro campos separados por {@code "|"}
-     * @throws IllegalArgumentException si la duración es nula o algún campo contiene {@code "|"}
-     */
-    private String timeToText(ExerciseByTime e) {
-        if (e.getDuration() == null) {
-            throw new IllegalArgumentException("El ejercicio " + e.getExerciseId() + " no tiene duración");
-        }
-        return TxtFormat.join(
-                String.valueOf(e.getRoutineId()),
-                String.valueOf(e.getExerciseId()),
-                String.valueOf(e.getSets()),
-                String.valueOf(e.getDuration().getSeconds()));
+                String.valueOf(e.getRepetitions()));
     }
 
     /**
@@ -369,48 +320,27 @@ public class ExerciseRoutineRepositoryTxt implements ExerciseRoutineRepository {
     }
 
     /**
-     * Convierte una línea del archivo de repeticiones en un {@link ExerciseByReps}.
+     * Convierte una línea de {@code rutina_ejercicio_ejercicio.txt} en un
+     * ejercicio de rutina.
      *
      * @param text línea con el formato {@code id_rutina|id_ejercicio|series|repeticiones}
-     * @return el ejercicio leído
+     * @return el ejercicio de la rutina leído
      * @throws PersistenceExceptions si la línea no tiene 4 campos o tiene valores inválidos
      */
-    private ExerciseRoutineExercise repsFromText(String text) throws PersistenceExceptions {
+    private ExerciseRoutineExercise exerciseFromText(String text) throws PersistenceExceptions {
         String[] c = TxtFormat.split(text);
         if (c.length != 4) {
-            throw new PersistenceExceptions("Línea inválida en rutina_ejercicio_repeticiones.txt: " + text);
+            throw new PersistenceExceptions("Línea inválida en rutina_ejercicio_ejercicio.txt: " + text);
         }
         try {
-            return new ExerciseByReps(
-                    Integer.parseInt(c[0]),
-                    Integer.parseInt(c[1]),
-                    Integer.parseInt(c[2]),
-                    Integer.parseInt(c[3]));
+            ExerciseRoutineExercise e = new ExerciseRoutineExercise();
+            e.setRoutineId(Integer.parseInt(c[0]));
+            e.setExerciseId(Integer.parseInt(c[1]));
+            e.setSets(Integer.parseInt(c[2]));
+            e.setRepetitions(Integer.parseInt(c[3]));
+            return e;
         } catch (IllegalArgumentException ex) {   // incluye NumberFormatException
-            throw new PersistenceExceptions("Línea corrupta en rutina_ejercicio_repeticiones.txt: " + text, ex);
-        }
-    }
-
-    /**
-     * Convierte una línea del archivo de tiempo en un {@link ExerciseByTime}.
-     *
-     * @param text línea con el formato {@code id_rutina|id_ejercicio|series|duracion_segundos}
-     * @return el ejercicio leído
-     * @throws PersistenceExceptions si la línea no tiene 4 campos o tiene valores inválidos
-     */
-    private ExerciseRoutineExercise timeFromText(String text) throws PersistenceExceptions {
-        String[] c = TxtFormat.split(text);
-        if (c.length != 4) {
-            throw new PersistenceExceptions("Línea inválida en rutina_ejercicio_tiempo.txt: " + text);
-        }
-        try {
-            return new ExerciseByTime(
-                    Integer.parseInt(c[0]),
-                    Integer.parseInt(c[1]),
-                    Integer.parseInt(c[2]),
-                    Duration.ofSeconds(Long.parseLong(c[3])));
-        } catch (IllegalArgumentException ex) {   // incluye NumberFormatException
-            throw new PersistenceExceptions("Línea corrupta en rutina_ejercicio_tiempo.txt: " + text, ex);
+            throw new PersistenceExceptions("Línea corrupta en rutina_ejercicio_ejercicio.txt: " + text, ex);
         }
     }
 

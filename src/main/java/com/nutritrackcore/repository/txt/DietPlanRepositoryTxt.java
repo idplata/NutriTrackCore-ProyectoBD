@@ -20,10 +20,7 @@ import java.util.Optional;
  * <p>
  * Formatos de línea:
  * <ul>
- *   <li>Plan: {@code id_plan|id_usuario|fecha_generacion|calorias_objetivo|activo|tipo_dieta}.
- *       El tipo de dieta se guarda por el nombre del enum {@link DietPlan.DietType};
- *       las líneas antiguas sin esa columna (5 campos) se leen como {@code OMNIVORA},
- *       el valor por defecto de la columna en la base de datos.</li>
+ *   <li>Plan: {@code id_plan|id_usuario|fecha_generacion|calorias_objetivo|activo}.</li>
  *   <li>Línea: {@code id_plan|id_alimento|cantidad_g|momento_comida}.</li>
  * </ul>
  * Al leer, cada plan recibe sus líneas agrupándolas por {@code id_plan}; al
@@ -33,7 +30,7 @@ public class DietPlanRepositoryTxt implements DietPlanRepository {
 
     /** Cabecera del archivo {@code planes_dieta.txt}. */
     public static final String PLANS_HEADER =
-            "#id_plan|id_usuario|fecha_generacion|calorias_objetivo|activo|tipo_dieta";
+            "#id_plan|id_usuario|fecha_generacion|calorias_objetivo|activo";
 
     /** Cabecera del archivo {@code plan_dieta_alimento.txt}. */
     public static final String LINES_HEADER =
@@ -219,7 +216,7 @@ public class DietPlanRepositoryTxt implements DietPlanRepository {
      * Convierte un plan (sin sus líneas) en una línea de {@code planes_dieta.txt}.
      *
      * @param p plan a convertir
-     * @return la línea con los seis campos separados por {@code "|"}
+     * @return la línea con los cinco campos separados por {@code "|"}
      * @throws IllegalArgumentException si algún campo contiene {@code "|"} o saltos de línea
      */
     private String planToText(DietPlan p) {
@@ -228,8 +225,7 @@ public class DietPlanRepositoryTxt implements DietPlanRepository {
                 String.valueOf(p.getUserId()),
                 TxtFormat.text(p.getGenerationDate()),
                 String.valueOf(p.getTargetCalories()),
-                String.valueOf(p.isActive()),
-                p.getDietType() == null ? null : p.getDietType().name());   // enums por nombre
+                String.valueOf(p.isActive()));
     }
 
     /**
@@ -253,13 +249,13 @@ public class DietPlanRepositoryTxt implements DietPlanRepository {
      * sus líneas, que las asigna {@link #readAll()}).
      *
      * @param text línea con el formato
-     *             {@code id_plan|id_usuario|fecha_generacion|calorias_objetivo|activo|tipo_dieta}
+     *             {@code id_plan|id_usuario|fecha_generacion|calorias_objetivo|activo}
      * @return el plan leído
-     * @throws PersistenceExceptions si la línea no tiene 5 ni 6 campos o tiene valores inválidos
+     * @throws PersistenceExceptions si la línea no tiene 5 campos o tiene valores inválidos
      */
     private DietPlan planFromText(String text) throws PersistenceExceptions {
         String[] c = TxtFormat.split(text);
-        if (c.length != 5 && c.length != 6) {                // 5 = formato anterior, sin tipo_dieta
+        if (c.length != 5) {
             throw new PersistenceExceptions("Línea inválida en planes_dieta.txt: " + text);
         }
         try {
@@ -269,8 +265,6 @@ public class DietPlanRepositoryTxt implements DietPlanRepository {
             p.setGenerationDate(TxtFormat.parseDate(c[2]));
             p.setTargetCalories(Double.parseDouble(c[3]));
             p.setActive(TxtFormat.parseBoolean(c[4]));
-            String type = c.length == 6 ? TxtFormat.nullIfEmpty(c[5]) : null;
-            p.setDietType(type == null ? DietPlan.DietType.OMNIVORA : DietPlan.DietType.valueOf(type));
             return p;
         } catch (DateTimeParseException | IllegalArgumentException e) {   // NumberFormatException ya es un IllegalArgumentException
             throw new PersistenceExceptions("Línea corrupta en planes_dieta.txt: " + text, e);

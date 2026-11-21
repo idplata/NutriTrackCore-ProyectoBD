@@ -2,8 +2,6 @@ package com.nutritrackcore.repository.txt;
 
 import com.nutritrackcore.exceptions.PersistenceExceptions;
 import com.nutritrackcore.model.ConsumptionRecord;
-import com.nutritrackcore.model.ConsumptionRecordByFood;
-import com.nutritrackcore.repository.ConsumptionRecordFoodRepository;
 import com.nutritrackcore.repository.ConsumptionRecordRepository;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -14,22 +12,19 @@ import java.util.Optional;
 
 /**
  * Implementación de {@link ConsumptionRecordRepository} sobre
- * {@code consumption_records.txt} (tabla {@code RegistroConsumo}).
+ * {@code registros_consumo.txt}.
  * <p>
- * Cada línea es la <b>cabecera</b> de un registro con el formato
- * {@code id_registro|id_usuario|kcal_estimadas|nivel_estimacion|fecha_hora}.
- * Los alimentos y gramos de cada registro ya no van aquí: viven en
- * {@code RegistroConsumo_Alimento} y los maneja el
- * {@link ConsumptionRecordFoodRepository} que recibe el constructor. Este
- * repositorio lo usa para guardar comidas completas y para borrar en cascada. El campo {@code nivel_estimacion}
- * puede quedar vacío. Cada operación lee el archivo completo y, si modifica
- * datos, lo reescribe completo.
+ * Cada línea del archivo representa un registro de consumo con el formato
+ * {@code id_registro|id_usuario|id_alimento|imagen_ref|nivel_estimacion|gramos_estimados|fecha_hora}.
+ * Los campos {@code imagen_ref} y {@code nivel_estimacion} quedan vacíos hasta
+ * que exista la captura por cámara. Cada operación lee el archivo completo y, si
+ * modifica datos, lo reescribe completo.
  */
 public class ConsumptionRecordRepositoryTxt implements ConsumptionRecordRepository {
 
     /** Cabecera del archivo {@code registros_consumo.txt}. */
     public static final String HEADER =
-            "#id_registro|id_usuario|kcal_estimadas|nivel_estimacion|fecha_hora";
+            "#id_registro|id_usuario|id_alimento|imagen_ref|nivel_estimacion|gramos_estimados|fecha_hora";
 
     /**
      * Orden estándar de los registros: por fecha y hora (las nulas van primero)
@@ -42,47 +37,13 @@ public class ConsumptionRecordRepositoryTxt implements ConsumptionRecordReposito
     /** Acceso al archivo .txt de registros de consumo. */
     private final TxtFile file;
 
-    /** Repositorio del detalle (alimentos de cada registro). */
-    private final ConsumptionRecordFoodRepository foodRepository;
-
     /**
      * Crea el repositorio sobre un archivo ya preparado.
      *
-     * @param file           archivo {@code consumption_records.txt}
-     * @param foodRepository repositorio de los alimentos de cada registro
+     * @param file archivo {@code registros_consumo.txt}
      */
-    public ConsumptionRecordRepositoryTxt(TxtFile file, ConsumptionRecordFoodRepository foodRepository) {
+    public ConsumptionRecordRepositoryTxt(TxtFile file) {
         this.file = file;
-        this.foodRepository = foodRepository;
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * En .txt no hay transacciones: si falla un alimento, se borran los
-     * alimentos ya guardados y la cabecera, y se relanza el error.
-     */
-    @Override
-    public ConsumptionRecord save(ConsumptionRecord record, List<ConsumptionRecordByFood> foods)
-            throws PersistenceExceptions {
-        if (foods == null || foods.isEmpty()) {
-            throw new PersistenceExceptions("Un registro de consumo debe tener al menos un alimento");
-        }
-        save(record);
-        try {
-            for (ConsumptionRecordByFood food : foods) {
-                food.setRecordId(record.getRecordId());
-                foodRepository.save(food);
-            }
-        } catch (PersistenceExceptions e) {
-            try {                                            // deshacer lo que se alcanzó a guardar
-                deleteById(record.getRecordId());
-            } catch (PersistenceExceptions undoError) {
-                e.addSuppressed(undoError);
-            }
-            throw e;
-        }
-        return record;
     }
 
     /**
@@ -168,13 +129,10 @@ public class ConsumptionRecordRepositoryTxt implements ConsumptionRecordReposito
     /**
      * {@inheritDoc}
      * <p>
-     * Primero borra los alimentos del registro (equivale al
-     * {@code ON DELETE CASCADE}) y solo reescribe el archivo si realmente se
-     * eliminó algún registro.
+     * Solo reescribe el archivo si realmente se eliminó algún registro.
      */
     @Override
     public void deleteById(int recordId) throws PersistenceExceptions {
-        foodRepository.deleteByRecordId(recordId);
         List<ConsumptionRecord> all = findAll();
         if (all.removeIf(r -> r.getRecordId() == recordId)) {
             write(all);
@@ -184,17 +142,11 @@ public class ConsumptionRecordRepositoryTxt implements ConsumptionRecordReposito
     /**
      * {@inheritDoc}
      * <p>
-     * Primero borra los alimentos de cada registro del usuario y solo
-     * reescribe el archivo si realmente se eliminó algún registro.
+     * Solo reescribe el archivo si realmente se eliminó algún registro.
      */
     @Override
     public void deleteByUserId(int userId) throws PersistenceExceptions {
         List<ConsumptionRecord> all = findAll();
-        for (ConsumptionRecord r : all) {
-            if (r.getUserId() == userId) {
-                foodRepository.deleteByRecordId(r.getRecordId());
-            }
-        }
         if (all.removeIf(r -> r.getUserId() == userId)) {
             write(all);
         }
@@ -237,42 +189,47 @@ public class ConsumptionRecordRepositoryTxt implements ConsumptionRecordReposito
     }
 
     /**
-     * Convierte un registro en una línea del archivo. El nivel de estimación
-     * nulo se escribe como campo vacío.
+     * Convierte un registro en una línea del archivo. La referencia de imagen y
+     * el nivel de estimación nulos se escriben como campo vacío.
      *
      * @param r registro a convertir
-     * @return la línea con los cinco campos separados por {@code "|"}
+     * @return la línea con los siete campos separados por {@code "|"}
      * @throws IllegalArgumentException si algún campo contiene {@code "|"} o saltos de línea
      */
     private String toLine(ConsumptionRecord r) {
         return TxtFormat.join(
                 String.valueOf(r.getRecordId()),
                 String.valueOf(r.getUserId()),
-                String.valueOf(r.getEstimatedCalories()),
-                TxtFormat.text(r.getEstimationLevel()),           // puede ser nulo -> campo vacío
+                String.valueOf(r.getFoodId()),
+                r.getImageRef(),                                  // vacío hasta que exista la cámara
+                TxtFormat.text(r.getEstimationLevel()),           // vacío hasta que exista la cámara
+                String.valueOf(r.getEstimatedGrams()),
                 TxtFormat.dateTime(r.getDateTime()));
     }
 
     /**
-     * Convierte una línea del archivo en un registro. Los campos vacíos de
-     * nivel de estimación y fecha y hora quedan como {@code null}.
+     * Convierte una línea del archivo en un registro de consumo. Los campos
+     * vacíos de imagen, nivel de estimación y fecha y hora quedan como
+     * {@code null}.
      *
      * @param line línea con el formato descrito en {@link ConsumptionRecordRepositoryTxt}
      * @return el registro leído
-     * @throws PersistenceExceptions si la línea no tiene 5 campos o tiene valores inválidos
+     * @throws PersistenceExceptions si la línea no tiene 7 campos o tiene valores inválidos
      */
     private ConsumptionRecord fromLine(String line) throws PersistenceExceptions {
         String[] c = TxtFormat.split(line);
-        if (c.length != 5) {
+        if (c.length != 7) {
             throw new PersistenceExceptions("Línea inválida en registros_consumo.txt: " + line);
         }
         try {
-            ConsumptionRecord r = new ConsumptionRecord(
-                    Integer.parseInt(c[1]),
-                    Double.parseDouble(c[2]),
-                    TxtFormat.parseDateTime(c[4]));
+            ConsumptionRecord r = new ConsumptionRecord();
             r.setRecordId(Integer.parseInt(c[0]));
-            r.setEstimationLevel(TxtFormat.parseDouble(c[3]));
+            r.setUserId(Integer.parseInt(c[1]));
+            r.setFoodId(Integer.parseInt(c[2]));
+            r.setImageRef(TxtFormat.nullIfEmpty(c[3]));
+            r.setEstimationLevel(TxtFormat.parseDouble(c[4]));
+            r.setEstimatedGrams(Double.parseDouble(c[5]));
+            r.setDateTime(TxtFormat.parseDateTime(c[6]));
             return r;
         } catch (DateTimeParseException | IllegalArgumentException e) {   // NumberFormatException ya es un IllegalArgumentException
             throw new PersistenceExceptions("Línea corrupta en registros_consumo.txt: " + line, e);

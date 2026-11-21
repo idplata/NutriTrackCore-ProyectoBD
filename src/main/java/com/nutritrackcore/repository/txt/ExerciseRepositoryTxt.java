@@ -12,15 +12,13 @@ import java.util.Optional;
  * Implementación de {@link ExerciseRepository} sobre {@code ejercicios.txt}.
  * <p>
  * Cada línea del archivo representa un ejercicio con el formato
- * {@code id_ejercicio|nombre|grupo_muscular|bajo_impacto|activo|requiere_equipo}.
- * Las líneas antiguas sin {@code requiere_equipo} (5 campos) se leen con
- * {@code false}, el mismo valor por defecto de la columna en la base de datos. Cada
+ * {@code id_ejercicio|nombre|grupo_muscular|bajo_impacto|activo}. Cada
  * operación lee el archivo completo y, si modifica datos, lo reescribe completo.
  */
 public class ExerciseRepositoryTxt implements ExerciseRepository {
 
     /** Cabecera del archivo {@code ejercicios.txt}. */
-    public static final String HEADER = "#id_ejercicio|nombre|grupo_muscular|bajo_impacto|activo|requiere_equipo";
+    public static final String HEADER = "#id_ejercicio|nombre|grupo_muscular|bajo_impacto|activo";
 
     /** Acceso al archivo .txt de ejercicios. */
     private final TxtFile file;
@@ -133,7 +131,7 @@ public class ExerciseRepositoryTxt implements ExerciseRepository {
      * Convierte un ejercicio en una línea del archivo.
      *
      * @param e ejercicio a convertir
-     * @return la línea con los seis campos separados por {@code "|"}
+     * @return la línea con los cinco campos separados por {@code "|"}
      * @throws IllegalArgumentException si algún campo contiene {@code "|"} o saltos de línea
      */
     private String toLine(Exercise e) {
@@ -142,21 +140,20 @@ public class ExerciseRepositoryTxt implements ExerciseRepository {
                 e.getName(),
                 e.getMuscleGroup(),
                 String.valueOf(e.isLowImpact()),
-                String.valueOf(e.isActive()),
-                String.valueOf(e.getNeed_Equipment()));
+                String.valueOf(e.isActive()));
     }
 
     /**
      * Convierte una línea del archivo en un ejercicio.
      *
      * @param line línea con el formato
-     *             {@code id_ejercicio|nombre|grupo_muscular|bajo_impacto|activo|requiere_equipo}
+     *             {@code id_ejercicio|nombre|grupo_muscular|bajo_impacto|activo}
      * @return el ejercicio leído; el grupo muscular vacío queda como {@code null}
-     * @throws PersistenceExceptions si la línea no tiene 5 ni 6 campos o tiene valores inválidos
+     * @throws PersistenceExceptions si la línea no tiene 5 campos o tiene valores inválidos
      */
     private Exercise fromLine(String line) throws PersistenceExceptions {
         String[] c = TxtFormat.split(line);
-        if (c.length != 5 && c.length != 6) {                // 5 = formato anterior, sin requiere_equipo
+        if (c.length != 5) {
             throw new PersistenceExceptions("Línea inválida en ejercicios.txt: " + line);
         }
         try {
@@ -166,7 +163,6 @@ public class ExerciseRepositoryTxt implements ExerciseRepository {
             e.setMuscleGroup(TxtFormat.nullIfEmpty(c[2]));
             e.setLowImpact(TxtFormat.parseBoolean(c[3]));
             e.setActive(TxtFormat.parseBoolean(c[4]));
-            e.setNeed_Equipment(c.length == 6 && TxtFormat.parseBoolean(c[5]));
             return e;
         } catch (DateTimeParseException | IllegalArgumentException ex) {   // NumberFormatException ya es un IllegalArgumentException
             throw new PersistenceExceptions("Línea corrupta en ejercicios.txt: " + line, ex);

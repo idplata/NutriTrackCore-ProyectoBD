@@ -14,10 +14,7 @@ import java.util.Optional;
  * Implementación de {@link FoodRepository} sobre {@code alimentos.txt}.
  * <p>
  * Cada línea del archivo representa un alimento con el formato
- * {@code id_alimento|nombre|densidad_g_cm3|calorias_100g|proteinas_100g|carbohidratos_100g|grasas_100g|activo|grupo}.
- * El grupo se guarda por el nombre del enum {@link Food.FoodPyramid}. Las líneas
- * antiguas sin la columna {@code grupo} (8 campos) se siguen leyendo con grupo
- * {@code null} y se completan la próxima vez que se reescribe el archivo.
+ * {@code id_alimento|nombre|densidad_g_cm3|calorias_100g|proteinas_100g|carbohidratos_100g|grasas_100g|activo}.
  * La densidad y los macronutrientes son opcionales (campo vacío = nulo). Cada
  * operación lee el archivo completo y, si modifica datos, lo reescribe completo.
  */
@@ -25,7 +22,7 @@ public class FoodRepositoryTxt implements FoodRepository {
 
     /** Cabecera del archivo {@code alimentos.txt}. */
     public static final String HEADER =
-            "#id_alimento|nombre|densidad_g_cm3|calorias_100g|proteinas_100g|carbohidratos_100g|grasas_100g|activo|grupo";
+            "#id_alimento|nombre|densidad_g_cm3|calorias_100g|proteinas_100g|carbohidratos_100g|grasas_100g|activo";
 
     /** Acceso al archivo .txt de alimentos. */
     private final TxtFile file;
@@ -173,7 +170,7 @@ public class FoodRepositoryTxt implements FoodRepository {
      * macronutrientes nulos se escriben como campo vacío.
      *
      * @param f alimento a convertir
-     * @return la línea con los nueve campos separados por {@code "|"}
+     * @return la línea con los ocho campos separados por {@code "|"}
      * @throws IllegalArgumentException si algún campo contiene {@code "|"} o saltos de línea
      */
     private String toLine(Food f) {
@@ -185,8 +182,7 @@ public class FoodRepositoryTxt implements FoodRepository {
                 TxtFormat.text(f.getProteins100g()),
                 TxtFormat.text(f.getCarbohydrates100g()),
                 TxtFormat.text(f.getFats100g()),
-                String.valueOf(f.isActive()),
-                f.getGrupe() == null ? null : f.getGrupe().name());   // enums por nombre
+                String.valueOf(f.isActive()));
     }
 
     /**
@@ -195,11 +191,11 @@ public class FoodRepositoryTxt implements FoodRepository {
      *
      * @param line línea con el formato descrito en {@link FoodRepositoryTxt}
      * @return el alimento leído
-     * @throws PersistenceExceptions si la línea no tiene 8 ni 9 campos o tiene valores inválidos
+     * @throws PersistenceExceptions si la línea no tiene 8 campos o tiene valores inválidos
      */
     private Food fromLine(String line) throws PersistenceExceptions {
         String[] c = TxtFormat.split(line);
-        if (c.length != 8 && c.length != 9) {                // 8 = formato anterior, sin grupo
+        if (c.length != 8) {
             throw new PersistenceExceptions("Línea inválida en alimentos.txt: " + line);
         }
         try {
@@ -212,8 +208,6 @@ public class FoodRepositoryTxt implements FoodRepository {
             f.setCarbohydrates100g(TxtFormat.parseDouble(c[5]));
             f.setFats100g(TxtFormat.parseDouble(c[6]));
             f.setActive(TxtFormat.parseBoolean(c[7]));
-            String group = c.length == 9 ? TxtFormat.nullIfEmpty(c[8]) : null;
-            f.setGrupe(group == null ? null : Food.FoodPyramid.valueOf(group));
             return f;
         } catch (DateTimeParseException | IllegalArgumentException e) {   // NumberFormatException ya es un IllegalArgumentException
             throw new PersistenceExceptions("Línea corrupta en alimentos.txt: " + line, e);
