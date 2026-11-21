@@ -18,7 +18,7 @@ CREATE TABLE Usuario (
         constraint usuario_nacimiento_menor_fecha_actual check (fecha_nacimiento <= current_date),
     sexo char(1) not null
         constraint usuario_sexo check (sexo in ('M', 'F', 'O')),
-    fecha_registro timestamp not null default now(),
+    fecha_registro timestamp not null default now()
 );
 
 -- Catálogo cerrado de condiciones médicas.
@@ -45,7 +45,7 @@ CREATE TABLE Alimento (
         constraint alimento_nombre_unico unique,
     densidad_g_cm3 numeric(5,3)
         constraint alimento_densidad_positiva check (densidad_g_cm3 > 0),
-    calorias_100g  numeric(6,2) not null
+    Kcal_100g  numeric(6,2) not null
         constraint alimento_calorias_positiva check (kcal_100g >= 0),
     proteinas_100g numeric(5,2)
         constraint alimento_proteinas_poitivo check (proteinas_100g >= 0),
