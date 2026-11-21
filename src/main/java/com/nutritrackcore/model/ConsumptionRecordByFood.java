@@ -14,14 +14,20 @@ public class ConsumptionRecordByFood {
     private int consumptionRecordByFoodId;
     private double estimatedGrams;
     
-    public ConsumptionRecordByFood( int recordId, int foodId, int consumptionRecordByFoodId, int estimatedGrams){
-        
+    public ConsumptionRecordByFood( int recordId, int foodId, int consumptionRecordByFoodId, double estimatedGrams){
+        this.recordId = recordId;
+        this.foodId = foodId;
         this.consumptionRecordByFoodId = consumptionRecordByFoodId;
         this.estimatedGrams = estimatedGrams;
-        this.foodId = foodId;
-        this.recordId = recordId;
+        
+       
         
     }
+
+    public ConsumptionRecordByFood() {
+    }
+    
+    
     
     public int getconsumptionRecordByFoodId(){
         return consumptionRecordByFoodId;
