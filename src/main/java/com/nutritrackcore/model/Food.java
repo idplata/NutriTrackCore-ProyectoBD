@@ -76,4 +76,8 @@ public class Food {
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
 
+    /** Grupo de la pirámide alimenticia (columna {@code grupo}). */
+    public FoodPyramid getGrupe() { return grupe; }
+    public void setGrupe(FoodPyramid grupe) { this.grupe = grupe; }
+
    }

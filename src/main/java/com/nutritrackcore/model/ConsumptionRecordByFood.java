@@ -13,8 +13,11 @@ public class ConsumptionRecordByFood {
     private int foodId;
     private int consumptionRecordByFoodId;
     private double estimatedGrams;
-    
-    public ConsumptionRecordByFood( int recordId, int foodId, int consumptionRecordByFoodId, int estimatedGrams){
+
+    /** Constructor vacío: lo usa la capa repository al leer filas. */
+    public ConsumptionRecordByFood() {}
+
+    public ConsumptionRecordByFood( int recordId, int foodId, int consumptionRecordByFoodId, double estimatedGrams){
         
         this.consumptionRecordByFoodId = consumptionRecordByFoodId;
         this.estimatedGrams = estimatedGrams;
