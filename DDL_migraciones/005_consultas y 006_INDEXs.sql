@@ -12,7 +12,7 @@ SELECT p.id_plan,
        tc.nombre                                      AS comida,
        a.nombre                                       AS alimento,
        pda.cantidad_g,
-       ROUND(pda.cantidad_g * a.kcal_100g / 100, 1)   AS kcal
+       ROUND(pda.cantidad_g * a.calorias_100g / 100, 1)   AS kcal
 FROM PlanDieta p
 JOIN PlanDieta_Alimento pda ON pda.id_plan = p.id_plan
 JOIN Alimento a             ON a.id_alimento = pda.id_alimento
@@ -126,7 +126,7 @@ ORDER BY u.nombre, al.nombre;
 -- Pregunta: ¿qué usuarios con una condición que exige "solo bajo impacto"
 --           tienen en su rutina activa ejercicios que NO son de bajo impacto?
 --           (la personalización no está respetando la regla clínica)
--- Tablas: RutinaEjercicio, Usuario, RutinaEjercicio_Ejercicio, Ejercicio,
+-- Tablas: RutinaEjercicio, Usuario, RutinaEjercicio_Repeticiones/_Tiempo, Ejercicio,
 --         y subconsulta sobre Usuario_Condicion y ReglaCondicion
 -- Si se separan los ejercicios en dos tablas (repeticiones y tiempo), reemplazar
 -- RutinaEjercicio_Ejercicio por:
@@ -138,7 +138,10 @@ SELECT DISTINCT u.nombre      AS usuario,
                 e.nombre      AS ejercicio_no_apto
 FROM RutinaEjercicio re
 JOIN Usuario u                     ON u.id_usuario = re.id_usuario
-JOIN RutinaEjercicio_Ejercicio ree ON ree.id_rutina = re.id_rutina
+JOIN (SELECT id_rutina, id_ejercicio FROM RutinaEjercicio_Repeticiones
+      UNION ALL
+      SELECT id_rutina, id_ejercicio FROM RutinaEjercicio_Tiempo) ree
+                                   ON ree.id_rutina = re.id_rutina
 JOIN Ejercicio e                   ON e.id_ejercicio = ree.id_ejercicio
 WHERE re.activa
   AND NOT e.bajo_impacto
@@ -176,7 +179,7 @@ SELECT r.id_registro,
        r.fecha_hora,
        a.nombre                                              AS alimento,
        l.gramos_estimados,
-       ROUND(l.gramos_estimados * a.kcal_100g / 100, 1)      AS kcal
+       ROUND(l.gramos_estimados * a.calorias_100g / 100, 1)      AS kcal
 FROM RegistroConsumo r
 JOIN RegistroConsumo_Alimento l ON l.id_registro = r.id_registro
 JOIN Alimento a                 ON a.id_alimento = l.id_alimento
@@ -237,6 +240,7 @@ CREATE INDEX IF NOT EXISTS idx_alergiaalim_alimento      ON Alergia_Alimento (id
 CREATE INDEX IF NOT EXISTS idx_excluido_alimento         ON Usuario_AlimentoExcluido (id_alimento);
 CREATE INDEX IF NOT EXISTS idx_pda_alimento              ON PlanDieta_Alimento (id_alimento);
 CREATE INDEX IF NOT EXISTS idx_pda_tipo_comida           ON PlanDieta_Alimento (id_tipo_comida);
-CREATE INDEX IF NOT EXISTS idx_rutinaej_ejercicio        ON RutinaEjercicio_Ejercicio (id_ejercicio);
+CREATE INDEX IF NOT EXISTS idx_rutinarep_ejercicio       ON RutinaEjercicio_Repeticiones (id_ejercicio);
+CREATE INDEX IF NOT EXISTS idx_rutinatiempo_ejercicio    ON RutinaEjercicio_Tiempo (id_ejercicio);
 CREATE INDEX IF NOT EXISTS idx_rutinacond_condicion      ON RutinaEjercicio_Condicion (id_condicion);
 
