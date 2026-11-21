@@ -1,0 +1,19 @@
+#id_ejercicio|nombre|grupo_muscular|bajo_impacto|activo
+1|Caminata|Piernas|true|true
+2|Bicicleta estática|Piernas|true|true
+3|Natación|Cuerpo completo|true|true
+4|Elíptica|Cuerpo completo|true|true
+5|Aeróbicos acuáticos|Cuerpo completo|true|true
+6|Plancha|Abdomen|true|true
+7|Puente de glúteos|Glúteos|true|true
+8|Sentadilla a una silla|Piernas|true|true
+9|Flexiones de pecho en pared|Pecho|true|true
+10|Remo con banda elástica|Espalda|true|true
+11|Zancadas|Piernas|true|true
+12|Estiramientos de cuerpo completo|Cuerpo completo|true|true
+13|Trote|Piernas|false|true
+14|Sentadillas con salto|Piernas|false|true
+15|Saltos de tijera|Cuerpo completo|false|true
+16|Burpees|Cuerpo completo|false|true
+17|Saltar la cuerda|Cuerpo completo|false|true
+18|Escaladores|Abdomen|false|true

@@ -1,0 +1,37 @@
+#id_alimento|nombre|densidad_g_cm3|calorias_100g|proteinas_100g|carbohidratos_100g|grasas_100g|activo
+1|Arroz blanco cocido||130|2.7|28.2|0.3|true
+2|Arroz integral cocido||123|2.7|25.6|1.0|true
+3|Arepa de maíz blanco||219|4.5|45.0|2.5|true
+4|Papa cocida||87|1.9|20.1|0.1|true
+5|Yuca cocida||112|1.4|27.0|0.3|true
+6|Plátano maduro cocido||116|0.8|31.2|0.2|true
+7|Fríjol rojo cocido||127|8.7|22.8|0.5|true
+8|Lenteja cocida||116|9.0|20.1|0.4|true
+9|Garbanzo cocido||164|8.9|27.4|2.6|true
+10|Pechuga de pollo cocida||165|31.0|0.0|3.6|true
+11|Carne de res magra cocida||217|26.1|0.0|11.8|true
+12|Lomo de cerdo cocido||143|26.2|0.0|3.5|true
+13|Tilapia cocida||128|26.2|0.0|2.7|true
+14|Atún en agua||116|25.5|0.0|0.8|true
+15|Huevo cocido||155|12.6|1.1|10.6|true
+16|Leche entera|1.03|61|3.2|4.8|3.3|true
+17|Leche descremada|1.035|34|3.4|5.0|0.1|true
+18|Yogur natural sin azúcar||61|3.5|4.7|3.3|true
+19|Queso campesino||264|18.0|3.0|20.0|true
+20|Pan integral||247|13.0|41.0|3.4|true
+21|Avena en hojuelas||389|16.9|66.3|6.9|true
+22|Banano||89|1.1|22.8|0.3|true
+23|Manzana||52|0.3|13.8|0.2|true
+24|Mango||60|0.8|15.0|0.4|true
+25|Papaya||43|0.5|10.8|0.3|true
+26|Guayaba||68|2.6|14.3|1.0|true
+27|Naranja||47|0.9|11.8|0.1|true
+28|Aguacate||160|2.0|8.5|14.7|true
+29|Tomate||18|0.9|3.9|0.2|true
+30|Zanahoria cruda||41|0.9|9.6|0.2|true
+31|Brócoli cocido||35|2.4|7.2|0.4|true
+32|Espinaca cruda||23|2.9|3.6|0.4|true
+33|Lechuga||15|1.4|2.9|0.2|true
+34|Almendras||579|21.2|21.6|49.9|true
+35|Maní tostado||585|23.7|21.5|49.7|true
+36|Aceite de oliva|0.92|884|0.0|0.0|100.0|true
