@@ -1,280 +1,95 @@
--- 004_datos_semilla.sql
--- Datos ficticios pero coherentes. Ningún dato personal real.
--- Supone una base recién creada con 001, 002 y 003 aplicados (los id
--- identity empiezan en 1, por eso las filas hijas usan esos números).
--- Los hashes son marcadores de posición, no credenciales.
+-- =====================================================================
+-- Semilla de la tabla Ejercicio (reemplaza el INSERT INTO Ejercicio de 004)
+-- ---------------------------------------------------------------------
+-- Fuentes:
+--   * Catálogo: free-exercise-db (yuhonas, dominio público / Unlicense),
+--     https://github.com/yuhonas/free-exercise-db  → columna "fuente" del comentario.
+--   * Impacto e intensidad: 2024 Adult Compendium of Physical Activities
+--     (Herrmann et al., J Sport Health Sci 2024;13:6-12), https://pacompendium.com
 --
--- Casos de prueba incluidos:
---   * Se relaciona con varias : Usuario 2 (2 condiciones, 2 alergias),
---     Alergia Lactosa (2 usuarios), Alimento Arroz (varios planes), etc.
---   * No se relaciona con ninguna : Usuario 6 (sin perfil, planes ni consumo),
---     Condición 5, Alergia 5, Ejercicio 9, Alimento 7 en ningún plan...
---   * Rechazo del servidor : sección final (comentada, se ejecuta una a una).
-
-BEGIN;
-
--- =====================================================================
--- 001: tablas sin dependencias
--- =====================================================================
-
-INSERT INTO Usuario (nombre, email, contrasena_hash, peso_kg, altura_cm,
-                     fecha_nacimiento, sexo) VALUES
-('Laura Martínez', 'laura.martinez@correo-demo.test', 'hash_ficticio_0001', 68.50, 165.00, '1990-04-12', 'F'),
-('Carlos Pérez',   'carlos.perez@correo-demo.test',   'hash_ficticio_0002', 92.00, 175.00, '1978-09-03', 'M'),
-('Andrea Gómez',   'andrea.gomez@correo-demo.test',   'hash_ficticio_0003', 55.00, 160.00, '1995-01-25', 'F'),
-('Julián Rojas',   'julian.rojas@correo-demo.test',   'hash_ficticio_0004', 78.20, 180.00, '2001-06-30', 'M'),
-('Marta Ríos',     'marta.rios@correo-demo.test',     'hash_ficticio_0005', 81.40, 158.00, '1962-11-18', 'F'),
-('Álex Vargas',    'alex.vargas@correo-demo.test',    'hash_ficticio_0006', 70.00, 172.00, '1999-03-09', 'O');
-
-INSERT INTO CondicionMedica (nombre, descripcion) VALUES
-('Diabetes tipo 2',        'Alteración del metabolismo de la glucosa'),
-('Hipertensión arterial',  'Presión arterial elevada de forma sostenida'),
-('Dislipidemia',           'Niveles anormales de colesterol o triglicéridos'),
-('Artrosis de rodilla',    'Desgaste articular que limita el ejercicio de impacto'),
-('Insuficiencia renal',    'Reducción de la función renal');
-
-INSERT INTO Alergia (nombre, descripcion) VALUES
-('Lactosa',        'Intolerancia a los lácteos'),
-('Gluten',         'Reacción al gluten del trigo, cebada y centeno'),
-('Frutos secos',   'Reacción a nueces, almendras y similares'),
-('Huevo',          'Alergia a las proteínas del huevo'),
-('Mariscos',       'Alergia a crustáceos y moluscos');
-
-INSERT INTO Alimento (nombre, densidad_g_cm3, calorias_100g, proteinas_100g, carbohidratos_100g, grasas_100g, grupo) VALUES
-('Arroz blanco cocido',        0.850, 130.00,  2.70, 28.00,  0.30, 'ARROZ'),
-('Pechuga de pollo a la plancha', 1.050, 165.00, 31.00,  0.00,  3.60, 'PROTEINAS_Y_LACTEOS'),
-('Huevo cocido',               1.030, 155.00, 13.00,  1.10, 11.00, 'PROTEINAS_Y_LACTEOS'),
-('Leche entera',               1.030,  61.00,  3.20,  4.80,  3.30, 'PROTEINAS_Y_LACTEOS'),
-('Pan de trigo',               0.300, 265.00,  9.00, 49.00,  3.20, 'CARBOHIDRATOS'),
-('Lentejas cocidas',           0.800, 116.00,  9.00, 20.00,  0.40, 'PROTEINAS_Y_LACTEOS'),
-('Aguacate',                   0.950, 160.00,  2.00,  9.00, 15.00, 'GRASA_SALUDABLES'),
-('Manzana',                    0.800,  52.00,  0.30, 14.00,  0.20, 'FRUTAS_Y_VERDURAS'),
-('Avena en hojuelas',          0.350, 389.00, 17.00, 66.00,  7.00, 'CARBOHIDRATOS'),
-('Almendras',                  0.600, 579.00, 21.00, 22.00, 50.00, 'GRASA_SALUDABLES'),
-('Salmón al horno',            1.050, 206.00, 22.00,  0.00, 12.00, 'PROTEINAS_Y_LACTEOS'),
-('Brócoli cocido',             0.600,  35.00,  2.40,  7.00,  0.40, 'FRUTAS_Y_VERDURAS'),
-('Tofu firme',                 NULL,  144.00, 17.00,  3.00,  9.00, 'PROTEINAS_Y_LACTEOS'),
-('Yuca cocida',                0.900, 160.00,  1.40, 38.00,  0.30, 'CARBOHIDRATOS');
-
-INSERT INTO TipoComida (nombre, orden_dia) VALUES
-('Desayuno',       1),
-('Media mañana',   2),
-('Almuerzo',       3),
-('Merienda',       4),
-('Cena',           5);
-
-INSERT INTO Ejercicio (nombre, grupo_muscular, bajo_impacto) VALUES
-('Caminata rápida',            'CARDIO',          true),
-('Sentadilla',                 'PIERNAS',         false),
-('Flexiones de brazos',        'PECHO',           false),
-('Natación',                   'CUERPO_COMPLETO', true),
-('Bicicleta estática',         'PIERNAS',         true),
-('Plancha abdominal',          'CORE',            true),
-('Press de banca',             'PECHO',           false),
-('Remo con mancuerna',         'ESPALDA',         true),
-('Burpees',                    'CUERPO_COMPLETO', false);
-
--- =====================================================================
--- 002: tablas dependientes
+-- Cómo se adaptó a la tabla:
+--   nombre          → traducido al español (máx. 100 caracteres, único)
+--   grupo_muscular  → primaryMuscles del dataset:
+--                       chest → PECHO | lats, middle back, lower back, traps → ESPALDA
+--                       shoulders → HOMBROS | biceps, triceps, forearms → BRAZOS
+--                       quadriceps, hamstrings, calves, adductors, abductors → PIERNAS
+--                       glutes → GLUTEOS | abdominals → CORE
+--                       category = cardio → CARDIO | varios grupos grandes → CUERPO_COMPLETO
+--   requiere_equipo → false solo si equipment = "body only" o vacío (se hace en casa)
+--   bajo_impacto    → true si no tiene saltos, carrera ni carga pesada sobre la columna,
+--                     y su MET en el Compendium es bajo o moderado (< 6 MET).
+--                     false: pliometría, carrera, saltar lazo, levantamientos con barra pesada.
+--
+-- Los 9 primeros conservan nombre y orden (ids 1 a 9) porque las rutinas de
+-- la semilla los usan. Solo se corrige requiere_equipo en los que usan equipo.
 -- =====================================================================
 
--- El usuario 6 (recién registrado) no tiene perfil: caso "sin relación".
-INSERT INTO PerfilUsuario (id_usuario, nivel_actividad, experiencia_ejercicio, objetivo_peso,
-                           dias_entrenamiento_semana, minutos_por_sesion, lugar_entrenamiento,
-                           tipo_dieta, comidas_al_dia) VALUES
-(1, 'ligero',     'principiante', 'bajar',    3, 45, 'casa',     'OMNIVORA',    4),
-(2, 'sedentario', 'principiante', 'bajar',    3, 30, 'casa',     'OMNIVORA',    3),
-(3, 'moderado',   'intermedio',   'mantener', 4, 60, 'gimnasio', 'VEGETARIANA', 4),
-(4, 'muy_activo', 'avanzado',     'subir',    6, 90, 'gimnasio', 'OMNIVORA',    4),
-(5, 'ligero',     'principiante', 'mantener', 2, 30, 'casa',     'OMNIVORA',    4);
+INSERT INTO Ejercicio (nombre, grupo_muscular, bajo_impacto, requiere_equipo) VALUES
+-- ---- ids 1 a 9: los de la semilla original -------------------------
+('Caminata rápida',                    'CARDIO',          true,  false),
+('Sentadilla',                         'PIERNAS',         false, false),
+('Flexiones de brazos',                'PECHO',           false, false),
+('Natación',                           'CUERPO_COMPLETO', true,  true),   -- requiere piscina
+('Bicicleta estática',                 'PIERNAS',         true,  true),
+('Plancha abdominal',                  'CORE',            true,  false),
+('Press de banca',                     'PECHO',           false, true),
+('Remo con mancuerna',                 'ESPALDA',         true,  true),
+('Burpees',                            'CUERPO_COMPLETO', false, false),
 
--- La insuficiencia renal tiene regla pero ningún usuario; la diabetes tiene dos reglas.
-INSERT INTO ReglaCondicion (id_condicion, tipo_regla, nutriente, valor_limite, descripcion) VALUES
-(1, 'maximo_nutriente',  'carbohidratos', 200.00, 'Limitar carbohidratos a 200 g diarios'),
-(1, 'minimo_nutriente',  'proteinas',      60.00, 'Asegurar al menos 60 g de proteína al día'),
-(2, 'maximo_nutriente',  'grasas',         70.00, 'Limitar grasas a 70 g diarios'),
-(3, 'maximo_nutriente',  'grasas',         60.00, 'Limitar grasas a 60 g diarios'),
-(4, 'solo_bajo_impacto',  NULL,             NULL, 'Solo ejercicios de bajo impacto articular'),
-(5, 'maximo_nutriente',  'proteinas',      50.00, 'Limitar proteínas a 50 g diarios');
+-- ---- PECHO -----------------------------------------------------------
+('Flexiones inclinadas',               'PECHO',           true,  false),  -- Incline_Push-Up
+('Aperturas con mancuernas',           'PECHO',           true,  true),   -- Dumbbell_Flyes
 
-INSERT INTO PlanDieta (id_usuario, fecha_generacion, kcal_objetivo, activo) VALUES
-(1, current_date - 30, 1700.00, false),
-(1, current_date - 2,  1650.00, true),
-(2, current_date - 5,  1800.00, true),
-(3, current_date - 7,  2000.00, true),
-(4, current_date - 3,  3000.00, true),
-(5, current_date - 10, 1700.00, true);
+-- ---- ESPALDA ---------------------------------------------------------
+('Superman',                           'ESPALDA',         true,  false),  -- Superman
+('Dominadas',                          'ESPALDA',         false, true),   -- Pullups (barra)
+('Remo inclinado con dos mancuernas',  'ESPALDA',         true,  true),   -- Bent_Over_Two-Dumbbell_Row
+('Remo sentado en polea',              'ESPALDA',         true,  true),   -- Seated_Cable_Rows
+('Jalón al pecho agarre ancho',        'ESPALDA',         true,  true),   -- Wide-Grip_Lat_Pulldown
+('Extensiones lumbares',               'ESPALDA',         true,  true),   -- Hyperextensions_Back_Extensions
 
-INSERT INTO Historial_IMC (id_usuario, peso_kg, altura_cm, fecha_registro) VALUES
-(1, 72.00, 165.00, current_date - 90),
-(1, 70.20, 165.00, current_date - 45),
-(1, 68.50, 165.00, current_date - 2),
-(2, 97.00, 175.00, current_date - 80),
-(2, 94.50, 175.00, current_date - 40),
-(2, 92.00, 175.00, current_date - 5),
-(3, 55.00, 160.00, current_date - 30),
-(4, 74.00, 180.00, current_date - 60),
-(4, 78.20, 180.00, current_date - 3),
-(5, 84.00, 158.00, current_date - 40),
-(5, 81.40, 158.00, current_date - 10);
+-- ---- HOMBROS ---------------------------------------------------------
+('Círculos con los brazos',            'HOMBROS',         true,  false),  -- Arm_Circles
+('Press de hombros con mancuernas',    'HOMBROS',         true,  true),   -- Dumbbell_Shoulder_Press
+('Elevaciones laterales',              'HOMBROS',         true,  true),   -- Side_Lateral_Raise
+('Elevaciones frontales',              'HOMBROS',         true,  true),   -- Front_Dumbbell_Raise
 
--- id_historial_base: la medición más reciente del usuario al generar la rutina
-INSERT INTO RutinaEjercicio (id_usuario, fecha_generacion, nivel_intensidad, activa, id_historial_base) VALUES
-(1, current_date - 2,  'bajo',     true, 3),
-(2, current_date - 5,  'bajo',     true, 6),
-(3, current_date - 7,  'moderado', true, 7),
-(4, current_date - 3,  'alto',     true, 9),
-(5, current_date - 10, 'bajo',     true, 11),
-(1, current_date - 60, 'bajo',     false, 1);
+-- ---- BRAZOS ----------------------------------------------------------
+('Fondos en banco',                    'BRAZOS',          true,  false),  -- Bench_Dips
+('Curl de bíceps con mancuernas',      'BRAZOS',          true,  true),   -- Dumbbell_Bicep_Curl
+('Curl martillo',                      'BRAZOS',          true,  true),   -- Hammer_Curls
+('Extensión de tríceps en polea',      'BRAZOS',          true,  true),   -- Triceps_Pushdown
 
--- Encabezado: kcal_estimadas = suma de gramos x kcal/100 g de cada alimento; nivel_estimacion entre 0 y 1.
-INSERT INTO RegistroConsumo (id_usuario, kcal_estimadas, nivel_estimacion, fecha_hora) VALUES
-(1, 481.50, 0.900, current_date - 3),   -- 1: Laura, almuerzo
-(1,  62.40, 0.950, current_date - 2),   -- 2: Laura, snack
-(2, 557.00, 0.830, current_date - 4),   -- 3: Carlos, cena
-(3, 216.00, 0.900, current_date - 1),   -- 4: Andrea, almuerzo
-(4, 495.00, 0.930, current_date - 1),   -- 5: Julián, cena
-(4, 311.20, 0.870, current_date - 2),   -- 6: Julián, desayuno
-(5, 155.00, 0.910, current_date - 6);   -- 7: Marta, desayuno
+-- ---- PIERNAS ---------------------------------------------------------
+('Sentadilla con peso corporal',       'PIERNAS',         true,  false),  -- Bodyweight_Squat
+('Zancadas caminando',                 'PIERNAS',         true,  false),  -- Bodyweight_Walking_Lunge
+('Subida al escalón con rodilla',      'PIERNAS',         true,  false),  -- Step-up_with_Knee_Raise
+('Sentadilla con barra',               'PIERNAS',         false, true),   -- Barbell_Squat
+('Zancadas con mancuernas',            'PIERNAS',         true,  true),   -- Dumbbell_Lunges
+('Prensa de piernas',                  'PIERNAS',         true,  true),   -- Leg_Press
+('Elevación de talones de pie',        'PIERNAS',         true,  true),   -- Standing_Calf_Raises
+('Peso muerto a una pierna con pesa rusa', 'PIERNAS',     false, true),   -- Kettlebell_One-Legged_Deadlift
 
--- Detalle: un registro puede tener varios alimentos.
-INSERT INTO RegistroConsumo_Alimento (id_registro, id_alimento, gramos_estimados) VALUES
-(1, 1, 180.00), (1, 2, 150.00),
-(2, 8, 120.00),
-(3, 1, 250.00), (3, 6, 200.00),
-(4, 13, 150.00),
-(5, 2, 300.00),
-(6, 9,  80.00),
-(7, 3, 100.00);
+-- ---- GLUTEOS ---------------------------------------------------------
+('Puente de glúteos',                  'GLUTEOS',         true,  false),  -- Butt_Lift_Bridge
+('Puente de glúteos a una pierna',     'GLUTEOS',         true,  false),  -- Single_Leg_Glute_Bridge
+('Patada de glúteo',                   'GLUTEOS',         true,  false),  -- Glute_Kickback
+('Patadas de tijera',                  'GLUTEOS',         true,  false),  -- Flutter_Kicks
+('Empuje de cadera con barra',         'GLUTEOS',         false, true),   -- Barbell_Hip_Thrust
 
+-- ---- CORE ------------------------------------------------------------
+('Abdominales crunch',                 'CORE',            true,  false),  -- Crunches
+('Bicho muerto',                       'CORE',            true,  false),  -- Dead_Bug
+('Plancha lateral',                    'CORE',            true,  false),  -- Side_Bridge
+('Giro ruso',                          'CORE',            true,  false),  -- Russian_Twist
+('Abdominales bicicleta',              'CORE',            true,  false),  -- Air_Bike
 
-
--- =====================================================================
--- 003: tablas asociativas y seguimiento
--- =====================================================================
-
--- Condición 5 sin usuarios; usuarios 2 y 5 con varias condiciones; usuario 6 sin ninguna.
-INSERT INTO Usuario_Condicion (id_usuario, id_condicion, fecha_diagnostico, observaciones) VALUES
-(1, 3, '2022-05-10', 'Colesterol LDL elevado'),
-(2, 1, '2020-02-14', 'Controlada con dieta'),
-(2, 2, '2021-08-01', NULL),
-(5, 2, '2015-03-22', 'En tratamiento farmacológico'),
-(5, 4, '2019-11-30', 'Rodilla derecha'),
-(5, 1, '2023-01-17', NULL);
-
--- Lactosa con 2 usuarios, Frutos secos con 2, Mariscos con ninguno.
-INSERT INTO Usuario_Alergia (id_usuario, id_alergia, severidad, observaciones) VALUES
-(1, 1, 'leve',     NULL),
-(3, 1, 'moderada', NULL),
-(3, 3, 'severa',   'Evitar trazas'),
-(2, 3, 'leve',     NULL),
-(4, 4, 'leve',     NULL),
-(5, 2, 'moderada', NULL);
-
--- Mariscos no tiene alimentos en el catálogo; Aguacate y Arroz no tienen alergia.
-INSERT INTO Alergia_Alimento (id_alergia, id_alimento) VALUES
-(1, 4),    -- Lactosa  -> Leche
-(2, 5),    -- Gluten   -> Pan
-(2, 9),    -- Gluten   -> Avena
-(3, 10),   -- Frutos secos -> Almendras
-(4, 3);    -- Huevo    -> Huevo cocido
-
-INSERT INTO Usuario_AlimentoExcluido (id_usuario, id_alimento) VALUES
-(1, 7),    -- Laura no come aguacate
-(2, 14),   -- Carlos no come yuca
-(3, 2),    -- Andrea (vegetariana) excluye pollo
-(3, 11),   -- y salmón
-(4, 12),   -- Julián no come brócoli
-(5, 5);    -- Marta excluye pan
-
--- Planes coherentes con alergias y exclusiones de cada usuario.
--- El plan 2 repite manzana en dos comidas distintas (permitido por la PK).
-INSERT INTO PlanDieta_Alimento (id_plan, id_alimento, id_tipo_comida, cantidad_g) VALUES
-(1, 1, 3, 120.00), (1, 2, 3, 120.00),
-(2, 9, 1,  60.00), (2, 8, 1, 150.00), (2, 8, 2, 100.00),
-(2, 2, 3, 150.00), (2, 1, 3, 150.00), (2, 12, 3, 100.00), (2, 3, 5, 100.00),
-(3, 9, 1,  50.00), (3, 8, 2, 150.00), (3, 6, 3, 200.00),
-(3, 2, 3, 150.00), (3, 12, 3, 100.00), (3, 11, 5, 150.00),
-(4, 9, 1,  60.00), (4, 3, 1, 100.00), (4, 8, 2, 150.00),
-(4, 13, 3, 150.00), (4, 6, 3, 200.00), (4, 1, 3, 150.00), (4, 7, 5, 80.00),
-(5, 9, 1, 100.00), (5, 4, 1, 250.00), (5, 2, 3, 250.00),
-(5, 1, 3, 250.00), (5, 11, 5, 200.00), (5, 14, 5, 200.00),
-(6, 3, 1, 100.00), (6, 8, 2, 150.00), (6, 1, 3, 150.00),
-(6, 2, 3, 120.00), (6, 12, 3, 100.00);
-
--- Ejercicio 9 (Burpees) sin rutina. La rutina 5 (artrosis) solo tiene bajo impacto.
-INSERT INTO RutinaEjercicio_Repeticiones (id_rutina, id_ejercicio, series, repeticiones) VALUES
-(1, 1, 3, 10),
-(1, 2, 3, 12),
-(2, 1, 3, 15),
-(2, 5, 3, 15),
-(3, 2, 4, 12),
-(3, 3, 3, 12),
-(3, 8, 3, 10),
-(4, 7, 5, 5),
-(4, 2, 5, 8),
-(4, 3, 4, 15),
-(4, 8, 4, 10),
-(5, 1, 3, 15),
-(5, 4, 3, 10),
-(5, 5, 3, 15),
-(5, 8, 3, 10),
-(6, 1, 2, 10);
-
--- Plancha abdominal (ejercicio 6) es por tiempo: el tercer valor son segundos.
-INSERT INTO RutinaEjercicio_Tiempo (id_rutina, id_ejercicio, series, duracion_segundos) VALUES
-(1, 6, 3, 20),
-(2, 6, 2, 20),
-(3, 6, 3, 30),
-(4, 6, 4, 45),
-(5, 6, 2, 20);
-
--- La rutina 6 (inactiva) no tiene sesiones registradas.
-INSERT INTO SeguimientoRutina (id_rutina, fecha_sesion, duracion_min, completada, observaciones) VALUES
-(1, current_date - 1, 40, true,  NULL),
-(1, current_date - 0, 25, false, 'Interrumpida por falta de tiempo'),
-(2, current_date - 3, 30, true,  NULL),
-(2, current_date - 1, 30, true,  'Sin molestias'),
-(3, current_date - 4, 60, true,  NULL),
-(3, current_date - 2, 55, true,  NULL),
-(4, current_date - 2, 90, true,  'Subió peso en press'),
-(5, current_date - 5, 30, true,  'Leve dolor de rodilla'),
-(5, current_date - 2, 20, false, 'Se detuvo por dolor');
-
-COMMIT;
-
--- =====================================================================
--- PRUEBAS DE RECHAZO (ejecutar de a una, en la sustentación).
--- Cada una debe fallar con el mensaje que se indica.
--- =====================================================================
-
--- 1) CHECK: correo sin arroba
--- INSERT INTO Usuario (nombre, email, contrasena_hash, peso_kg, altura_cm, fecha_nacimiento, sexo)
--- VALUES ('Prueba', 'correo-sin-arroba', 'x', 70, 170, '1990-01-01', 'M');
--- ERROR: new row for relation "usuario" violates check constraint "usuario_email_formato_arroba"
-
--- 2) UNIQUE: correo repetido
--- INSERT INTO Usuario (nombre, email, contrasena_hash, peso_kg, altura_cm, fecha_nacimiento, sexo)
--- VALUES ('Otra Laura', 'laura.martinez@correo-demo.test', 'x', 70, 170, '1990-01-01', 'F');
--- ERROR: duplicate key value violates unique constraint "usuario_email_unico"
-
--- 3) CHECK: severidad fuera del dominio
--- INSERT INTO Usuario_Alergia (id_usuario, id_alergia, severidad) VALUES (4, 1, 'extrema');
--- ERROR: new row for relation "usuario_alergia" violates check constraint "usuarioalergia_severidad"
-
--- 4) CHECK: cantidad no positiva en un plan
--- INSERT INTO PlanDieta_Alimento (id_plan, id_alimento, id_tipo_comida, cantidad_g) VALUES (2, 10, 4, 0);
--- ERROR: new row for relation "plandieta_alimento" violates check constraint "plandietaalimento_cantidad_positiva"
-
--- 5) PRIMARY KEY: misma condición dos veces al mismo usuario
--- INSERT INTO Usuario_Condicion (id_usuario, id_condicion) VALUES (2, 1);
--- ERROR: duplicate key value violates unique constraint "usuario_condicion_pkey"
-
--- 6) ON DELETE RESTRICT: borrar un alimento que está en un plan
--- DELETE FROM Alimento WHERE id_alimento = 1;
--- ERROR: update or delete on table "alimento" violates foreign key constraint "plandieta_alimento_id_alimento_fkey" on table "plandieta_alimento"
-
--- 7) ON DELETE CASCADE (no es error: demuestra el borrado en cascada)
--- BEGIN; DELETE FROM Usuario WHERE id_usuario = 5;
--- SELECT count(*) FROM PerfilUsuario WHERE id_usuario = 5;   -- 0
--- ROLLBACK;
+-- ---- CARDIO ----------------------------------------------------------
+('Escaladores',                        'CARDIO',          false, false),  -- Mountain_Climbers
+('Saltar lazo',                        'CARDIO',          false, true),   -- Rope_Jumping
+('Trote en caminadora',                'CARDIO',          false, true),   -- Jogging_Treadmill
+('Caminata en caminadora',             'CARDIO',          true,  true),   -- Walking_Treadmill
+('Bicicleta reclinada',                'CARDIO',          true,  true),   -- Recumbent_Bike
+('Elíptica',                           'CARDIO',          true,  true),   -- Elliptical_Trainer
+('Remo estático',                      'CARDIO',          true,  true),   -- Rowing_Stationary
+('Escaladora',                         'CARDIO',          false, true);   -- Stairmaster
