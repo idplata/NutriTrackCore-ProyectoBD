@@ -1,0 +1,9 @@
+# Librerías del servicio de visión real (incluye las del stub).
+# PyTorch en versión CPU (más liviana; no requiere tarjeta gráfica).
+--extra-index-url https://download.pytorch.org/whl/cpu
+-r requirements-stub.txt
+torch
+torchvision
+open_clip_torch
+transformers
+segment-anything @ git+https://github.com/facebookresearch/segment-anything.git

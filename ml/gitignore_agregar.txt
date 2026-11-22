@@ -1,0 +1,11 @@
+# Agregar estas líneas al .gitignore de la RAÍZ del repositorio
+ml/.venv/
+ml/data/
+ml/weights/
+ml/dist/
+ml/build/
+ml/*.spec
+ml/vision_service/
+__pycache__/
+desktop.ini
+ml/vision_service.log
