@@ -1,90 +1,48 @@
 package com.nutritrackcore.services;
 
 import com.nutritrackcore.model.Food;
+import com.nutritrackcore.model.Food.FoodPyramid;
 import com.nutritrackcore.model.IntensityLevel;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Regla para el hipotiroidismo: no restringe alimentos, pero limita la
- * intensidad del ejercicio a moderada.
- * <p>
- * Valor de demostración: la meta calórica se mantiene sin cambios.
+ * Hipotiroidismo: sin dulces ni ultraprocesados, carbohidratos y proteínas al 75 %
+ * e intensidad máxima moderada.
  */
 public class HypothyroidismRule implements ConditionRule {
+    private static final double LIMITED_GROUP_FACTOR = 0.75;
+    private static final Set<FoodPyramid> BLOCKED_GROUPS = Set.of(FoodPyramid.DULCES, FoodPyramid.ULTRAPROCESADOS);
+    private static final Set<FoodPyramid> LIMITED_GROUPS =
+            Set.of(FoodPyramid.CARBOHIDRATOS, FoodPyramid.PROTEINAS_Y_LACTEOS);
 
-    /**
-     * Devuelve el nombre principal de la condición.
-     *
-     * @return {@code "Hipotiroidismo"}
-     */
     @Override
-    public String getConditionName() {
-        return "Hipotiroidismo";
-    }
+    public String getConditionName() { return "Hipotiroidismo"; }
 
-    /**
-     * Devuelve el nombre alternativo (en inglés) con el que puede aparecer en el catálogo.
-     *
-     * @return lista con {@code "Hypothyroidism"}
-     */
     @Override
-    public List<String> getAliases() {
-        return List.of("Hypothyroidism");
-    }
+    public List<String> getAliases() { return List.of("Hypothyroidism"); }
 
-    /**
-     * No modifica la meta calórica.
-     *
-     * @param baseCalories calorías antes del ajuste
-     * @return el mismo valor recibido
-     * @throws IllegalArgumentException si el valor no es un número mayor que cero
-     */
     @Override
-    public double adjustCalories(double baseCalories) {
-        ParameterChecks.requirePositive(baseCalories, "calorías base");
-        return baseCalories;
-    }
+    public double adjustCalories(double baseCalories) { return baseCalories; }
 
-    /**
-     * Acepta cualquier alimento.
-     *
-     * @param food alimento a evaluar
-     * @return siempre {@code true}
-     * @throws IllegalArgumentException si el alimento es nulo
-     */
     @Override
     public boolean isFoodAllowed(Food food) {
-        ParameterChecks.requireNonNull(food, "alimento");
-        return true;
+        return food != null && !BLOCKED_GROUPS.contains(food.getGrupe());
     }
 
-    /**
-     * Limita la intensidad a moderada.
-     *
-     * @return {@link IntensityLevel#MODERATE}
-     */
     @Override
-    public IntensityLevel maxIntensity() {
-        return IntensityLevel.MODERATE;
+    public double groupFactor(FoodPyramid group) {
+        return LIMITED_GROUPS.contains(group) ? LIMITED_GROUP_FACTOR : 1.0;
     }
 
-    /**
-     * No exige ejercicios de bajo impacto.
-     *
-     * @return {@code false}
-     */
     @Override
-    public boolean requiresLowImpact() {
-        return false;
-    }
+    public IntensityLevel maxIntensity() { return IntensityLevel.MODERATE; }
 
-    /**
-     * Describe la restricción aplicada.
-     *
-     * @return texto en español con la limitación de intensidad
-     */
+    @Override
+    public boolean requiresLowImpact() { return false; }
+
     @Override
     public String describeRestriction() {
-        return "Intensidad de ejercicio máxima moderada";
+        return "Sin dulces ni ultraprocesados, carbohidratos y proteínas al 75 % e intensidad máxima moderada";
     }
 }

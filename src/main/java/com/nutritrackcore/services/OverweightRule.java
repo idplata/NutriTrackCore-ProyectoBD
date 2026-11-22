@@ -1,97 +1,63 @@
 package com.nutritrackcore.services;
 
 import com.nutritrackcore.model.Food;
+import com.nutritrackcore.model.Food.FoodPyramid;
 import com.nutritrackcore.model.IntensityLevel;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Regla para el sobrepeso: déficit calórico, exclusión de alimentos muy
- * calóricos y rutinas solo con ejercicios de bajo impacto.
- * <p>
- * Valores de demostración: la meta calórica se reduce un 15 % y se excluyen los
- * alimentos de más de 500 kcal por cada 100 g.
+ * Sobrepeso: −15 % de kcal, alimentos de hasta 500 kcal por 100 g, carbohidratos,
+ * proteínas y arroz al 75 %, grasas saludables al 50 %, solo bajo impacto,
+ * 3 series y máximo 10 repeticiones.
  */
 public class OverweightRule implements ConditionRule {
-
-    /** Multiplicador que reduce la meta calórica un 15 %. */
+    public static final String NAME = "Sobrepeso";
     private static final double CALORIE_FACTOR = 0.85;
-
-    /** Calorías máximas por 100 g para que un alimento sea aceptado. */
     private static final double MAX_CALORIES_PER_100G = 500;
+    private static final double LIMITED_GROUP_FACTOR = 0.75;
+    private static final double HEALTHY_FAT_FACTOR = 0.5;
+    private static final Set<FoodPyramid> LIMITED_GROUPS =
+            Set.of(FoodPyramid.CARBOHIDRATOS, FoodPyramid.PROTEINAS_Y_LACTEOS, FoodPyramid.ARROZ);
+    private static final int SETS = 3;
+    private static final int MAX_REPETITIONS = 10;
 
-    /**
-     * Devuelve el nombre principal de la condición.
-     *
-     * @return {@code "Sobrepeso"}
-     */
     @Override
-    public String getConditionName() {
-        return "Sobrepeso";
-    }
+    public String getConditionName() { return NAME; }
 
-    /**
-     * Devuelve el nombre alternativo (en inglés) con el que puede aparecer en el catálogo.
-     *
-     * @return lista con {@code "Overweight"}
-     */
     @Override
-    public List<String> getAliases() {
-        return List.of("Overweight");
-    }
+    public List<String> getAliases() { return List.of("Overweight"); }
 
-    /**
-     * Aplica un déficit calórico del 15 %.
-     *
-     * @param baseCalories calorías antes del ajuste
-     * @return {@code baseCalories × 0,85}
-     * @throws IllegalArgumentException si el valor no es un número mayor que cero
-     */
     @Override
-    public double adjustCalories(double baseCalories) {
-        ParameterChecks.requirePositive(baseCalories, "calorías base");
-        return baseCalories * CALORIE_FACTOR;
-    }
+    public double adjustCalories(double baseCalories) { return baseCalories * CALORIE_FACTOR; }
 
-    /**
-     * Acepta el alimento si tiene como máximo 500 kcal por cada 100 g.
-     *
-     * @param food alimento a evaluar
-     * @return {@code true} si el alimento es aceptable
-     * @throws IllegalArgumentException si el alimento es nulo
-     */
     @Override
     public boolean isFoodAllowed(Food food) {
-        ParameterChecks.requireNonNull(food, "alimento");
-        return food.getCalories100g() <= MAX_CALORIES_PER_100G;
+        return food != null && food.getCalories100g() <= MAX_CALORIES_PER_100G;
     }
 
-    /**
-     * Limita la intensidad a moderada.
-     *
-     * @return {@link IntensityLevel#MODERATE}
-     */
     @Override
-    public IntensityLevel maxIntensity() {
-        return IntensityLevel.MODERATE;
+    public double groupFactor(FoodPyramid group) {
+        if (group == FoodPyramid.GRASA_SALUDABLES) {
+            return HEALTHY_FAT_FACTOR;
+        }
+        return LIMITED_GROUPS.contains(group) ? LIMITED_GROUP_FACTOR : 1.0;
     }
 
-    /**
-     * Exige ejercicios de bajo impacto para cuidar las articulaciones.
-     *
-     * @return {@code true}
-     */
     @Override
-    public boolean requiresLowImpact() {
-        return true;
-    }
+    public IntensityLevel maxIntensity() { return IntensityLevel.MODERATE; }
 
-    /**
-     * Describe la restricción aplicada.
-     *
-     * @return texto en español con la limitación de ejercicio
-     */
+    @Override
+    public boolean requiresLowImpact() { return true; }
+
+    @Override
+    public Integer fixedSets() { return SETS; }
+
+    @Override
+    public Integer maxRepetitions() { return MAX_REPETITIONS; }
+
     @Override
     public String describeRestriction() {
-        return "Solo ejercicios de bajo impacto e intensidad máxima moderada";
+        return "Solo bajo impacto, 3 series de máximo 10 repeticiones e intensidad máxima moderada";
     }
 }
