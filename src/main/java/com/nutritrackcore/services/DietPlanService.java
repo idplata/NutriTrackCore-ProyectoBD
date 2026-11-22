@@ -1,48 +1,64 @@
 package com.nutritrackcore.services;
 
-import com.nutritrackcore.exceptions.PersistenceExceptions;
+import com.nutritrackcore.exceptions.BussinesRuleException;
+import com.nutritrackcore.exceptions.NotFoundEntityException;
+import com.nutritrackcore.exceptions.NutriTrackException;
+import com.nutritrackcore.model.Allergy;
+import com.nutritrackcore.model.AllergyFood;
 import com.nutritrackcore.model.DietPlan;
+import com.nutritrackcore.model.DietPlan.DietType;
 import com.nutritrackcore.model.DietPlanFood;
 import com.nutritrackcore.model.Food;
 import com.nutritrackcore.model.MealTime;
 import com.nutritrackcore.model.MedicalCondition;
 import com.nutritrackcore.model.User;
+import com.nutritrackcore.model.UserAllergy;
+import com.nutritrackcore.model.UserExcludedFood;
+import com.nutritrackcore.model.UserProfile;
+import com.nutritrackcore.repository.AllergyFoodRepository;
+import com.nutritrackcore.repository.AllergyRepository;
 import com.nutritrackcore.repository.DietPlanRepository;
 import com.nutritrackcore.repository.FoodRepository;
+import com.nutritrackcore.repository.UserAllergyRepository;
+import com.nutritrackcore.repository.UserExcludedFoodRepository;
+import com.nutritrackcore.repository.UserProfileRepository;
 import com.nutritrackcore.repository.UserRepository;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /**
- * Casos de uso de los planes de dieta: generar uno nuevo, consultar el vigente
- * y ver el historial.
+ * Genera el plan de dieta y lo mantiene libre de alérgenos.
  * <p>
- * Un usuario puede tener varios planes a lo largo del tiempo, pero solo uno
- * <b>activo</b>: al generar uno nuevo, los anteriores se marcan como inactivos
- * (se conservan como historial).
- * <p>
- * Las cantidades y los alimentos que genera son una propuesta académica para
- * demostrar el flujo; no sustituyen la recomendación de un nutricionista.
+ * Reglas: tipo de dieta del perfil (grupos de la pirámide permitidos), comidas al día
+ * del perfil (1 a 4), reglas por condición médica (incluido el sobrepeso por IMC),
+ * alergias y alimentos excluidos. Con condiciones médicas: dieta omnívora y 4 comidas.
  */
 public class DietPlanService {
-
-    /** Meta calórica mínima permitida, para no proponer planes peligrosamente bajos. */
-    private static final double MIN_TARGET_CALORIES = 1200;
-
-    /** Comidas del día, en orden. */
-    private static final MealTime[] MEALS = {MealTime.BREAKFAST, MealTime.LUNCH, MealTime.DINNER, MealTime.SNACK};
-
-    /** Fracción de la meta calórica que corresponde a cada comida (mismo orden que {@link #MEALS}). */
-    private static final double[] MEAL_SHARES = {0.25, 0.35, 0.30, 0.10};
-
-    /** Cantidad mínima, en gramos, que se propone de un alimento. */
+    private static final double MIN_TARGET_KCAL = 1200;
     private static final double MIN_GRAMS = 20;
-
-    /** Cantidad máxima, en gramos, que se propone de un alimento. */
     private static final double MAX_GRAMS = 500;
+    private static final int DEFAULT_MEALS = 4;
+
+    /** Comidas y reparto de kcal según la cantidad de comidas al día (1 a 4, como la base de datos). */
+    private static final Map<Integer, MealTime[]> MEALS_BY_COUNT = Map.of(
+            1, new MealTime[] {MealTime.LUNCH},
+            2, new MealTime[] {MealTime.LUNCH, MealTime.DINNER},
+            3, new MealTime[] {MealTime.BREAKFAST, MealTime.LUNCH, MealTime.DINNER},
+            4, new MealTime[] {MealTime.BREAKFAST, MealTime.LUNCH, MealTime.SNACK, MealTime.DINNER});
+    private static final Map<Integer, double[]> SHARES_BY_COUNT = Map.of(
+            1, new double[] {1.0},
+            2, new double[] {0.55, 0.45},
+            3, new double[] {0.30, 0.40, 0.30},
+            4, new double[] {0.25, 0.35, 0.15, 0.25});
 
     private final DietPlanRepository dietPlanRepository;
     private final UserRepository userRepository;
@@ -50,137 +66,178 @@ public class DietPlanService {
     private final MedicalConditionService medicalConditionService;
     private final CalorieRequirementCalculator calorieCalculator;
     private final ConditionRuleCatalog ruleCatalog;
+    private final UserProfileRepository profileRepository;
+    private final AllergyRepository allergyRepository;
+    private final UserAllergyRepository userAllergyRepository;
+    private final AllergyFoodRepository allergyFoodRepository;
+    private final UserExcludedFoodRepository excludedFoodRepository;
 
-    /**
-     * Crea el servicio con sus dependencias.
-     *
-     * @param dietPlanRepository      repositorio de planes de dieta
-     * @param userRepository          repositorio de usuarios
-     * @param foodRepository          repositorio del catálogo de alimentos
-     * @param medicalConditionService servicio que entrega las condiciones del usuario
-     * @param calorieCalculator       fórmula del requerimiento calórico
-     * @param ruleCatalog             catálogo de reglas por condición médica
-     * @throws IllegalArgumentException si alguna dependencia es nula
-     */
     public DietPlanService(DietPlanRepository dietPlanRepository, UserRepository userRepository,
                            FoodRepository foodRepository, MedicalConditionService medicalConditionService,
-                           CalorieRequirementCalculator calorieCalculator, ConditionRuleCatalog ruleCatalog) {
-        this.dietPlanRepository = ParameterChecks.requireNonNull(dietPlanRepository, "repositorio de planes");
-        this.userRepository = ParameterChecks.requireNonNull(userRepository, "repositorio de usuarios");
-        this.foodRepository = ParameterChecks.requireNonNull(foodRepository, "repositorio de alimentos");
-        this.medicalConditionService = ParameterChecks.requireNonNull(medicalConditionService,
-                "servicio de condiciones médicas");
-        this.calorieCalculator = ParameterChecks.requireNonNull(calorieCalculator, "calculadora de calorías");
-        this.ruleCatalog = ParameterChecks.requireNonNull(ruleCatalog, "catálogo de reglas");
+                           CalorieRequirementCalculator calorieCalculator, ConditionRuleCatalog ruleCatalog,
+                           UserProfileRepository profileRepository, AllergyRepository allergyRepository,
+                           UserAllergyRepository userAllergyRepository, AllergyFoodRepository allergyFoodRepository,
+                           UserExcludedFoodRepository excludedFoodRepository) {
+        this.dietPlanRepository = Objects.requireNonNull(dietPlanRepository, "repositorio de planes");
+        this.userRepository = Objects.requireNonNull(userRepository, "repositorio de usuarios");
+        this.foodRepository = Objects.requireNonNull(foodRepository, "repositorio de alimentos");
+        this.medicalConditionService = Objects.requireNonNull(medicalConditionService, "servicio de condiciones");
+        this.calorieCalculator = Objects.requireNonNull(calorieCalculator, "calculadora de kcal");
+        this.ruleCatalog = Objects.requireNonNull(ruleCatalog, "catálogo de reglas");
+        this.profileRepository = Objects.requireNonNull(profileRepository, "repositorio de perfiles");
+        this.allergyRepository = Objects.requireNonNull(allergyRepository, "repositorio de alergias");
+        this.userAllergyRepository = Objects.requireNonNull(userAllergyRepository, "repositorio de alergias del usuario");
+        this.allergyFoodRepository = Objects.requireNonNull(allergyFoodRepository, "repositorio de alergia-alimento");
+        this.excludedFoodRepository = Objects.requireNonNull(excludedFoodRepository, "repositorio de excluidos");
     }
 
-    /**
-     * Genera un plan de dieta nuevo para un usuario y lo deja como el plan
-     * activo.
-     * <p>
-     * Pasos: (1) valida el id y carga el usuario; (2) obtiene las reglas de sus
-     * condiciones médicas activas; (3) calcula la meta calórica con la fórmula
-     * inyectada y le aplica el ajuste de cada regla (nunca baja de 1200 kcal);
-     * (4) selecciona los alimentos activos con calorías que cumplan <b>todas</b>
-     * las reglas, ordenados por nombre; (5) reparte la meta entre desayuno
-     * (25 %), almuerzo (35 %), cena (30 %) y merienda (10 %), usando un alimento
-     * distinto en cada línea (la clave del plan es plan+alimento, así que un
-     * alimento no puede repetirse) y calculando los gramos con una regla de tres
-     * entre 20 g y 500 g; (6) desactiva los planes activos anteriores; (7) guarda
-     * el plan nuevo como activo.
-     *
-     * @param userId identificador del usuario
-     * @return el plan guardado, con su id y sus líneas
-     * @throws IllegalArgumentException si el id es inválido o el usuario no existe
-     * @throws IllegalStateException    si no hay alimentos activos que cumplan las restricciones del usuario
-     * @throws PersistenceExceptions    si falla la lectura o escritura del almacenamiento
-     */
-    public DietPlan generatePlan(int userId) throws PersistenceExceptions {
-        ParameterChecks.requireId(userId, "identificador del usuario");
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new IllegalArgumentException("No existe un usuario con el identificador " + userId + "."));
+    /** Genera un plan nuevo y desactiva el anterior. */
+    public DietPlan generatePlan(int userId) throws NutriTrackException {
+        User user = requireUser(userId);
+        boolean hasConditions = !medicalConditionService.listActiveByUser(userId).isEmpty();
+        Optional<UserProfile> profile = hasConditions ? Optional.empty() : profileRepository.findByUserId(userId);
+        DietType dietType = profile.isPresent()
+                ? ParameterChecks.requireDietType(profile.get().getDietType()) : DietType.OMNIVORA;
+        int meals = profile.isPresent() ? profile.get().getMealsPerDay() : DEFAULT_MEALS;
+        ParameterChecks.requireMealsPerDay(meals);
 
-        List<ConditionRule> rules = rulesOf(userId);
+        List<ConditionRule> rules = rulesOf(user);
         double target = calorieCalculator.calculateDailyCalories(user, LocalDate.now());
         for (ConditionRule rule : rules) {
             target = rule.adjustCalories(target);
         }
-        target = Math.max(MIN_TARGET_CALORIES, Math.round(target * 10.0) / 10.0);
+        target = Math.max(MIN_TARGET_KCAL, Math.min(ParameterChecks.MAX_TARGET_KCAL, target));
+        target = Math.round(target * 10.0) / 10.0;
+        ParameterChecks.requireRange(target, ParameterChecks.MIN_TARGET_KCAL, ParameterChecks.MAX_TARGET_KCAL,
+                "kcal objetivo");
 
-        List<Food> candidates = selectFoods(rules);
-        List<DietPlanFood> lines = buildLines(candidates, target);
+        List<Food> candidates = allowedFoods(dietType, rules, blockedFoodIds(userId));
+        List<DietPlanFood> lines = buildLines(candidates, target, meals, rules);
 
         deactivateActivePlans(userId);
-
-        DietPlan plan = new DietPlan();
-        plan.setUserId(userId);
-        plan.setGenerationDate(LocalDate.now());
-        plan.setTargetCalories(target);
-        plan.setActive(true);
+        DietPlan plan = new DietPlan(userId, LocalDate.now(), target, dietType);
         plan.setLines(lines);
         return dietPlanRepository.save(plan);
     }
 
-    /**
-     * Obtiene el plan de dieta activo de un usuario.
-     *
-     * @param userId identificador del usuario
-     * @return el plan activo más reciente, o vacío si el usuario no tiene ninguno activo
-     * @throws IllegalArgumentException si el id es inválido
-     * @throws PersistenceExceptions    si falla la lectura del almacenamiento
-     */
-    public Optional<DietPlan> getActivePlan(int userId) throws PersistenceExceptions {
+    public Optional<DietPlan> getActivePlan(int userId) throws NutriTrackException {
         ParameterChecks.requireId(userId, "identificador del usuario");
         return dietPlanRepository.findActiveByUserId(userId);
     }
 
-    /**
-     * Lista todos los planes de un usuario (activos e inactivos), del más
-     * antiguo al más reciente.
-     *
-     * @param userId identificador del usuario
-     * @return historial de planes; vacío si no tiene ninguno
-     * @throws IllegalArgumentException si el id es inválido
-     * @throws PersistenceExceptions    si falla la lectura del almacenamiento
-     */
-    public List<DietPlan> listHistory(int userId) throws PersistenceExceptions {
+    public List<DietPlan> listHistory(int userId) throws NutriTrackException {
         ParameterChecks.requireId(userId, "identificador del usuario");
         return dietPlanRepository.findByUserId(userId);
     }
 
     /**
-     * Obtiene las reglas que aplican a las condiciones médicas <b>activas</b> de
-     * un usuario. Las condiciones desactivadas del catálogo no restringen planes
-     * nuevos.
-     *
-     * @param userId identificador del usuario
-     * @return una regla por cada condición activa del usuario; vacía si no tiene
-     * @throws PersistenceExceptions si falla la lectura del almacenamiento
+     * Revisa el plan activo después de agregar una alergia (o un alimento excluido).
+     * Cada alimento bloqueado se reemplaza por el alimento permitido con las kcal por 100 g
+     * más parecidas (prefiriendo el mismo grupo), ajustando los gramos para mantener las kcal.
+     * Si no hay ninguno permitido, el alimento se elimina definitivamente del plan.
      */
-    private List<ConditionRule> rulesOf(int userId) throws PersistenceExceptions {
+    public AllergyChangeResult refreshForRestrictions(int userId) throws NutriTrackException {
+        User user = requireUser(userId);
+        AllergyChangeResult result = new AllergyChangeResult();
+        Optional<DietPlan> active = dietPlanRepository.findActiveByUserId(userId);
+        if (active.isEmpty()) {
+            return result;
+        }
+        DietPlan plan = active.get();
+        Set<Integer> blocked = blockedFoodIds(userId);
+        DietType dietType = plan.getDietType() == null ? DietType.OMNIVORA : plan.getDietType();
+        List<Food> candidates = allowedFoods(dietType, rulesOf(user), blocked);
+
+        List<DietPlanFood> lines = new ArrayList<>(plan.getLines());
+        List<DietPlanFood> pending = new ArrayList<>();
+        for (DietPlanFood line : lines) {
+            if (blocked.contains(line.getFoodId())) {
+                pending.add(line);
+            }
+        }
+        if (pending.isEmpty()) {
+            return result;
+        }
+        for (DietPlanFood line : pending) {
+            lines.remove(line);
+            Food original = foodRepository.findById(line.getFoodId()).orElse(null);
+            String originalName = original == null ? "Alimento " + line.getFoodId() : original.getName();
+            String meal = line.getMealTime() == null ? "" : line.getMealTime().getDisplayName();
+            Optional<Food> replacement = original == null ? Optional.empty()
+                    : closestReplacement(original, candidates, lines, line.getMealTime());
+            if (replacement.isEmpty()) {
+                result.addRemoved(originalName, meal);
+                continue;
+            }
+            Food food = replacement.get();
+            double grams = line.getQuantityG() * original.getCalories100g() / food.getCalories100g();
+            grams = round(clamp(grams));
+            DietPlanFood existing = findLine(lines, food.getFoodId(), line.getMealTime());
+            if (existing != null) {
+                existing.setQuantityG(round(clamp(existing.getQuantityG() + grams)));
+            } else {
+                lines.add(new DietPlanFood(plan.getPlanId(), food.getFoodId(), grams, line.getMealTime()));
+            }
+            result.addReplaced(originalName, food.getName(), meal);
+        }
+        plan.setLines(lines);
+        dietPlanRepository.update(plan);       // reescribe las líneas en una transacción
+        return result;
+    }
+
+    /** Reglas que aplican al usuario: sus condiciones activas y el sobrepeso detectado por IMC. */
+    List<ConditionRule> rulesOf(User user) throws NutriTrackException {
         List<ConditionRule> rules = new ArrayList<>();
-        for (MedicalCondition condition : medicalConditionService.listByUser(userId)) {
-            if (condition.isActive()) {
-                rules.add(ruleCatalog.getFor(condition));
+        for (MedicalCondition condition : medicalConditionService.listActiveByUser(user.getIdUser())) {
+            ConditionRule rule = ruleCatalog.getFor(condition);
+            if (!rules.contains(rule)) {
+                rules.add(rule);
+            }
+        }
+        BmiCategory category = BmiResult.calculate(user.getWeightKg(), user.getHeightCm()).getCategory();
+        if (category == BmiCategory.OVERWEIGHT) {
+            Optional<ConditionRule> overweight = ruleCatalog.findByName(OverweightRule.NAME);
+            if (overweight.isPresent() && !rules.contains(overweight.get())) {
+                rules.add(overweight.get());
             }
         }
         return rules;
     }
 
-    /**
-     * Filtra el catálogo: deja los alimentos activos con calorías mayores que
-     * cero que todas las reglas aceptan, ordenados por nombre sin distinguir
-     * mayúsculas (para que el resultado sea predecible).
-     *
-     * @param rules reglas de las condiciones del usuario
-     * @return alimentos candidatos
-     * @throws IllegalStateException si no queda ningún alimento
-     * @throws PersistenceExceptions si falla la lectura del almacenamiento
-     */
-    private List<Food> selectFoods(List<ConditionRule> rules) throws PersistenceExceptions {
+    /** Alimentos ligados a las alergias del usuario (o con el nombre de la alergia) y los que excluyó. */
+    private Set<Integer> blockedFoodIds(int userId) throws NutriTrackException {
+        Set<Integer> blocked = new HashSet<>();
+        List<String> allergyNames = new ArrayList<>();
+        for (UserAllergy userAllergy : userAllergyRepository.findByUserId(userId)) {
+            for (AllergyFood link : allergyFoodRepository.findByAllergyId(userAllergy.getAllergyId())) {
+                blocked.add(link.getFoodId());
+            }
+            allergyRepository.findById(userAllergy.getAllergyId())
+                    .map(Allergy::getName).map(DietPlanService::normalize).ifPresent(allergyNames::add);
+        }
+        if (!allergyNames.isEmpty()) {
+            for (Food food : foodRepository.findAll()) {
+                String foodName = normalize(food.getName());
+                for (String allergyName : allergyNames) {
+                    if (!allergyName.isEmpty() && foodName.contains(allergyName)) {
+                        blocked.add(food.getFoodId());
+                    }
+                }
+            }
+        }
+        for (UserExcludedFood excluded : excludedFoodRepository.findByUserId(userId)) {
+            blocked.add(excluded.getFoodId());
+        }
+        return blocked;
+    }
+
+    /** Alimentos activos permitidos por el tipo de dieta, las condiciones y que no estén bloqueados. */
+    private List<Food> allowedFoods(DietType dietType, List<ConditionRule> rules, Set<Integer> blocked)
+            throws NutriTrackException {
         List<Food> candidates = new ArrayList<>();
         for (Food food : foodRepository.findAllActive()) {
-            if (food.getCalories100g() <= 0) {
+            if (food.getCalories100g() <= 0 || blocked.contains(food.getFoodId())
+                    || food.getGrupe() == null || !dietType.getAllowedGroups().contains(food.getGrupe())) {
                 continue;
             }
             boolean allowed = true;
@@ -194,68 +251,84 @@ public class DietPlanService {
                 candidates.add(food);
             }
         }
-        if (candidates.isEmpty()) {
-            throw new IllegalStateException(
-                    "No hay alimentos activos que cumplan las restricciones de las condiciones del usuario.");
-        }
-        candidates.sort(Comparator.comparing(f -> f.getName() == null ? "" : f.getName().toLowerCase()));
+        candidates.sort(Comparator.comparing(f -> f.getName() == null ? "" : f.getName().toLowerCase(Locale.ROOT)));
         return candidates;
     }
 
-    /**
-     * Construye las líneas del plan repartiendo la meta calórica entre las
-     * comidas.
-     * <p>
-     * Si hay al menos 8 alimentos candidatos se usan 2 por comida; si no, 1. Se
-     * usan tantas comidas como alcancen los alimentos (máximo 4) y el porcentaje
-     * de cada una se reescala para que las comidas usadas sumen el 100 %. Cada
-     * alimento se usa una sola vez. Los gramos de cada línea salen de
-     * {@code calorías asignadas / calorías por 100 g × 100}, limitados a
-     * 20–500 g y redondeados a un decimal.
-     *
-     * @param candidates alimentos disponibles (no vacía)
-     * @param target     meta calórica diaria
-     * @return líneas del plan
-     */
-    private List<DietPlanFood> buildLines(List<Food> candidates, double target) {
-        int foodsPerMeal = candidates.size() >= 2 * MEALS.length ? 2 : 1;
-        int mealsUsed = Math.min(MEALS.length, candidates.size() / foodsPerMeal);
+    private List<DietPlanFood> buildLines(List<Food> candidates, double target, int meals, List<ConditionRule> rules)
+            throws NutriTrackException {
+        if (candidates.isEmpty()) {
+            throw new BussinesRuleException(
+                    "No hay alimentos activos que cumplan el tipo de dieta, las alergias y las condiciones del usuario.");
+        }
+        MealTime[] mealTimes = MEALS_BY_COUNT.get(meals);
+        double[] shares = SHARES_BY_COUNT.get(meals);
+        int foodsPerMeal = candidates.size() >= 2 * mealTimes.length ? 2 : 1;
+        int mealsUsed = Math.min(mealTimes.length, candidates.size() / foodsPerMeal);
         double shareTotal = 0;
         for (int m = 0; m < mealsUsed; m++) {
-            shareTotal += MEAL_SHARES[m];
+            shareTotal += shares[m];
         }
-
         List<DietPlanFood> lines = new ArrayList<>();
         int cursor = 0;
         for (int m = 0; m < mealsUsed; m++) {
-            double caloriesPerFood = target * (MEAL_SHARES[m] / shareTotal) / foodsPerMeal;
+            double kcalPerFood = target * (shares[m] / shareTotal) / foodsPerMeal;
             for (int k = 0; k < foodsPerMeal; k++) {
                 Food food = candidates.get(cursor++);
-                double grams = caloriesPerFood / food.getCalories100g() * 100.0;
-                grams = Math.min(MAX_GRAMS, Math.max(MIN_GRAMS, grams));
-                DietPlanFood line = new DietPlanFood();
-                line.setFoodId(food.getFoodId());
-                line.setQuantityG(Math.round(grams * 10.0) / 10.0);
-                line.setMealTime(MEALS[m]);
-                lines.add(line);
+                double grams = kcalPerFood / food.getCalories100g() * 100.0;
+                for (ConditionRule rule : rules) {
+                    grams *= rule.groupFactor(food.getGrupe());      // límites por grupo de cada condición
+                }
+                lines.add(new DietPlanFood(0, food.getFoodId(), round(clamp(grams)), mealTimes[m]));
             }
         }
         return lines;
     }
 
-    /**
-     * Marca como inactivos todos los planes activos del usuario, conservándolos
-     * como historial.
-     *
-     * @param userId identificador del usuario
-     * @throws PersistenceExceptions si falla la lectura o escritura del almacenamiento
-     */
-    private void deactivateActivePlans(int userId) throws PersistenceExceptions {
+    /** Alimento permitido con kcal por 100 g más parecidas, prefiriendo el mismo grupo. */
+    private Optional<Food> closestReplacement(Food original, List<Food> candidates, List<DietPlanFood> lines,
+                                              MealTime meal) {
+        return candidates.stream()
+                .filter(f -> f.getFoodId() != original.getFoodId())
+                .min(Comparator.<Food>comparingInt(f -> f.getGrupe() == original.getGrupe() ? 0 : 1)
+                        .thenComparingDouble(f -> Math.abs(f.getCalories100g() - original.getCalories100g()))
+                        .thenComparingInt(f -> findLine(lines, f.getFoodId(), meal) == null ? 0 : 1));
+    }
+
+    private static DietPlanFood findLine(List<DietPlanFood> lines, int foodId, MealTime meal) {
+        for (DietPlanFood line : lines) {
+            if (line.getFoodId() == foodId && line.getMealTime() == meal) {
+                return line;
+            }
+        }
+        return null;
+    }
+
+    private void deactivateActivePlans(int userId) throws NutriTrackException {
         for (DietPlan previous : dietPlanRepository.findByUserId(userId)) {
             if (previous.isActive()) {
                 previous.setActive(false);
                 dietPlanRepository.update(previous);
             }
         }
+    }
+
+    private User requireUser(int userId) throws NutriTrackException {
+        ParameterChecks.requireId(userId, "identificador del usuario");
+        return userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundEntityException("No existe un usuario con el identificador " + userId + "."));
+    }
+
+    private static double clamp(double grams) {
+        return Math.min(MAX_GRAMS, Math.max(MIN_GRAMS, grams));
+    }
+
+    private static double round(double grams) {
+        return Math.round(grams * 10.0) / 10.0;
+    }
+
+    private static String normalize(String text) {
+        String clean = text == null ? "" : text.trim().toLowerCase(Locale.ROOT);
+        return Normalizer.normalize(clean, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
     }
 }
