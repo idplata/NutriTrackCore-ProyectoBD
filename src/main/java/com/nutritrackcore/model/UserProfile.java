@@ -23,9 +23,7 @@ public class UserProfile {
 
     public UserProfile() {}
 
-    public UserProfile(int userId, String activityLevel, String exerciseExperience, String weightGoal,
-                       int trainingDaysPerWeek, int minutesPerSession, String trainingLocation,
-                       String dietType, int mealsPerDay, String budget, LocalDate updatedAt) {
+    public UserProfile(int userId, String activityLevel, String exerciseExperience, String weightGoal, int trainingDaysPerWeek, int minutesPerSession, String trainingLocation, String dietType, int mealsPerDay, LocalDate updatedAt) {
         this.userId = userId;
         this.activityLevel = activityLevel;
         this.exerciseExperience = exerciseExperience;
@@ -37,6 +35,8 @@ public class UserProfile {
         this.mealsPerDay = mealsPerDay;
         this.updatedAt = updatedAt;
     }
+
+    
 
     public int getUserId() { return userId; }
     public void setUserId(int userId) { this.userId = userId; }
