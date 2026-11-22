@@ -1,7 +1,6 @@
-package com.nutritrackcore.services.calculation;
+package com.nutritrackcore.services;
 
 import com.nutritrackcore.model.User;
-import com.nutritrackcore.services.ParameterChecks;
 import java.time.LocalDate;
 import java.time.Period;
 

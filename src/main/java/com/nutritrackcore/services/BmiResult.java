@@ -1,6 +1,6 @@
-package com.nutritrackcore.services.dto;
+package com.nutritrackcore.services;
 
-import com.nutritrackcore.services.ParameterChecks;
+
 
 /**
  * Resultado de calcular el IMC: el valor numérico y su clasificación.

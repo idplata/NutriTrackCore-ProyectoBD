@@ -1,25 +1,35 @@
-package com.nutritrackcore.services.calculation;
+package com.nutritrackcore.services;
 
 import com.nutritrackcore.model.Food;
 import com.nutritrackcore.model.IntensityLevel;
-import com.nutritrackcore.services.ParameterChecks;
+import java.util.List;
 
 /**
- * Regla "nula": no cambia nada. Se usa cuando una condición médica del catálogo
- * todavía no tiene una regla propia, de modo que los servicios no tengan que
- * comprobar {@code null} ni tratar ese caso aparte (patrón Objeto Nulo).
+ * Regla para el hipotiroidismo: no restringe alimentos, pero limita la
+ * intensidad del ejercicio a moderada.
+ * <p>
+ * Valor de demostración: la meta calórica se mantiene sin cambios.
  */
-public class NoRestrictionRule implements ConditionRule {
+public class HypothyroidismRule implements ConditionRule {
 
     /**
-     * Devuelve un nombre descriptivo; esta regla no está asociada a ninguna
-     * condición concreta.
+     * Devuelve el nombre principal de la condición.
      *
-     * @return {@code "Sin restricción"}
+     * @return {@code "Hipotiroidismo"}
      */
     @Override
     public String getConditionName() {
-        return "Sin restricción";
+        return "Hipotiroidismo";
+    }
+
+    /**
+     * Devuelve el nombre alternativo (en inglés) con el que puede aparecer en el catálogo.
+     *
+     * @return lista con {@code "Hypothyroidism"}
+     */
+    @Override
+    public List<String> getAliases() {
+        return List.of("Hypothyroidism");
     }
 
     /**
@@ -49,13 +59,13 @@ public class NoRestrictionRule implements ConditionRule {
     }
 
     /**
-     * No limita la intensidad.
+     * Limita la intensidad a moderada.
      *
-     * @return {@link IntensityLevel#HIGH}
+     * @return {@link IntensityLevel#MODERATE}
      */
     @Override
     public IntensityLevel maxIntensity() {
-        return IntensityLevel.HIGH;
+        return IntensityLevel.MODERATE;
     }
 
     /**
@@ -69,12 +79,12 @@ public class NoRestrictionRule implements ConditionRule {
     }
 
     /**
-     * Describe que no hay restricción.
+     * Describe la restricción aplicada.
      *
-     * @return {@code "Sin restricciones"}
+     * @return texto en español con la limitación de intensidad
      */
     @Override
     public String describeRestriction() {
-        return "Sin restricciones";
+        return "Intensidad de ejercicio máxima moderada";
     }
 }

@@ -1,4 +1,4 @@
-package com.nutritrackcore.services.dto;
+package com.nutritrackcore.services;
 
 import com.nutritrackcore.model.Sex;
 import java.time.LocalDate;

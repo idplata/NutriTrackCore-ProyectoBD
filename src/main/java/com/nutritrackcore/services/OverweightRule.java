@@ -1,8 +1,7 @@
-package com.nutritrackcore.services.calculation;
+package com.nutritrackcore.services;
 
 import com.nutritrackcore.model.Food;
 import com.nutritrackcore.model.IntensityLevel;
-import com.nutritrackcore.services.ParameterChecks;
 import java.util.List;
 
 /**

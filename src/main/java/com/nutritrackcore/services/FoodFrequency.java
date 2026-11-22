@@ -1,4 +1,4 @@
-package com.nutritrackcore.services.dto;
+package com.nutritrackcore.services;
 
 /**
  * Resultado de una consulta de "alimentos más consumidos": cuántas veces se

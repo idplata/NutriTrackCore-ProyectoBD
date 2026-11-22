@@ -1,5 +1,4 @@
-package com.nutritrackcore.services.dto;
-
+package com.nutritrackcore.services;
 /**
  * Aporte nutricional total (calorías y macronutrientes) de uno o varios
  * consumos.

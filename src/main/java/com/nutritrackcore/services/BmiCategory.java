@@ -1,4 +1,4 @@
-package com.nutritrackcore.services.dto;
+package com.nutritrackcore.services;
 
 /**
  * Clasificación del índice de masa corporal (IMC) según los rangos de la OMS

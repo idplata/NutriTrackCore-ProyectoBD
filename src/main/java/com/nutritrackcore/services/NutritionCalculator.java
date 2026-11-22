@@ -1,8 +1,7 @@
-package com.nutritrackcore.services.calculation;
+package com.nutritrackcore.services;
 
 import com.nutritrackcore.model.Food;
-import com.nutritrackcore.services.ParameterChecks;
-import com.nutritrackcore.services.dto.NutritionalSummary;
+
 
 /**
  * Calcula cuánto aporta nutricionalmente una porción de un alimento.

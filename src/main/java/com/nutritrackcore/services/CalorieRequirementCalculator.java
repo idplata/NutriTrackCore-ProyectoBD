@@ -1,8 +1,8 @@
-package com.nutritrackcore.services.calculation;
+package com.nutritrackcore.services;
 
 import com.nutritrackcore.model.User;
 import java.time.LocalDate;
-
+ import com.nutritrackcore.exceptions.ValidationException;
 /**
  * Contrato para calcular cuántas calorías necesita una persona al día.
  * <p>
@@ -20,5 +20,5 @@ public interface CalorieRequirementCalculator {
      * @return calorías diarias (kcal) antes de aplicar ajustes por condiciones médicas
      * @throws IllegalArgumentException si algún parámetro es nulo o el usuario tiene datos incompletos o inválidos
      */
-    double calculateDailyCalories(User user, LocalDate today);
+    double calculateDailyCalories(User user, LocalDate today) throws ValidationException;
 }

@@ -6,8 +6,6 @@ import com.nutritrackcore.model.Food;
 import com.nutritrackcore.repository.ConsumptionRecordRepository;
 import com.nutritrackcore.repository.FoodRepository;
 import com.nutritrackcore.repository.UserRepository;
-import com.nutritrackcore.services.calculation.NutritionCalculator;
-import com.nutritrackcore.services.dto.NutritionalSummary;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;

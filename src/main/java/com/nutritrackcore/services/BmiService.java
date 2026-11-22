@@ -5,7 +5,6 @@ import com.nutritrackcore.model.BMIHistory;
 import com.nutritrackcore.model.User;
 import com.nutritrackcore.repository.BMIHistoryRepository;
 import com.nutritrackcore.repository.UserRepository;
-import com.nutritrackcore.services.dto.BmiResult;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

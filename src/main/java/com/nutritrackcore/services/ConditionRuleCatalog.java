@@ -1,7 +1,6 @@
-package com.nutritrackcore.services.calculation;
+package com.nutritrackcore.services;
 
 import com.nutritrackcore.model.MedicalCondition;
-import com.nutritrackcore.services.ParameterChecks;
 import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.Locale;

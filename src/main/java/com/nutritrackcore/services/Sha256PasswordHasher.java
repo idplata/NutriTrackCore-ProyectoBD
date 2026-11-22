@@ -58,7 +58,7 @@ public class Sha256PasswordHasher implements PasswordHasher {
      */
     @Override
     public String hash(String plain) {
-        ParameterChecks.requireNonNull(plain, "contraseña");
+        java.util.Objects.requireNonNull(plain, "contraseña");
         byte[] salt = new byte[SALT_BYTES];
         random.nextBytes(salt);
         byte[] hash = derive(plain, salt, ITERATIONS);
@@ -85,8 +85,8 @@ public class Sha256PasswordHasher implements PasswordHasher {
      */
     @Override
     public boolean verify(String plain, String hash) {
-        ParameterChecks.requireNonNull(plain, "contraseña");
-        ParameterChecks.requireNonNull(hash, "hash guardado");
+        java.util.Objects.requireNonNull(plain, "contraseña");
+        java.util.Objects.requireNonNull(hash, "hash guardado");
         String[] parts = hash.split(PART_SEPARATOR);
         if (parts.length != 3) {
             return false;
