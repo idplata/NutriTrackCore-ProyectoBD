@@ -8,7 +8,7 @@ package com.nutritrackcore.exceptions;
  *
  * @author irind
  */
-public class PersistenceExceptions extends Exception {
+public class PersistenceExceptions extends NutriTrackException {
     public PersistenceExceptions(String message){ super(message);}
     
     public PersistenceExceptions(String message, Throwable cause){
