@@ -1,4 +1,6 @@
 /target/
 nbactions.xml
 *.zip
-desktop.ini
+
+# Credenciales de la base de datos
+db.properties

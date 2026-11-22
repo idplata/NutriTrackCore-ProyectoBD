@@ -8,49 +8,65 @@ import com.nutritrackcore.repository.ExerciseRepository;
 import com.nutritrackcore.repository.ExerciseRoutineRepository;
 import com.nutritrackcore.repository.FoodRepository;
 import com.nutritrackcore.repository.MedicalConditionRepository;
+import com.nutritrackcore.repository.Repositories;
 import com.nutritrackcore.repository.UserConditionRepository;
 import com.nutritrackcore.repository.UserRepository;
-import com.nutritrackcore.repository.txt.BMIHistoryRepositoryTxt;
-import com.nutritrackcore.repository.txt.ConsumptionRecordRepositoryTxt;
-import com.nutritrackcore.repository.txt.DietPlanRepositoryTxt;
-import com.nutritrackcore.repository.txt.ExerciseRepositoryTxt;
-import com.nutritrackcore.repository.txt.ExerciseRoutineRepositoryTxt;
-import com.nutritrackcore.repository.txt.FoodRepositoryTxt;
-import com.nutritrackcore.repository.txt.MedicalConditionRepositoryTxt;
-import com.nutritrackcore.repository.txt.TxtFile;
-import com.nutritrackcore.repository.txt.UserConditionRepositoryTxt;
-import com.nutritrackcore.repository.txt.UserRepositoryTxt;
+import com.nutritrackcore.repository.jdbc.ConnectionPool;
+import com.nutritrackcore.repository.jdbc.DatabaseConfig;
+import com.nutritrackcore.repository.jdbc.JdbcRepositories;
+import com.nutritrackcore.repository.txt.TxtRepositories;
+import com.nutritrackcore.services.AccountDeletionService;
+import com.nutritrackcore.services.AllergyService;
 import com.nutritrackcore.services.AuthenticationService;
 import com.nutritrackcore.services.BmiService;
+import com.nutritrackcore.services.CalorieRequirementCalculator;
+import com.nutritrackcore.services.ConditionRuleCatalog;
 import com.nutritrackcore.services.ConsumptionService;
 import com.nutritrackcore.services.DietPlanService;
 import com.nutritrackcore.services.ExerciseRoutineService;
 import com.nutritrackcore.services.ExerciseService;
 import com.nutritrackcore.services.FoodService;
 import com.nutritrackcore.services.MedicalConditionService;
+import com.nutritrackcore.services.MifflinStJeorCalculator;
 import com.nutritrackcore.services.PasswordHasher;
+import com.nutritrackcore.services.QueryService;
+import com.nutritrackcore.services.RoutineFollowUpService;
 import com.nutritrackcore.services.Sha256PasswordHasher;
+import com.nutritrackcore.services.UserProfileService;
 import com.nutritrackcore.services.UserService;
 import com.nutritrackcore.services.UserSession;
-import com.nutritrackcore.services.calculation.CalorieRequirementCalculator;
-import com.nutritrackcore.services.calculation.ConditionRuleCatalog;
-import com.nutritrackcore.services.calculation.MifflinStJeorCalculator;
 import com.nutritrackcore.ui.AppServices;
 import com.nutritrackcore.ui.MainWindow;
-import java.nio.file.Paths;
 
 /**
  * Raíz de composición: el único lugar donde se crean las implementaciones
- * concretas (repositorios .txt, cifrador, reglas, servicios) y se conectan
+ * concretas (repositorios, cifrador, reglas, servicios) y se conectan
  * entre sí.
  * <p>
- * Para pasar a base de datos solo se cambian aquí los {@code ...RepositoryTxt}
- * por sus versiones JDBC; nada más del proyecto se entera.
+ * Los repositorios salen de {@code db.properties}: con {@code persistencia=jdbc}
+ * se abre el pool de conexiones y se usan los repositorios JDBC; si no, los
+ * archivos .txt. Nada más del proyecto se entera del cambio. Al salir hay que
+ * llamar a {@link #close()} para cerrar el pool.
+ * <p>
+ * Los servicios que todavía no están en {@link AppServices} se exponen con
+ * sus propios getters.
  */
-public class ApplicationContext {
+public class ApplicationContext implements AutoCloseable {
 
     private final UserSession userSession;
+
+    /** Pool de conexiones; {@code null} cuando se usan archivos .txt. */
+    private final ConnectionPool connectionPool;
+
+    /** Los 17 repositorios, de la implementación elegida. */
+    private final Repositories repositories;
     private final AppServices services;
+
+    private final QueryService queryService;
+    private final UserProfileService userProfileService;
+    private final AllergyService allergyService;
+    private final RoutineFollowUpService followUpService;
+    private final AccountDeletionService accountDeletionService;
 
     /**
      * Crea todas las piezas de la aplicación.
@@ -59,28 +75,28 @@ public class ApplicationContext {
      * @throws PersistenceExceptions si no se pueden crear o abrir los archivos de datos
      */
     public ApplicationContext(String dataFolder) throws PersistenceExceptions {
-        // 1. Repositorios (.txt)
-        UserRepository userRepository = new UserRepositoryTxt(
-                txt(dataFolder, "users.txt", UserRepositoryTxt.HEADER));
-        BMIHistoryRepository bmiHistoryRepository = new BMIHistoryRepositoryTxt(
-                txt(dataFolder, "bmi_records.txt", BMIHistoryRepositoryTxt.HEADER));
-        MedicalConditionRepository conditionRepository = new MedicalConditionRepositoryTxt(
-                txt(dataFolder, "medical_conditions.txt", MedicalConditionRepositoryTxt.HEADER));
-        UserConditionRepository userConditionRepository = new UserConditionRepositoryTxt(
-                txt(dataFolder, "user_conditions.txt", UserConditionRepositoryTxt.HEADER));
-        FoodRepository foodRepository = new FoodRepositoryTxt(
-                txt(dataFolder, "foods.txt", FoodRepositoryTxt.HEADER));
-        ExerciseRepository exerciseRepository = new ExerciseRepositoryTxt(
-                txt(dataFolder, "exercises.txt", ExerciseRepositoryTxt.HEADER));
-        ConsumptionRecordRepository consumptionRepository = new ConsumptionRecordRepositoryTxt(
-                txt(dataFolder, "consumption_records.txt", ConsumptionRecordRepositoryTxt.HEADER));
-        DietPlanRepository dietPlanRepository = new DietPlanRepositoryTxt(
-                txt(dataFolder, "diet_plans.txt", DietPlanRepositoryTxt.PLANS_HEADER),
-                txt(dataFolder, "diet_plan_items.txt", DietPlanRepositoryTxt.LINES_HEADER));
-        ExerciseRoutineRepository routineRepository = new ExerciseRoutineRepositoryTxt(
-                txt(dataFolder, "exercise_routines.txt", ExerciseRoutineRepositoryTxt.ROUTINES_HEADER),
-                txt(dataFolder, "routine_exercises.txt", ExerciseRoutineRepositoryTxt.EXERCISES_HEADER),
-                txt(dataFolder, "routine_conditions.txt", ExerciseRoutineRepositoryTxt.CONDITIONS_HEADER));
+        // 1. Repositorios: PostgreSQL (con pool) o archivos .txt, según db.properties
+        DatabaseConfig config = DatabaseConfig.load();
+        Repositories repos;
+        if (config.useJdbc()) {
+            this.connectionPool = new ConnectionPool(config);
+            repos = JdbcRepositories.create(connectionPool.getDataSource());
+        } else {
+            this.connectionPool = null;
+            repos = TxtRepositories.create(dataFolder);
+        }
+        this.repositories = repos;
+
+        UserRepository userRepository = repos.users();
+        BMIHistoryRepository bmiHistoryRepository = repos.bmiHistory();
+        MedicalConditionRepository conditionRepository = repos.medicalConditions();
+        UserConditionRepository userConditionRepository = repos.userConditions();
+        FoodRepository foodRepository = repos.foods();
+        ExerciseRepository exerciseRepository = repos.exercises();
+        ConsumptionRecordRepository consumptionRepository = repos.consumptionRecords();
+        DietPlanRepository dietPlanRepository = repos.dietPlans();
+        ExerciseRoutineRepository routineRepository = repos.exerciseRoutines();
+        // Los demás repositorios se toman directo de repos al crear cada servicio.
 
         // 2. Seguridad, sesión y cálculo
         PasswordHasher passwordHasher = new Sha256PasswordHasher();
@@ -97,13 +113,29 @@ public class ApplicationContext {
                 conditionRepository, userConditionRepository, userRepository);
         FoodService foodService = new FoodService(foodRepository);
         ExerciseService exerciseService = new ExerciseService(exerciseRepository);
+        this.userProfileService = new UserProfileService(
+                repos.userProfiles(), userConditionRepository, userRepository);
+
         ConsumptionService consumptionService = new ConsumptionService(
-                consumptionRepository, foodRepository, userRepository);
+                consumptionRepository, repos.consumptionRecordFoods(), foodRepository, userRepository);
+        this.queryService = new QueryService(consumptionRepository, repos.consumptionRecordFoods(),
+                foodRepository, userRepository, userConditionRepository, bmiHistoryRepository, routineRepository);
+
         DietPlanService dietPlanService = new DietPlanService(dietPlanRepository, userRepository,
-                foodRepository, conditionService, calorieCalculator, ruleCatalog);
+                foodRepository, conditionService, calorieCalculator, ruleCatalog, repos.userProfiles(),
+                repos.allergies(), repos.userAllergies(), repos.allergyFoods(), repos.excludedFoods());
+        this.allergyService = new AllergyService(repos.allergies(), repos.userAllergies(),
+                userRepository, dietPlanService);
+
         ExerciseRoutineService routineService = new ExerciseRoutineService(routineRepository,
                 exerciseRepository, bmiHistoryRepository, dietPlanRepository, userRepository,
-                conditionService, ruleCatalog);
+                conditionService, ruleCatalog, repos.userProfiles());
+        this.followUpService = new RoutineFollowUpService(
+                repos.routineFollowUps(), routineRepository, routineService);
+
+        this.accountDeletionService = new AccountDeletionService(userRepository, bmiHistoryRepository,
+                userConditionRepository, consumptionRepository, dietPlanRepository, routineRepository,
+                repos.routineFollowUps(), repos.userProfiles(), repos.userAllergies(), repos.excludedFoods());
 
         this.services = new AppServices(userSession, authenticationService, userService, bmiService,
                 conditionService, foodService, exerciseService, consumptionService, dietPlanService,
@@ -129,12 +161,44 @@ public class ApplicationContext {
         return services;
     }
 
-    /** @return el servicio de registro e inicio de sesión */
-    public AuthenticationService getAuthenticationService() {
-        return services.authentication();
+    /** @return los 17 repositorios (.txt o JDBC, según la configuración) */
+    public Repositories getRepositories() {
+        return repositories;
     }
 
-    private static TxtFile txt(String folder, String name, String header) throws PersistenceExceptions {
-        return new TxtFile(Paths.get(folder, name).toString(), header);
+    /** @return consultas del planteamiento del problema */
+    public QueryService getQueryService() {
+        return queryService;
+    }
+
+    /** @return perfil de hábitos del usuario */
+    public UserProfileService getUserProfileService() {
+        return userProfileService;
+    }
+
+    /** @return alergias del usuario (corrige el plan activo al agregar una) */
+    public AllergyService getAllergyService() {
+        return allergyService;
+    }
+
+    /** @return seguimiento de la rutina y progresión de repeticiones */
+    public RoutineFollowUpService getFollowUpService() {
+        return followUpService;
+    }
+
+    /** @return borrado de la cuenta y todo lo que depende de ella */
+    public AccountDeletionService getAccountDeletionService() {
+        return accountDeletionService;
+    }
+
+    /**
+     * Cierra el pool de conexiones, si se está usando la base de datos. Se
+     * llama una vez, al salir de la aplicación.
+     */
+    @Override
+    public void close() {
+        if (connectionPool != null) {
+            connectionPool.close();
+        }
     }
 }
