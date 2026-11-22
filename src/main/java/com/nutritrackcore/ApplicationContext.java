@@ -15,33 +15,41 @@ import com.nutritrackcore.repository.jdbc.ConnectionPool;
 import com.nutritrackcore.repository.jdbc.DatabaseConfig;
 import com.nutritrackcore.repository.jdbc.JdbcRepositories;
 import com.nutritrackcore.repository.txt.TxtRepositories;
+import com.nutritrackcore.services.AccountDeletionService;
+import com.nutritrackcore.services.AllergyService;
 import com.nutritrackcore.services.AuthenticationService;
 import com.nutritrackcore.services.BmiService;
+import com.nutritrackcore.services.CalorieRequirementCalculator;
+import com.nutritrackcore.services.ConditionRuleCatalog;
 import com.nutritrackcore.services.ConsumptionService;
 import com.nutritrackcore.services.DietPlanService;
 import com.nutritrackcore.services.ExerciseRoutineService;
 import com.nutritrackcore.services.ExerciseService;
 import com.nutritrackcore.services.FoodService;
 import com.nutritrackcore.services.MedicalConditionService;
+import com.nutritrackcore.services.MifflinStJeorCalculator;
 import com.nutritrackcore.services.PasswordHasher;
+import com.nutritrackcore.services.QueryService;
+import com.nutritrackcore.services.RoutineFollowUpService;
 import com.nutritrackcore.services.Sha256PasswordHasher;
+import com.nutritrackcore.services.UserProfileService;
 import com.nutritrackcore.services.UserService;
 import com.nutritrackcore.services.UserSession;
-import com.nutritrackcore.services.calculation.CalorieRequirementCalculator;
-import com.nutritrackcore.services.calculation.ConditionRuleCatalog;
-import com.nutritrackcore.services.calculation.MifflinStJeorCalculator;
 import com.nutritrackcore.ui.AppServices;
 import com.nutritrackcore.ui.MainWindow;
 
 /**
  * Raíz de composición: el único lugar donde se crean las implementaciones
- * concretas (repositorios .txt, cifrador, reglas, servicios) y se conectan
+ * concretas (repositorios, cifrador, reglas, servicios) y se conectan
  * entre sí.
  * <p>
  * Los repositorios salen de {@code db.properties}: con {@code persistencia=jdbc}
  * se abre el pool de conexiones y se usan los repositorios JDBC; si no, los
  * archivos .txt. Nada más del proyecto se entera del cambio. Al salir hay que
  * llamar a {@link #close()} para cerrar el pool.
+ * <p>
+ * Los servicios que todavía no están en {@link AppServices} se exponen con
+ * sus propios getters.
  */
 public class ApplicationContext implements AutoCloseable {
 
@@ -53,6 +61,12 @@ public class ApplicationContext implements AutoCloseable {
     /** Los 17 repositorios, de la implementación elegida. */
     private final Repositories repositories;
     private final AppServices services;
+
+    private final QueryService queryService;
+    private final UserProfileService userProfileService;
+    private final AllergyService allergyService;
+    private final RoutineFollowUpService followUpService;
+    private final AccountDeletionService accountDeletionService;
 
     /**
      * Crea todas las piezas de la aplicación.
@@ -82,8 +96,7 @@ public class ApplicationContext implements AutoCloseable {
         ConsumptionRecordRepository consumptionRepository = repos.consumptionRecords();
         DietPlanRepository dietPlanRepository = repos.dietPlans();
         ExerciseRoutineRepository routineRepository = repos.exerciseRoutines();
-        // Los demás (alergias, perfil, reglas, seguimiento, detalle de consumo)
-        // quedan en getRepositories() para los servicios que los vayan a usar.
+        // Los demás repositorios se toman directo de repos al crear cada servicio.
 
         // 2. Seguridad, sesión y cálculo
         PasswordHasher passwordHasher = new Sha256PasswordHasher();
@@ -100,13 +113,29 @@ public class ApplicationContext implements AutoCloseable {
                 conditionRepository, userConditionRepository, userRepository);
         FoodService foodService = new FoodService(foodRepository);
         ExerciseService exerciseService = new ExerciseService(exerciseRepository);
+        this.userProfileService = new UserProfileService(
+                repos.userProfiles(), userConditionRepository, userRepository);
+
         ConsumptionService consumptionService = new ConsumptionService(
-                consumptionRepository, foodRepository, userRepository);
+                consumptionRepository, repos.consumptionRecordFoods(), foodRepository, userRepository);
+        this.queryService = new QueryService(consumptionRepository, repos.consumptionRecordFoods(),
+                foodRepository, userRepository, userConditionRepository, bmiHistoryRepository, routineRepository);
+
         DietPlanService dietPlanService = new DietPlanService(dietPlanRepository, userRepository,
-                foodRepository, conditionService, calorieCalculator, ruleCatalog);
+                foodRepository, conditionService, calorieCalculator, ruleCatalog, repos.userProfiles(),
+                repos.allergies(), repos.userAllergies(), repos.allergyFoods(), repos.excludedFoods());
+        this.allergyService = new AllergyService(repos.allergies(), repos.userAllergies(),
+                userRepository, dietPlanService);
+
         ExerciseRoutineService routineService = new ExerciseRoutineService(routineRepository,
                 exerciseRepository, bmiHistoryRepository, dietPlanRepository, userRepository,
-                conditionService, ruleCatalog);
+                conditionService, ruleCatalog, repos.userProfiles());
+        this.followUpService = new RoutineFollowUpService(
+                repos.routineFollowUps(), routineRepository, routineService);
+
+        this.accountDeletionService = new AccountDeletionService(userRepository, bmiHistoryRepository,
+                userConditionRepository, consumptionRepository, dietPlanRepository, routineRepository,
+                repos.routineFollowUps(), repos.userProfiles(), repos.userAllergies(), repos.excludedFoods());
 
         this.services = new AppServices(userSession, authenticationService, userService, bmiService,
                 conditionService, foodService, exerciseService, consumptionService, dietPlanService,
@@ -135,6 +164,31 @@ public class ApplicationContext implements AutoCloseable {
     /** @return los 17 repositorios (.txt o JDBC, según la configuración) */
     public Repositories getRepositories() {
         return repositories;
+    }
+
+    /** @return consultas del planteamiento del problema */
+    public QueryService getQueryService() {
+        return queryService;
+    }
+
+    /** @return perfil de hábitos del usuario */
+    public UserProfileService getUserProfileService() {
+        return userProfileService;
+    }
+
+    /** @return alergias del usuario (corrige el plan activo al agregar una) */
+    public AllergyService getAllergyService() {
+        return allergyService;
+    }
+
+    /** @return seguimiento de la rutina y progresión de repeticiones */
+    public RoutineFollowUpService getFollowUpService() {
+        return followUpService;
+    }
+
+    /** @return borrado de la cuenta y todo lo que depende de ella */
+    public AccountDeletionService getAccountDeletionService() {
+        return accountDeletionService;
     }
 
     /**
