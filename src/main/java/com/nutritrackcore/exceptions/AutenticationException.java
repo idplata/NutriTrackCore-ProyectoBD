@@ -8,7 +8,7 @@ package com.nutritrackcore.exceptions;
  *
  * @author irind
  */
-public class AutenticationException extends Exception{
+public class AutenticationException extends NutriTrackException{
      public AutenticationException(String message) {
         super(message);
     }

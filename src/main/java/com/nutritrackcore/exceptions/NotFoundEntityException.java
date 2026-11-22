@@ -8,7 +8,7 @@ package com.nutritrackcore.exceptions;
  *
  * @author irind
  */
-public class NotFoundEntityException extends Exception {
+public class NotFoundEntityException extends NutriTrackException {
     
     public NotFoundEntityException(String message) {
         super(message);

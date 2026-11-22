@@ -8,7 +8,7 @@ package com.nutritrackcore.exceptions;
  *
  * @author irind
  */
-public class BussinesRuleException extends Exception {
+public class BussinesRuleException extends NutriTrackException {
     public BussinesRuleException(String message) {
         super(message);
     }
