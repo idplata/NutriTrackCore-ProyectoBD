@@ -1,0 +1,6 @@
+#id_rutina|id_usuario|fecha_generacion|nivel_intensidad|activa|id_historial_base|id_plan_dieta
+1|1|2026-11-22|HIGH|false|1|1
+2|1|2026-11-22|MODERATE|true|2|3
+3|2|2026-11-22|MODERATE|false|3|7
+4|2|2026-11-22|MODERATE|false|3|7
+5|2|2026-11-22|MODERATE|true|3|7

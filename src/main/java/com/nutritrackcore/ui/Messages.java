@@ -33,7 +33,11 @@ public final class Messages {
         if (error instanceof PersistenceExceptions) {
             title = "Error al guardar o leer los datos";
             message = "No se pudieron leer o guardar los datos.\n" + safe(error.getMessage());
-        } else if (error instanceof IllegalArgumentException || error instanceof IllegalStateException) {
+        } else if (error instanceof IllegalArgumentException || error instanceof IllegalStateException
+                || error instanceof com.nutritrackcore.exceptions.ValidationException
+                || error instanceof com.nutritrackcore.exceptions.BussinesRuleException
+                || error instanceof com.nutritrackcore.exceptions.NotFoundEntityException
+                || error instanceof com.nutritrackcore.exceptions.AutenticationException) {
             title = "Revisa los datos";
             message = safe(error.getMessage());
         } else {

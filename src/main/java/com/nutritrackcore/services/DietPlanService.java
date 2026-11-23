@@ -49,6 +49,9 @@ public class DietPlanService {
     private static final int DEFAULT_MEALS = 4;
 
     /** Comidas y reparto de kcal según la cantidad de comidas al día (1 a 4, como la base de datos). */
+    /** Desde cuántos gramos de proteína por 100 kcal un alimento cuenta como "proteína" del plato. */
+    private static final double PROTEIN_PER_100_KCAL = 8.0;
+
     private static final Map<Integer, MealTime[]> MEALS_BY_COUNT = Map.of(
             1, new MealTime[] {MealTime.LUNCH},
             2, new MealTime[] {MealTime.LUNCH, MealTime.DINNER},
@@ -195,7 +198,7 @@ public class DietPlanService {
             }
         }
         BmiCategory category = BmiResult.calculate(user.getWeightKg(), user.getHeightCm()).getCategory();
-        if (category == BmiCategory.OVERWEIGHT) {
+        if (category == BmiCategory.OVERWEIGHT || category == BmiCategory.OBESITY) {   // obesidad: mismas precauciones
             Optional<ConditionRule> overweight = ruleCatalog.findByName(OverweightRule.NAME);
             if (overweight.isPresent() && !rules.contains(overweight.get())) {
                 rules.add(overweight.get());
@@ -263,19 +266,44 @@ public class DietPlanService {
         }
         MealTime[] mealTimes = MEALS_BY_COUNT.get(meals);
         double[] shares = SHARES_BY_COUNT.get(meals);
-        int foodsPerMeal = candidates.size() >= 2 * mealTimes.length ? 2 : 1;
-        int mealsUsed = Math.min(mealTimes.length, candidates.size() / foodsPerMeal);
-        double shareTotal = 0;
-        for (int m = 0; m < mealsUsed; m++) {
-            shareTotal += shares[m];
+
+        // Plato balanceado por comida: proteína, base (arroz/cereal/tubérculo) y fruta o verdura.
+        // Se rota dentro de cada grupo para no repetir y el día cambia el punto de partida.
+        List<Food> proteins = new ArrayList<>();
+        List<Food> bases = new ArrayList<>();
+        List<Food> plants = new ArrayList<>();
+        for (Food food : candidates) {
+            Food.FoodPyramid group = food.getGrupe();
+            if (group == Food.FoodPyramid.FRUTAS_Y_VERDURAS) {
+                plants.add(food);
+            } else if (group == Food.FoodPyramid.ARROZ || group == Food.FoodPyramid.CARBOHIDRATOS) {
+                bases.add(food);
+            }
+            if (group != Food.FoodPyramid.DULCES && group != Food.FoodPyramid.FRUTAS_Y_VERDURAS
+                    && proteinDensity(food) >= PROTEIN_PER_100_KCAL) {
+                proteins.add(food);
+            }
         }
+        proteins.sort(Comparator.comparingDouble(DietPlanService::proteinDensity).reversed());
+        bases.removeAll(proteins);
+        int offset = LocalDate.now().getDayOfYear();
+
         List<DietPlanFood> lines = new ArrayList<>();
-        int cursor = 0;
-        for (int m = 0; m < mealsUsed; m++) {
-            double kcalPerFood = target * (shares[m] / shareTotal) / foodsPerMeal;
-            for (int k = 0; k < foodsPerMeal; k++) {
-                Food food = candidates.get(cursor++);
-                double grams = kcalPerFood / food.getCalories100g() * 100.0;
+        Set<Integer> usedToday = new HashSet<>();
+        for (int m = 0; m < mealTimes.length; m++) {
+            double mealKcal = target * shares[m];
+            List<Food> plate = new ArrayList<>();
+            List<Double> weights = new ArrayList<>();
+            addFromSlot(plate, weights, proteins, offset + m, usedToday, 0.40);
+            addFromSlot(plate, weights, bases, offset + m, usedToday, 0.40);
+            addFromSlot(plate, weights, plants, offset + m, usedToday, 0.20);
+            if (plate.isEmpty()) {                 // ningún grupo útil: se toma cualquiera permitido
+                addFromSlot(plate, weights, candidates, offset + m, usedToday, 1.0);
+            }
+            double weightTotal = weights.stream().mapToDouble(Double::doubleValue).sum();
+            for (int k = 0; k < plate.size(); k++) {
+                Food food = plate.get(k);
+                double grams = mealKcal * (weights.get(k) / weightTotal) / food.getCalories100g() * 100.0;
                 for (ConditionRule rule : rules) {
                     grams *= rule.groupFactor(food.getGrupe());      // límites por grupo de cada condición
                 }
@@ -317,6 +345,40 @@ public class DietPlanService {
         ParameterChecks.requireId(userId, "identificador del usuario");
         return userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundEntityException("No existe un usuario con el identificador " + userId + "."));
+    }
+
+    /** Gramos de proteína por cada 100 kcal del alimento. */
+    private static double proteinDensity(Food food) {
+        Double protein = food.getProteins100g();
+        return food.getCalories100g() <= 0 || protein == null ? 0 : protein * 100.0 / food.getCalories100g();
+    }
+
+    /**
+     * Agrega al plato el siguiente alimento del grupo que no se haya usado hoy
+     * (si todos se usaron, repite). Si el grupo está vacío no agrega nada.
+     */
+    private static void addFromSlot(List<Food> plate, List<Double> weights, List<Food> group, int start,
+                                    Set<Integer> usedToday, double weight) {
+        if (group.isEmpty()) {
+            return;
+        }
+        Food chosen = null;
+        for (int i = 0; i < group.size(); i++) {
+            Food food = group.get(Math.floorMod(start * 3 + i, group.size()));
+            if (!usedToday.contains(food.getFoodId()) && !plate.contains(food)) {
+                chosen = food;
+                break;
+            }
+        }
+        if (chosen == null) {
+            chosen = group.get(Math.floorMod(start, group.size()));
+            if (plate.contains(chosen)) {
+                return;
+            }
+        }
+        usedToday.add(chosen.getFoodId());
+        plate.add(chosen);
+        weights.add(weight);
     }
 
     private static double clamp(double grams) {

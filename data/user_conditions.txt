@@ -1,0 +1,2 @@
+#id_usuario|id_condicion|fecha_diagnostico|observaciones
+1|3||

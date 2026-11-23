@@ -1,5 +1,6 @@
 package com.nutritrackcore.ui;
 
+import com.nutritrackcore.exceptions.NutriTrackException;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.nutritrackcore.exceptions.PersistenceExceptions;
 import com.nutritrackcore.model.MedicalCondition;
@@ -42,6 +43,8 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
     private final AppServices services;
     private final Consumer<String> navigate;
     private final JPanel body = new JPanel(new GridBagLayout());
+    private final RoundedBox bmiBanner = new RoundedBox(new Color(0xFFF4E5));
+    private final javax.swing.JLabel bmiText = ScreenKit.label(" ", Theme.font(Font.PLAIN, 13), new Color(0x7A3E00));
 
     /**
      * Crea la pantalla.
@@ -54,8 +57,17 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
         this.services = services;
         this.navigate = navigate;
         setBorder(BorderFactory.createEmptyBorder(32, 36, 32, 36));
-        add(ScreenKit.header("Condiciones médicas",
-                "Elige las que tienes. Las usamos para ajustar tu dieta y tu rutina.", null), BorderLayout.NORTH);
+        JPanel north = ScreenKit.column();
+        north.add(ScreenKit.header("Condiciones médicas",
+                "Elige las que tienes. Las usamos para ajustar tu dieta y tu rutina.", null));
+        bmiBanner.setLayout(new BorderLayout(12, 0));
+        bmiBanner.setBorder(BorderFactory.createEmptyBorder(12, 18, 12, 18));
+        bmiBanner.add(new javax.swing.JLabel(Icons.alert(20, new Color(0x7A3E00))), BorderLayout.WEST);
+        bmiBanner.add(bmiText, BorderLayout.CENTER);
+        bmiBanner.setVisible(false);
+        north.add(Box.createVerticalStrut(16));
+        north.add(ScreenKit.fixedHeight(bmiBanner));
+        add(north, BorderLayout.NORTH);
         body.setOpaque(false);
         add(body, BorderLayout.CENTER);
     }
@@ -66,8 +78,16 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
         if (!services.session().hasSession()) {
             return;
         }
-        int userId = services.session().getCurrentUser().getIdUser();
+        int userId = services.currentUser().getIdUser();
         try {
+            bmiBanner.setVisible(false);
+            com.nutritrackcore.services.BmiResult bmi = services.bmi().getCurrentBmi(userId);
+            if (bmi.getValue() >= com.nutritrackcore.services.BmiCategory.OVERWEIGHT.getMin()) {
+                bmiText.setText("Tu IMC es " + ScreenKit.decimal(bmi.getValue()) + " ("
+                        + bmi.getCategory().getDisplayName().toLowerCase() + "). Ya lo tenemos en cuenta: tu dieta "
+                        + "reduce calorías y tu rutina es de bajo impacto, sin que lo marques.");
+                bmiBanner.setVisible(true);
+            }
             List<MedicalCondition> catalog = services.conditions().listCatalog();
             List<MedicalCondition> mine = services.conditions().listByUser(userId);
             List<UserCondition> assignments = services.conditions().listAssignments(userId);
@@ -89,7 +109,7 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
             c.weightx = 1;
             c.insets = new Insets(0, 0, 0, 0);
             body.add(createMineCard(mine, byId), c);
-        } catch (PersistenceExceptions | IllegalArgumentException | IllegalStateException ex) {
+        } catch (NutriTrackException | IllegalArgumentException | IllegalStateException ex) {
             Messages.showError(this, ex);
         }
         body.revalidate();
@@ -104,7 +124,14 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.add(ScreenKit.left(ScreenKit.label("Elige tus condiciones", Theme.font("SemiBold", 18), Theme.TEXT)));
         card.add(Box.createVerticalStrut(2));
-        card.add(ScreenKit.left(ScreenKit.label("Pulsa una para agregarla o quitarla.",
+        String bmi = "";
+        try {
+            bmi = ScreenKit.decimal(services.bmi().getCurrentBmi(services.currentUser().getIdUser()).getValue());
+        } catch (NutriTrackException | IllegalStateException ignored) {
+            // sin IMC disponible se muestra solo la instrucción
+        }
+        card.add(ScreenKit.left(ScreenKit.label("<html>Pulsa una para agregarla o quitarla."
+                + (bmi.isEmpty() ? "" : " Tu IMC actual: <b>" + bmi + "</b>") + "</html>",
                 Theme.font(Font.PLAIN, 13), ScreenKit.NOTE)));
         card.add(Box.createVerticalStrut(14));
 
@@ -128,7 +155,13 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
             });
             grid.add(tile);
         }
-        card.add(ScreenKit.fixedHeight(grid));
+        // Con el catálogo completo la lista es larga: se desplaza dentro de la tarjeta.
+        ScreenKit.ScrollColumn list = new ScreenKit.ScrollColumn();
+        list.add(grid);
+        javax.swing.JScrollPane scroll = ScreenKit.transparentScroll(list);
+        scroll.setAlignmentX(LEFT_ALIGNMENT);
+        scroll.setPreferredSize(new Dimension(400, 300));
+        card.add(scroll);
         card.add(Box.createVerticalStrut(14));
 
         JButton none = FormKit.secondaryButton("No tengo ninguna condición", null, 10);
@@ -140,7 +173,6 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
         none.setPreferredSize(new Dimension(200, 48));
         none.addActionListener(e -> removeAll(mine));
         card.add(ScreenKit.left(none));
-        card.add(Box.createVerticalGlue());
         return card;
     }
 
@@ -203,7 +235,7 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
         note.setLayout(new BoxLayout(note, BoxLayout.Y_AXIS));
         note.setBorder(BorderFactory.createEmptyBorder(12, 14, 10, 14));
         note.add(ScreenKit.left(ScreenKit.wrapped("Si cambias tus condiciones, genera de nuevo tu dieta y tu rutina "
-                + "para que se ajusten.", 250, Theme.font(Font.PLAIN, 13), new Color(0x7A3E00))));
+                + "para que se ajusten.", 300, Theme.font(Font.PLAIN, 13), new Color(0x7A3E00))));
         note.add(Box.createVerticalStrut(4));
         JPanel links = new JPanel(new FlowLayout(FlowLayout.LEFT, 14, 0));
         links.setOpaque(false);
@@ -225,7 +257,7 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
         if (data == null) {
             return;
         }
-        int userId = services.session().getCurrentUser().getIdUser();
+        int userId = services.currentUser().getIdUser();
         try {
             if (data.getDiagnosisDate() == null) {
                 services.conditions().assign(userId, condition.getConditionId());
@@ -233,7 +265,7 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
                 services.conditions().assign(userId, condition.getConditionId(), data.getDiagnosisDate(),
                         data.getNotes());
             }
-        } catch (PersistenceExceptions | IllegalArgumentException | IllegalStateException ex) {
+        } catch (NutriTrackException | IllegalArgumentException | IllegalStateException ex) {
             Messages.showError(this, ex);
         }
         refresh();
@@ -244,8 +276,8 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
             return;
         }
         try {
-            services.conditions().remove(services.session().getCurrentUser().getIdUser(), conditionId);
-        } catch (PersistenceExceptions | IllegalArgumentException | IllegalStateException ex) {
+            services.conditions().remove(services.currentUser().getIdUser(), conditionId);
+        } catch (NutriTrackException | IllegalArgumentException | IllegalStateException ex) {
             Messages.showError(this, ex);
         }
         refresh();
@@ -253,18 +285,22 @@ public class ConditionsPanel extends ScreenKit.BlueBackground implements Refresh
 
     private void removeAll(Map<Integer, UserCondition> mine) {
         if (mine.isEmpty()) {
-            Messages.showInfo(this, "Listo. No tienes condiciones registradas.");
+            HabitsPanel.openFrom(AppShellPanel.CONDITIONS);
+            navigate.accept(AppShellPanel.HABITS);   // sin condiciones: el usuario llena sus hábitos
             return;
         }
         if (!Messages.confirm(this, "¿Quitar todas tus condiciones médicas?")) {
             return;
         }
-        int userId = services.session().getCurrentUser().getIdUser();
+        int userId = services.currentUser().getIdUser();
         try {
             for (Integer conditionId : mine.keySet()) {
                 services.conditions().remove(userId, conditionId);
             }
-        } catch (PersistenceExceptions | IllegalArgumentException | IllegalStateException ex) {
+            HabitsPanel.openFrom(AppShellPanel.CONDITIONS);
+            navigate.accept(AppShellPanel.HABITS);
+            return;
+        } catch (NutriTrackException | IllegalArgumentException | IllegalStateException ex) {
             Messages.showError(this, ex);
         }
         refresh();

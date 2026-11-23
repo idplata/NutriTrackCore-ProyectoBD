@@ -1,0 +1,3 @@
+#id_usuario|nivel_actividad|experiencia_ejercicio|objetivo_peso|dias_entrenamiento_semana|minutos_por_sesion|lugar_entrenamiento|tipo_dieta|comidas_al_dia|fecha_actualizacion
+1|muy_activo|avanzado|bajar|5|60|gimnasio|VEGETARIANA|4|2026-11-22
+2|ligero|principiante|mantener|3|45|casa|OMNIVORA|4|2026-11-22

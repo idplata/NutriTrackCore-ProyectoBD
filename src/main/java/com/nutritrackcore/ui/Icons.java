@@ -130,6 +130,96 @@ public final class Icons {
         return new LineIcon(size, color, 2.4f, List.of(polyline(20, 6, 9, 17, 4, 12)));
     }
 
+    /** Cámara de fotos. */
+    public static Icon camera(int size, Color color) {
+        return new LineIcon(size, color, 1.8f, List.of(
+                new RoundRectangle2D.Double(2, 7, 20, 14, 4, 4),
+                polyline(8, 7, 9.5, 4, 14.5, 4, 16, 7),
+                new java.awt.geom.Ellipse2D.Double(8, 9.5, 8, 8)));
+    }
+
+    /** Lupa (buscar). */
+    public static Icon search(int size, Color color) {
+        return new LineIcon(size, color, 2f, List.of(
+                new java.awt.geom.Ellipse2D.Double(4, 4, 13, 13),
+                new Line2D.Double(15.5, 15.5, 21, 21)));
+    }
+
+    /** Papelera (eliminar). */
+    public static Icon trash(int size, Color color) {
+        return new LineIcon(size, color, 1.8f, List.of(
+                new Line2D.Double(3, 6, 21, 6),
+                polyline(8, 6, 8, 3, 16, 3, 16, 6),
+                polyline(5, 6, 6, 21, 18, 21, 19, 6),
+                new Line2D.Double(10, 10, 10, 17),
+                new Line2D.Double(14, 10, 14, 17)));
+    }
+
+    /** Lápiz (editar). */
+    public static Icon pencil(int size, Color color) {
+        return new LineIcon(size, color, 1.8f, List.of(
+                polyline(4, 20, 4, 16, 16, 4, 20, 8, 8, 20, 4, 20),
+                new Line2D.Double(13, 7, 17, 11)));
+    }
+
+    /** Llama (racha de días entrenados). */
+    public static Icon flame(int size, Color color) {
+        Path2D p = new Path2D.Double();
+        p.moveTo(12, 2);
+        p.curveTo(13, 7, 19, 9, 19, 15);
+        p.curveTo(19, 19, 16, 22, 12, 22);
+        p.curveTo(8, 22, 5, 19, 5, 15);
+        p.curveTo(5, 11, 8, 10, 9, 7);
+        p.curveTo(10, 9, 11, 10, 11, 12);
+        p.curveTo(12, 9, 12, 5, 12, 2);
+        p.closePath();
+        return new LineIcon(size, color, 1.8f, List.of(p));
+    }
+
+    /** Flecha hacia abajo (acordeón cerrado) o hacia arriba (abierto). */
+    public static Icon chevron(int size, Color color, boolean up) {
+        return new LineIcon(size, color, 2f, List.of(up ? polyline(6, 15, 12, 9, 18, 15) : polyline(6, 9, 12, 15, 18, 9)));
+    }
+
+    /** Diana (objetivo). */
+    public static Icon target(int size, Color color) {
+        return new LineIcon(size, color, 1.8f, List.of(
+                new java.awt.geom.Ellipse2D.Double(3, 3, 18, 18),
+                new java.awt.geom.Ellipse2D.Double(7, 7, 10, 10),
+                new java.awt.geom.Ellipse2D.Double(10.5, 10.5, 3, 3)));
+    }
+
+    /** Barras verticales (medidas, calorías por día). */
+    public static Icon bars(int size, Color color) {
+        return new LineIcon(size, color, 1.8f, List.of(
+                new Line2D.Double(3, 21, 21, 21),
+                new Line2D.Double(7, 17, 7, 11),
+                new Line2D.Double(12, 17, 12, 6),
+                new Line2D.Double(17, 17, 17, 13)));
+    }
+
+    /** Círculo tachado (prohibido / excluido). */
+    public static Icon ban(int size, Color color) {
+        return new LineIcon(size, color, 1.8f, List.of(
+                new java.awt.geom.Ellipse2D.Double(3, 3, 18, 18),
+                new Line2D.Double(5.6, 5.6, 18.4, 18.4)));
+    }
+
+    /** Gráfico de torta (macronutrientes). */
+    public static Icon pie(int size, Color color) {
+        return new LineIcon(size, color, 1.8f, List.of(
+                new java.awt.geom.Arc2D.Double(3, 3, 18, 18, 90, 270, java.awt.geom.Arc2D.OPEN),
+                polyline(12, 3, 12, 12, 21, 12),
+                polyline(14, 3, 14, 10, 21, 10)));
+    }
+
+    /** Línea que sube (tendencia). */
+    public static Icon trendUp(int size, Color color) {
+        return new LineIcon(size, color, 1.8f, List.of(
+                polyline(3, 17, 9, 11, 13, 15, 21, 7),
+                polyline(15, 7, 21, 7, 21, 13)));
+    }
+
     /** Calendario. */
     public static Icon calendar(int size, Color color) {
         return new LineIcon(size, color, 1.8f, List.of(

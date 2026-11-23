@@ -1,0 +1,1 @@
+#id_rutina|id_condicion|restriccion_aplicada
