@@ -1,9 +1,9 @@
-# Librerías del servicio de visión real (incluye las del stub).
-# PyTorch en versión CPU (más liviana; no requiere tarjeta gráfica).
+# Servicio de visión real (solo CPU). Python 3.14.
 --extra-index-url https://download.pytorch.org/whl/cpu
 -r requirements-stub.txt
-torch
-torchvision
-open_clip_torch
-transformers
+torch>=2.9
+torchvision>=0.24
+open_clip_torch>=3.1
+transformers>=4.56
+psycopg[binary]>=3.2.10
 segment-anything @ git+https://github.com/facebookresearch/segment-anything.git
