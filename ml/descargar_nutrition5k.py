@@ -4,18 +4,25 @@ Descarga la parte de Nutrition5k que necesita NutriTrack Core:
   2. Una muestra de fotos cenitales (desde arriba) de platos.
   3. Dos CSV limpios: dishes.csv y dish_ingredients.csv.
 
-Uso:
-    python descargar_nutrition5k.py --destino ml/data/nutrition5k --platos 300
+Uso (dentro de la carpeta ml):
+    .venv\\Scripts\\python.exe descargar_nutrition5k.py --platos 1000
 
-No requiere Google Cloud SDK: usa las URL públicas del bucket por HTTPS.
+Se puede cortar y volver a correr: lo ya descargado no se baja otra vez.
 """
 import argparse
 import csv
 import random
 import sys
+import time 
 import urllib.error
 import urllib.request
 from pathlib import Path
+
+
+# Carpeta ml (los valores por defecto no dependen de dónde se corra el script)
+ML_DIR = Path(__file__).resolve().parent
+MAX_PLATOS = 1000
+REINTENTOS = 3
 
 # Raíz pública del bucket de Nutrition5k
 BASE = "https://storage.googleapis.com/nutrition5k_dataset/nutrition5k_dataset"
@@ -36,14 +43,23 @@ def descargar(url: str, destino: Path) -> bool:
     if destino.exists() and destino.stat().st_size > 0:
         return True  # ya descargado: permite reanudar
     destino.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        with urllib.request.urlopen(url, timeout=60) as resp, open(destino, "wb") as f:
-            f.write(resp.read())
-        return True
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            return False
-        raise
+    temporal = destino.with_suffix(destino.suffix + ".part")
+    for intento in range(1, REINTENTOS + 1):
+        try:
+            with urllib.request.urlopen(url, timeout=60) as resp, open(temporal, "wb") as f:
+                f.write(resp.read())
+            temporal.replace(destino)   # solo queda el archivo si llegó completo
+            return True
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                return False
+            error = e
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+            error = e
+        print(f"    reintento {intento}/{REINTENTOS} ({error})")
+        time.sleep(2 * intento)
+    temporal.unlink(missing_ok=True)
+    raise RuntimeError(f"No se pudo descargar {url}: {error}")
 
 
 def leer_platos(ruta_csv: Path):
@@ -94,12 +110,13 @@ def escribir_csv(ruta: Path, filas: list):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--destino", default="ml/data/nutrition5k")
-    p.add_argument("--platos", type=int, default=300, help="cuántas fotos intentar bajar")
+    p.add_argument("--destino", default=str(ML_DIR / "data" / "nutrition5k"))
+    p.add_argument("--platos", type=int, default=MAX_PLATOS, help=f"cuántas fotos bajar (máximo {MAX_PLATOS})")
     p.add_argument("--semilla", type=int, default=42)
     args = p.parse_args()
-
+    args.platos = max(1, min(args.platos, MAX_PLATOS))
     destino = Path(args.destino)
+
     print(f"Destino: {destino.resolve()}")
 
     # Paso 1: metadatos
@@ -121,7 +138,7 @@ def main():
 
     # Paso 3: muestra de fotos cenitales (no todos los platos tienen foto cenital)
     random.seed(args.semilla)
-    candidatos = [pl["dish_id"] for pl in platos]
+    candidatos = [pl["dish_id"] for pl in platos if float(pl["total_mass_g"] or 0) > 0]
     random.shuffle(candidatos)
     bajadas, intentos = 0, 0
     con_foto = []
@@ -130,7 +147,12 @@ def main():
             break
         intentos += 1
         rel = RUTA_FOTO.format(dish_id=dish_id)
-        if descargar(f"{BASE}/{rel}", destino / "overhead" / f"{dish_id}.png"):
+        try:
+            ok = descargar(f"{BASE}/{rel}", destino / "overhead" / f"{dish_id}.png")
+        except RuntimeError as e:
+            print(f"  se salta {dish_id}: {e}")
+            continue
+        if ok:
             bajadas += 1
             con_foto.append({"dish_id": dish_id})
             if bajadas % 25 == 0:
