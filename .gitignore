@@ -13,3 +13,8 @@ ml/*.spec
 ml/vision_service/
 __pycache__/
 desktop.ini
+ml/index/
+ml/catalog.csv
+ml/n5k_map.csv
+ml/weights/*.part
+ml/data/**/*.part
