@@ -12,8 +12,8 @@ import javax.swing.JPanel;
  * Estructura de la aplicación después de iniciar sesión: el
  * {@link SidebarPanel} a la izquierda y, a la derecha, la sección elegida.
  * <p>
- * Las secciones que todavía no están construidas muestran un
- * {@link PlaceholderPanel}; se reemplazan aquí a medida que se terminen.
+ * Todas las secciones del menú están construidas; además existe la sección
+ * oculta {@link #HABITS} (formulario de hábitos).
  */
 public class AppShellPanel extends JPanel {
 
@@ -31,10 +31,13 @@ public class AppShellPanel extends JPanel {
     public static final String ROUTINE = "routine";
     /** Sección Mi progreso. */
     public static final String PROGRESS = "progress";
+    /** Formulario de hábitos (no aparece en el menú lateral). */
+    public static final String HABITS = "habits";
 
     private final CardLayout sections = new CardLayout();
     private final JPanel content = new JPanel(sections);
     private final SidebarPanel sidebar;
+    private final AppServices services;
     private final HomePanel homePanel;
     private final Map<String, JComponent> screens = new HashMap<>();
 
@@ -43,19 +46,22 @@ public class AppShellPanel extends JPanel {
      *
      * @param services servicios de la aplicación
      * @param onLogout qué hacer al cerrar sesión
+     * @param onAccountDeleted qué hacer después de eliminar la cuenta
      */
-    public AppShellPanel(AppServices services, Runnable onLogout) {
+    public AppShellPanel(AppServices services, Runnable onLogout, Runnable onAccountDeleted) {
         setLayout(new BorderLayout());
+        this.services = services;
         sidebar = new SidebarPanel(this::showSection, onLogout);
         homePanel = new HomePanel(services, this::showSection);
 
         addSection(HOME, homePanel);
-        addSection(PROFILE, placeholder("Mi perfil"));
+        addSection(PROFILE, new ProfilePanel(services, this::showSection, onAccountDeleted));
         addSection(CONDITIONS, new ConditionsPanel(services, this::showSection));
-        addSection(CONSUMPTION, placeholder("Registrar consumo"));
+        addSection(CONSUMPTION, new ConsumptionPanel(services, this::showSection));
         addSection(DIET, new DietPanel(services, this::showSection));
         addSection(ROUTINE, new RoutinePanel(services, this::showSection));
-        addSection(PROGRESS, placeholder("Mi progreso"));
+        addSection(PROGRESS, new ProgressPanel(services, this::showSection));
+        addSection(HABITS, new HabitsPanel(services, this::showSection));
 
         add(sidebar, BorderLayout.WEST);
         add(content, BorderLayout.CENTER);
@@ -72,11 +78,30 @@ public class AppShellPanel extends JPanel {
     }
 
     /**
+     * Quien ya dijo que no tiene condiciones (no tiene ninguna y ya llenó sus
+     * hábitos) no ve "Condiciones médicas" en el menú.
+     */
+    private void updateMenu() {
+        boolean show = true;
+        try {
+            if (services.session().hasSession()) {
+                int userId = services.currentUser().getIdUser();
+                show = !services.conditions().listByUser(userId).isEmpty()
+                        || services.profiles().find(userId).isEmpty();
+            }
+        } catch (com.nutritrackcore.exceptions.NutriTrackException | IllegalStateException ignored) {
+            // si no se puede consultar, se deja visible
+        }
+        sidebar.setSectionVisible(CONDITIONS, show);
+    }
+
+    /**
      * Muestra una sección y la marca en el menú.
      *
      * @param section nombre de la sección (constantes de esta clase)
      */
     public void showSection(String section) {
+        updateMenu();
         sidebar.select(section);
         if (screens.get(section) instanceof Refreshable screen) {
             screen.refresh();                      // cada pantalla relee sus datos al abrirse
@@ -87,10 +112,5 @@ public class AppShellPanel extends JPanel {
     private void addSection(String name, JComponent screen) {
         screens.put(name, screen);
         content.add(screen, name);
-    }
-
-    private PlaceholderPanel placeholder(String title) {
-        return new PlaceholderPanel(title, "Esta sección está en construcción.", "Volver al inicio",
-                () -> showSection(HOME));
     }
 }

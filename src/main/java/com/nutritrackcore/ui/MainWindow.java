@@ -51,7 +51,7 @@ public class MainWindow extends JFrame {
             registrationPanel.reset();
             showPanel(REGISTER);
         });
-        appShell = new AppShellPanel(services, this::logout);
+        appShell = new AppShellPanel(services, this::logout, this::afterAccountDeleted);
 
         content.add(loginPanel, LOGIN);
         content.add(registrationPanel, REGISTER);
@@ -82,6 +82,14 @@ public class MainWindow extends JFrame {
     private void onLoggedIn(User user) {
         appShell.open(user);
         showPanel(APP);
+    }
+
+    /** Tras eliminar la cuenta: cierra la sesión sin preguntar y vuelve al inicio de sesión. */
+    private void afterAccountDeleted() {
+        services.authentication().logout();
+        showPanel(LOGIN);
+        loginPanel.reset();
+        Messages.showInfo(this, "Tu cuenta fue eliminada.");
     }
 
     private void logout() {
