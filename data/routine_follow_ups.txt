@@ -1,0 +1,3 @@
+#id_seguimiento|id_rutina|fecha_sesion|duracion_min|completada|observaciones
+1|1|2026-11-22|30|true|
+2|5|2026-11-22|30|true|

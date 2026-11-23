@@ -1,0 +1,2 @@
+#id_registro|id_usuario|kcal_estimadas|nivel_estimacion|fecha_hora
+1|1|130.0||2026-11-22T16:00:00
