@@ -26,7 +26,7 @@ public class OverweightRule implements ConditionRule {
     public String getConditionName() { return NAME; }
 
     @Override
-    public List<String> getAliases() { return List.of("Overweight"); }
+    public List<String> getAliases() { return List.of("Overweight", "Obesidad"); }
 
     @Override
     public double adjustCalories(double baseCalories) { return baseCalories * CALORIE_FACTOR; }

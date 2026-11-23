@@ -81,7 +81,7 @@ public class ExerciseRoutineService {
         for (MedicalCondition condition : conditions) {
             rules.add(ruleCatalog.getFor(condition));
         }
-        if (category == BmiCategory.OVERWEIGHT) {
+        if (category == BmiCategory.OVERWEIGHT || category == BmiCategory.OBESITY) {   // obesidad: mismas precauciones
             ruleCatalog.findByName(OverweightRule.NAME).ifPresent(rule -> {
                 if (!rules.contains(rule)) {
                     rules.add(rule);
@@ -141,8 +141,9 @@ public class ExerciseRoutineService {
             max = minNullable(max, ruleCatalog.getFor(condition).maxRepetitions());
         }
         Optional<BMIHistory> latest = bmiHistoryRepository.findLatestByUserId(userId);
-        if (latest.isPresent() && BmiResult.calculate(latest.get().getWeightKg(), latest.get().getHeightCm())
-                .getCategory() == BmiCategory.OVERWEIGHT) {
+        BmiCategory latestCategory = latest.isPresent()
+                ? BmiResult.calculate(latest.get().getWeightKg(), latest.get().getHeightCm()).getCategory() : null;
+        if (latestCategory == BmiCategory.OVERWEIGHT || latestCategory == BmiCategory.OBESITY) {
             Optional<ConditionRule> overweight = ruleCatalog.findByName(OverweightRule.NAME);
             if (overweight.isPresent()) {
                 max = minNullable(max, overweight.get().maxRepetitions());
