@@ -1,5 +1,6 @@
 package com.nutritrackcore.ui;
 
+import com.nutritrackcore.exceptions.NutriTrackException;
 import com.nutritrackcore.exceptions.PersistenceExceptions;
 import com.nutritrackcore.model.User;
 import com.nutritrackcore.services.AuthenticationService;
@@ -180,7 +181,7 @@ public class LoginPanel extends JPanel {
             saveRememberedEmail(email);
             passwordField.setText("");
             onLoginSuccess.accept(user);
-        } catch (PersistenceExceptions | IllegalArgumentException | IllegalStateException ex) {
+        } catch (NutriTrackException | IllegalArgumentException | IllegalStateException ex) {
             Messages.showError(this, ex);
             passwordField.selectAll();
             passwordField.requestFocusInWindow();

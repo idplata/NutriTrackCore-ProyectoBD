@@ -1,5 +1,6 @@
 package com.nutritrackcore.ui;
 
+import com.nutritrackcore.exceptions.NutriTrackException;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.nutritrackcore.exceptions.PersistenceExceptions;
 import com.nutritrackcore.model.DietPlan;
@@ -8,8 +9,8 @@ import com.nutritrackcore.model.ExerciseRoutine;
 import com.nutritrackcore.model.ExerciseRoutineCondition;
 import com.nutritrackcore.model.MedicalCondition;
 import com.nutritrackcore.model.User;
-import com.nutritrackcore.services.dto.BmiResult;
-import com.nutritrackcore.services.dto.NutritionalSummary;
+import com.nutritrackcore.services.BmiResult;
+import com.nutritrackcore.services.NutritionalSummary;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -101,7 +102,7 @@ public class HomePanel extends JPanel implements Refreshable {
         if (!services.session().hasSession()) {
             return;
         }
-        User user = services.session().getCurrentUser();
+        User user = services.currentUser();
         content.add(row(createHeader(user)));
         content.add(Box.createVerticalStrut(22));
 
@@ -130,7 +131,7 @@ public class HomePanel extends JPanel implements Refreshable {
                 cards.add(createRoutineCard(routine, conditions));
                 content.add(row(cards));
             }
-        } catch (PersistenceExceptions | IllegalArgumentException | IllegalStateException ex) {
+        } catch (NutriTrackException | IllegalArgumentException | IllegalStateException ex) {
             Messages.showError(this, ex);
         }
         content.revalidate();

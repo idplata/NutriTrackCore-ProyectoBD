@@ -1,13 +1,13 @@
 package com.nutritrackcore.ui;
 
+import com.nutritrackcore.exceptions.NutriTrackException;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.nutritrackcore.exceptions.PersistenceExceptions;
-import com.nutritrackcore.model.BMI;
-import com.nutritrackcore.model.BMIClasification;
 import com.nutritrackcore.model.Sex;
 import com.nutritrackcore.services.AuthenticationService;
 import com.nutritrackcore.services.ParameterChecks;
-import com.nutritrackcore.services.dto.RegistrationData;
+import com.nutritrackcore.services.BmiResult;
+import com.nutritrackcore.services.RegistrationData;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -371,7 +371,7 @@ public class UserRegistrationPanel extends JPanel {
                 return;
             }
             showStep(STEP_MEASUREMENTS);
-        } catch (IllegalArgumentException ex) {
+        } catch (NutriTrackException | IllegalArgumentException ex) {
             Messages.showError(this, ex);
         } finally {
             Arrays.fill(password, '\0');
@@ -409,7 +409,7 @@ public class UserRegistrationPanel extends JPanel {
             Messages.showInfo(this, "¡Listo! Tu cuenta quedó creada.\nInicia sesión con tu correo y contraseña.");
             reset();
             onRegistered.accept(email);
-        } catch (PersistenceExceptions | IllegalArgumentException | IllegalStateException ex) {
+        } catch (NutriTrackException | IllegalArgumentException | IllegalStateException ex) {
             Messages.showError(this, ex);
         } finally {
             Arrays.fill(password, '\0');
@@ -427,11 +427,18 @@ public class UserRegistrationPanel extends JPanel {
             bmiCategory.setVisible(false);
             return;
         }
-        double bmi = BMI.calculate(weight, height);
-        BMIClasification category = BMI.classify(bmi);
-        bmiValue.setText(String.format("%.1f", bmi).replace('.', ','));
-        bmiCategory.setText(category.getLabel());
-        bmiCategory.setFill(FormKit.bmiColor(category.getLabel()));
+        BmiResult result;
+        try {
+            result = BmiResult.calculate(weight, height);
+        } catch (com.nutritrackcore.exceptions.ValidationException e) {
+            bmiValue.setText("—");
+            bmiCategory.setVisible(false);
+            return;
+        }
+        String label = result.getCategory().getDisplayName();
+        bmiValue.setText(String.format("%.1f", result.getValue()).replace('.', ','));
+        bmiCategory.setText(label);
+        bmiCategory.setFill(FormKit.bmiColor(label));
         bmiCategory.setVisible(true);
     }
 
