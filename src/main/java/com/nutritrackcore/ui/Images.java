@@ -23,6 +23,22 @@ public final class Images {
     public static final String CARD_DIET = "card-diet.jpg";
     /** Portada de la tarjeta de rutina. */
     public static final String CARD_ROUTINE = "card-routine.jpg";
+    /** Fondo con gotas de agua del formulario de hábitos. */
+    public static final String HABITS_BACKGROUND = "habits-bg.jpg";
+    /** Foto del bloque "Actividad y objetivo". */
+    public static final String HABITS_ACTIVITY = "habits-activity.jpg";
+    /** Foto del bloque "Entrenamiento". */
+    public static final String HABITS_TRAINING = "habits-training.jpg";
+    /** Foto del bloque "Alimentación". */
+    public static final String HABITS_FOOD = "habits-food.jpg";
+    /** Foto del desayuno en Mi dieta. */
+    public static final String MEAL_BREAKFAST = "meal-breakfast.jpg";
+    /** Foto del almuerzo en Mi dieta. */
+    public static final String MEAL_LUNCH = "meal-lunch.jpg";
+    /** Foto de la merienda y la media mañana en Mi dieta. */
+    public static final String MEAL_SNACK = "meal-snack.jpg";
+    /** Foto de la cena en Mi dieta. */
+    public static final String MEAL_DINNER = "meal-dinner.jpg";
 
     private static final Map<String, Image> CACHE = new HashMap<>();
 

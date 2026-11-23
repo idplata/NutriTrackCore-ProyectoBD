@@ -23,6 +23,7 @@ import com.nutritrackcore.services.CalorieRequirementCalculator;
 import com.nutritrackcore.services.ConditionRuleCatalog;
 import com.nutritrackcore.services.ConsumptionService;
 import com.nutritrackcore.services.DietPlanService;
+import com.nutritrackcore.services.ExcludedFoodService;
 import com.nutritrackcore.services.ExerciseRoutineService;
 import com.nutritrackcore.services.ExerciseService;
 import com.nutritrackcore.services.FoodService;
@@ -150,9 +151,13 @@ public class ApplicationContext implements AutoCloseable {
                 userConditionRepository, consumptionRepository, dietPlanRepository, routineRepository,
                 repos.routineFollowUps(), repos.userProfiles(), repos.userAllergies(), repos.excludedFoods());
 
+        ExcludedFoodService excludedFoodService = new ExcludedFoodService(repos.excludedFoods(),
+                foodRepository, userRepository, dietPlanService);
+
         this.services = new AppServices(userSession, authenticationService, userService, bmiService,
                 conditionService, foodService, exerciseService, consumptionService, dietPlanService,
-                routineService);
+                routineService, userProfileService, allergyService, excludedFoodService, followUpService,
+                queryService, accountDeletionService);
     }
 
     /**

@@ -1,0 +1,1 @@
+#id_regla|id_condicion|tipo_regla|nutriente|valor_limite|descripcion

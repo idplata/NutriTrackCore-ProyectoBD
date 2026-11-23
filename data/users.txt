@@ -1,0 +1,3 @@
+#id_usuario|nombre|email|contrasena_hash|peso_kg|altura_cm|fecha_nacimiento|sexo|fecha_registro
+1|Angel Pirela|apirela@unicesar.edu.co|65536:HUYzxsBsgZkeYQ+AzNEJFQ==:Xrj+sJ+8dGqgz0ryudUajlHc4ShkXYRz/o7yEPUJ1E8=|80.0|164.0|2006-10-26|M|2026-11-22T17:45:40
+2|Miguel Pirela|alepirela@unicesar.edu.co|65536:x2d9/Si4fVU3aK+wuFC4qA==:xKkDJW90SYlayX4VG7QW9eoRyUC7TXUbs87Uh2u+Lw0=|104.0|200.0|2016-08-14|M|2026-11-22T22:30:47

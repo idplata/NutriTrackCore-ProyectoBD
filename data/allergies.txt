@@ -1,0 +1,21 @@
+#id_alergia|nombre|descripcion
+1|Alergia a la proteína de la leche de vaca|Reacción a las proteínas de la leche (caseína y suero) y sus derivados.
+2|Intolerancia a la lactosa|El cuerpo no digiere bien el azúcar de la leche; produce gases, cólicos o diarrea.
+3|Alergia al huevo|Reacción a las proteínas de la clara o la yema.
+4|Alergia al maní|Reacción al maní y sus derivados; puede ser grave.
+5|Alergia a los frutos secos|Almendras, nueces, marañones, pistachos, avellanas y similares.
+6|Alergia al pescado|Reacción a pescados de mar o de río.
+7|Alergia a los crustáceos|Camarones, langostinos, cangrejo y langosta.
+8|Alergia a los moluscos|Calamar, pulpo, mejillones, almejas y ostras.
+9|Alergia a la soya|Reacción a la soya y productos que la contienen (tofu, bebida de soya).
+10|Alergia al trigo|Reacción a las proteínas del trigo (pan, pasta, harinas).
+11|Sensibilidad al gluten|Malestar con el gluten del trigo, la cebada, el centeno y la avena.
+12|Alergia al ajonjolí (sésamo)|Reacción a las semillas de ajonjolí y al tahini.
+13|Alergia a la mostaza|Reacción a la mostaza, presente en salsas y embutidos.
+14|Alergia al apio|Reacción al apio y a vegetales de su familia.
+15|Alergia al maíz|Reacción al maíz y sus harinas (arepas, tortillas, mazorca).
+16|Alergia a la fresa|Reacción a las fresas; suele dar ronchas o picazón en la boca.
+17|Alergia al kiwi|Reacción al kiwi; común en personas alérgicas al látex.
+18|Alergia a frutas de la familia de la rosa|Manzana, pera, durazno, fresa y mora (síndrome de alergia oral).
+19|Alergia a los cítricos|Naranja, mandarina, limón y sus jugos.
+20|Síndrome látex-fruta|Personas alérgicas al látex que reaccionan a banano, aguacate, kiwi o papaya.

@@ -1,19 +1,120 @@
-#id_ejercicio|nombre|grupo_muscular|bajo_impacto|activo
-1|Caminata|Piernas|true|true
-2|Bicicleta estática|Piernas|true|true
-3|Natación|Cuerpo completo|true|true
-4|Elíptica|Cuerpo completo|true|true
-5|Aeróbicos acuáticos|Cuerpo completo|true|true
-6|Plancha|Abdomen|true|true
-7|Puente de glúteos|Glúteos|true|true
-8|Sentadilla a una silla|Piernas|true|true
-9|Flexiones de pecho en pared|Pecho|true|true
-10|Remo con banda elástica|Espalda|true|true
-11|Zancadas|Piernas|true|true
-12|Estiramientos de cuerpo completo|Cuerpo completo|true|true
-13|Trote|Piernas|false|true
-14|Sentadillas con salto|Piernas|false|true
-15|Saltos de tijera|Cuerpo completo|false|true
-16|Burpees|Cuerpo completo|false|true
-17|Saltar la cuerda|Cuerpo completo|false|true
-18|Escaladores|Abdomen|false|true
+#id_ejercicio|nombre|grupo_muscular|bajo_impacto|activo|requiere_equipo
+1|Caminata rápida|CARDIO|true|true|false
+2|Sentadilla|PIERNAS|false|true|false
+3|Flexiones de brazos|PECHO|false|true|false
+4|Natación|CUERPO_COMPLETO|true|true|true
+5|Bicicleta estática|PIERNAS|true|true|true
+6|Plancha abdominal|CORE|true|true|false
+7|Press de banca|PECHO|false|true|true
+8|Remo con mancuerna|ESPALDA|true|true|true
+9|Burpees|CUERPO_COMPLETO|false|true|false
+10|Flexiones inclinadas|PECHO|true|true|false
+11|Aperturas con mancuernas|PECHO|true|true|true
+12|Superman|ESPALDA|true|true|false
+13|Dominadas|ESPALDA|false|true|true
+14|Remo inclinado con dos mancuernas|ESPALDA|true|true|true
+15|Remo sentado en polea|ESPALDA|true|true|true
+16|Jalón al pecho agarre ancho|ESPALDA|true|true|true
+17|Extensiones lumbares|ESPALDA|true|true|true
+18|Círculos con los brazos|HOMBROS|true|true|false
+19|Press de hombros con mancuernas|HOMBROS|true|true|true
+20|Elevaciones laterales|HOMBROS|true|true|true
+21|Elevaciones frontales|HOMBROS|true|true|true
+22|Fondos en banco|BRAZOS|true|true|false
+23|Curl de bíceps con mancuernas|BRAZOS|true|true|true
+24|Curl martillo|BRAZOS|true|true|true
+25|Extensión de tríceps en polea|BRAZOS|true|true|true
+26|Sentadilla con peso corporal|PIERNAS|true|true|false
+27|Zancadas caminando|PIERNAS|true|true|false
+28|Subida al escalón con rodilla|PIERNAS|true|true|false
+29|Sentadilla con barra|PIERNAS|false|true|true
+30|Zancadas con mancuernas|PIERNAS|true|true|true
+31|Prensa de piernas|PIERNAS|true|true|true
+32|Elevación de talones de pie|PIERNAS|true|true|true
+33|Peso muerto a una pierna con pesa rusa|PIERNAS|false|true|true
+34|Puente de glúteos|GLUTEOS|true|true|false
+35|Puente de glúteos a una pierna|GLUTEOS|true|true|false
+36|Patada de glúteo|GLUTEOS|true|true|false
+37|Patadas de tijera|GLUTEOS|true|true|false
+38|Empuje de cadera con barra|GLUTEOS|false|true|true
+39|Abdominales crunch|CORE|true|true|false
+40|Bicho muerto|CORE|true|true|false
+41|Plancha lateral|CORE|true|true|false
+42|Giro ruso|CORE|true|true|false
+43|Abdominales bicicleta|CORE|true|true|false
+44|Escaladores|CARDIO|false|true|false
+45|Saltar lazo|CARDIO|false|true|true
+46|Trote en caminadora|CARDIO|false|true|true
+47|Caminata en caminadora|CARDIO|true|true|true
+48|Bicicleta reclinada|CARDIO|true|true|true
+49|Elíptica|CARDIO|true|true|true
+50|Remo estático|CARDIO|true|true|true
+51|Escaladora|CARDIO|false|true|true
+52|Flexiones con rodillas apoyadas|PECHO|true|true|false
+53|Flexiones declinadas|PECHO|false|true|false
+54|Flexiones diamante|PECHO|false|true|false
+55|Press inclinado con mancuernas|PECHO|true|true|true
+56|Cruce de poleas|PECHO|true|true|true
+57|Press de pecho en máquina|PECHO|true|true|true
+58|Fondos en paralelas|PECHO|false|true|true
+59|Remo invertido bajo una mesa|ESPALDA|true|true|false
+60|Ángeles en el piso|ESPALDA|true|true|false
+61|Nado en el piso (Y-T-W)|ESPALDA|true|true|false
+62|Remo con banda elástica|ESPALDA|true|true|true
+63|Peso muerto rumano con mancuernas|ESPALDA|false|true|true
+64|Remo con barra|ESPALDA|false|true|true
+65|Pullover con mancuerna|ESPALDA|true|true|true
+66|Flexiones pike|HOMBROS|false|true|false
+67|Toques de hombro en plancha|HOMBROS|true|true|false
+68|Elevaciones en Y boca abajo|HOMBROS|true|true|false
+69|Press Arnold|HOMBROS|true|true|true
+70|Pájaros con mancuernas|HOMBROS|true|true|true
+71|Face pull en polea|HOMBROS|true|true|true
+72|Encogimientos de hombros con mancuernas|HOMBROS|true|true|true
+73|Extensión de tríceps tras nuca con mancuerna|BRAZOS|true|true|true
+74|Patada de tríceps con mancuerna|BRAZOS|true|true|true
+75|Curl de bíceps con banda elástica|BRAZOS|true|true|true
+76|Curl con barra|BRAZOS|true|true|true
+77|Curl concentrado|BRAZOS|true|true|true
+78|Flexiones cerradas en pared|BRAZOS|true|true|false
+79|Sentadilla sumo|PIERNAS|true|true|false
+80|Sentadilla isométrica en pared|PIERNAS|true|true|false
+81|Zancada inversa|PIERNAS|true|true|false
+82|Zancada lateral|PIERNAS|true|true|false
+83|Elevación de talones sin peso|PIERNAS|true|true|false
+84|Sentadilla búlgara|PIERNAS|false|true|false
+85|Sentadilla con salto|PIERNAS|false|true|false
+86|Sentadilla goblet con mancuerna|PIERNAS|true|true|true
+87|Extensión de cuádriceps en máquina|PIERNAS|true|true|true
+88|Curl femoral en máquina|PIERNAS|true|true|true
+89|Hip thrust en el piso|GLUTEOS|true|true|false
+90|Patada lateral acostado|GLUTEOS|true|true|false
+91|Almeja (clamshell)|GLUTEOS|true|true|false
+92|Caminata lateral con banda|GLUTEOS|true|true|true
+93|Abducción de cadera en máquina|GLUTEOS|true|true|true
+94|Patada de glúteo en polea|GLUTEOS|true|true|true
+95|Elevaciones de piernas acostado|CORE|true|true|false
+96|Plancha con elevación de pierna|CORE|true|true|false
+97|Bird dog (cuadrupedia)|CORE|true|true|false
+98|Hollow hold|CORE|true|true|false
+99|Abdominales inversos|CORE|true|true|false
+100|Rueda abdominal|CORE|false|true|true
+101|Pallof press con banda|CORE|true|true|true
+102|Marcha en el sitio|CARDIO|true|true|false
+103|Jumping jacks|CARDIO|false|true|false
+104|Jumping jacks sin salto|CARDIO|true|true|false
+105|Rodillas arriba (skipping)|CARDIO|false|true|false
+106|Boxeo de sombra|CARDIO|true|true|false
+107|Baile aeróbico|CARDIO|true|true|false
+108|Subir y bajar escaleras|CARDIO|false|true|false
+109|Trote suave al aire libre|CARDIO|false|true|false
+110|Bicicleta al aire libre|CARDIO|true|true|true
+111|Sentadilla con press de hombros|CUERPO_COMPLETO|true|true|true
+112|Swing con pesa rusa|CUERPO_COMPLETO|false|true|true
+113|Oso caminando (bear crawl)|CUERPO_COMPLETO|false|true|false
+114|Levantarse del piso (get-up) sin peso|CUERPO_COMPLETO|true|true|false
+115|Thrusters con mancuernas|CUERPO_COMPLETO|false|true|true
+116|Yoga: saludo al sol|CUERPO_COMPLETO|true|true|false
+117|Pilates en colchoneta|CUERPO_COMPLETO|true|true|false
+118|Aeróbicos acuáticos|CUERPO_COMPLETO|true|true|true
+119|Tai chi|CUERPO_COMPLETO|true|true|false

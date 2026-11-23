@@ -114,6 +114,22 @@ public class SidebarPanel extends JPanel {
         }
     }
 
+    /**
+     * Muestra u oculta una opción del menú.
+     *
+     * @param section sección de la opción ({@link AppShellPanel#CONDITIONS}, etc.)
+     * @param visible si debe verse
+     */
+    public void setSectionVisible(String section, boolean visible) {
+        for (NavButton item : items) {
+            if (section.equals(item.section)) {
+                item.setVisible(visible);
+            }
+        }
+        revalidate();
+        repaint();
+    }
+
     /** @return {@code true} si el menú está expandido */
     public boolean isExpanded() {
         return expanded;

@@ -1,0 +1,2 @@
+#id_registro_alimento|id_registro|id_alimento|gramos_estimados
+1|1|1|100.0

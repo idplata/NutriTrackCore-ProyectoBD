@@ -5,3 +5,24 @@
 4|Sobrepeso|IMC entre 25 y 29,9|true
 5|Hipertensión|Presión arterial alta de forma sostenida|true
 6|Colesterol alto|Niveles elevados de colesterol en la sangre|true
+7|Diabetes tipo 1|El páncreas no produce insulina; requiere insulina a diario|true
+8|Prediabetes|Azúcar en la sangre más alta de lo normal, sin llegar a diabetes|true
+9|Obesidad|IMC de 30 o más|true
+10|Triglicéridos altos|Exceso de grasas tipo triglicéridos en la sangre|true
+11|Enfermedad celíaca|El gluten daña el intestino delgado|true
+12|Gastritis|Inflamación de la mucosa del estómago|true
+13|Reflujo gastroesofágico|El ácido del estómago sube al esófago y causa acidez|true
+14|Síndrome de intestino irritable|Dolor abdominal, gases y cambios en el ritmo intestinal|true
+15|Hígado graso|Acumulación de grasa en el hígado|true
+16|Gota|Exceso de ácido úrico que inflama las articulaciones|true
+17|Enfermedad renal crónica|Los riñones pierden poco a poco su capacidad de filtrar|true
+18|Anemia ferropénica|Falta de hierro que reduce los glóbulos rojos|true
+19|Osteoporosis|Huesos frágiles con más riesgo de fracturas|true
+20|Artrosis|Desgaste del cartílago de las articulaciones|true
+21|Asma|Inflamación de las vías respiratorias que dificulta respirar|true
+22|Síndrome de ovario poliquístico|Desbalance hormonal que afecta el peso y la insulina|true
+23|Insuficiencia cardíaca|El corazón no bombea la sangre con la fuerza necesaria|true
+24|Dolor lumbar crónico|Dolor persistente en la parte baja de la espalda|true
+25|Migraña|Dolores de cabeza intensos y recurrentes|true
+26|Embarazo|Etapa de gestación que cambia las necesidades de energía|true
+27|Hipoglucemia reactiva|Bajones de azúcar pocas horas después de comer|true
