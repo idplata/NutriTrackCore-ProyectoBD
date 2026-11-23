@@ -426,7 +426,18 @@ INSERT INTO Alimento (nombre, densidad_g_cm3, calorias_100g, proteinas_100g, car
 ('Agua de coco', 1.020, 14, 0.3, 3.2, 0, 'FRUTAS_Y_VERDURAS'),
 ('Bebida de avena', 1.030, 59, 1.9, 9.8, 1, 'CARBOHIDRATOS'),
 ('Chocolatina de leche', NULL, 550, 5.5, 60, 31.8, 'DULCES'),
-('Helado de leche', NULL, 63, 0.4, 14.8, 0.2, 'DULCES')
+('Helado de leche', NULL, 63, 0.4, 14.8, 0.2, 'DULCES'),
+-- Nuevos de Nutrition5k (no están en el ICBF)
+('Arándanos', NULL, 57.2, 0.7, 14.4, 0.3, 'FRUTAS_Y_VERDURAS'),
+('Frambuesas', NULL, 53, 1.2, 12, 0.7, 'FRUTAS_Y_VERDURAS'),
+('Zarzamoras', NULL, 43, 1.4, 9.2, 0.5, 'FRUTAS_Y_VERDURAS'),
+('Melón verde', NULL, 36, 0.5, 9, 0.1, 'FRUTAS_Y_VERDURAS'),
+('Papa rallada frita', NULL, 326, 2.6, 32, 22, 'CARBOHIDRATOS'),
+('Mezcla de hojas verdes', NULL, 28, 2.2, 5.3, 0.4, 'FRUTAS_Y_VERDURAS'),
+('Arroz salvaje cocido', NULL, 119, 5, 25, 0.4, 'ARROZ'),
+('Germinados de fríjol', NULL, 30, 3, 5.9, 0.2, 'FRUTAS_Y_VERDURAS'),
+('Puré de papa', NULL, 90.7, 1.7, 15.1, 2.9, 'CARBOHIDRATOS'),
+('Ensalada César', NULL, 44, 3.2, 4.3, 2.1, 'FRUTAS_Y_VERDURAS')
 ON CONFLICT (nombre) DO UPDATE SET
     densidad_g_cm3     = EXCLUDED.densidad_g_cm3,
     calorias_100g      = EXCLUDED.calorias_100g,
@@ -726,7 +737,17 @@ FROM (VALUES
     ('Intolerancia a la lactosa', 'Chocolatina de leche'),
     ('Alergia a la soya', 'Chocolatina de leche'),
     ('Alergia a la proteína de la leche de vaca', 'Helado de leche'),
-    ('Intolerancia a la lactosa', 'Helado de leche')
+    ('Intolerancia a la lactosa', 'Helado de leche'),
+    ('Alergia a frutas de la familia de la rosa', 'Frambuesas'),
+    ('Alergia a frutas de la familia de la rosa', 'Zarzamoras'),
+    ('Alergia a la proteína de la leche de vaca', 'Puré de papa'),
+    ('Intolerancia a la lactosa', 'Puré de papa'),
+    ('Alergia al huevo', 'Ensalada César'),
+    ('Alergia al pescado', 'Ensalada César'),
+    ('Alergia a la proteína de la leche de vaca', 'Ensalada César'),
+    ('Intolerancia a la lactosa', 'Ensalada César'),
+    ('Alergia al trigo', 'Ensalada César'),
+    ('Sensibilidad al gluten', 'Ensalada César')
 ) AS r(alergia, alimento)
 JOIN Alergia a ON a.nombre = r.alergia
 JOIN Alimento al ON al.nombre = r.alimento
