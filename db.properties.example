@@ -6,9 +6,9 @@
 # jdbc = PostgreSQL con pool de conexiones (HikariCP)
 persistencia=jdbc
 
-db.url=jdbc:postgresql://localhost:5432/nutritrack
+db.url=jdbc:postgresql://localhost:5432/nutritrackv1
 db.usuario=postgres
-db.contrasena=CAMBIAR
+db.contrasena=@Samuel_11111
 
 # Pool de conexiones (opcional; estos son los valores por defecto)
 db.pool.maximo=10
