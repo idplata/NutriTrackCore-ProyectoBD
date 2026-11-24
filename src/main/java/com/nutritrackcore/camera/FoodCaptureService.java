@@ -203,6 +203,17 @@ public class FoodCaptureService {
      * @throws ValidationException si hay una fila sin alimento o no hay filas
      */
     public ConsumptionRecord confirm(int userId, List<CaptureItem> items) throws NutriTrackException {
+        return confirm(userId, items, LocalDateTime.now());
+    }
+
+    /**
+     * Igual que {@link #confirm(int, List)}, pero con la fecha y hora de la comida
+     * (por ejemplo, la hora del almuerzo cuando se registra desde la pestaña Almuerzo).
+     *
+     * @param when fecha y hora de la comida; si es futura se usa la hora actual
+     */
+    public ConsumptionRecord confirm(int userId, List<CaptureItem> items, LocalDateTime when)
+            throws NutriTrackException {
         List<ConsumptionRecordByFood> lines = toLines(items);
         double confidence = 1.0;
         for (CaptureItem item : items) {
@@ -210,16 +221,28 @@ public class FoodCaptureService {
                 confidence = Math.min(confidence, item.getConfidence());
             }
         }
-        ConsumptionRecord record = consumptionService.register(userId, LocalDateTime.now(), confidence, lines);
+        ConsumptionRecord record = consumptionService.register(userId, notFuture(when), confidence, lines);
         cancel();
         return record;
     }
 
     /** Guarda una comida escrita a mano (sin nivel de estimación). */
     public ConsumptionRecord confirmManual(int userId, List<CaptureItem> items) throws NutriTrackException {
-        ConsumptionRecord record = consumptionService.registerManual(userId, LocalDateTime.now(), toLines(items));
+        return confirmManual(userId, items, LocalDateTime.now());
+    }
+
+    /** Igual que {@link #confirmManual(int, List)}, con la fecha y hora de la comida. */
+    public ConsumptionRecord confirmManual(int userId, List<CaptureItem> items, LocalDateTime when)
+            throws NutriTrackException {
+        ConsumptionRecord record = consumptionService.registerManual(userId, notFuture(when), toLines(items));
         cancel();
         return record;
+    }
+
+    /** La fecha de la comida, o la hora actual si es futura o no se indicó. */
+    private static LocalDateTime notFuture(LocalDateTime when) {
+        LocalDateTime now = LocalDateTime.now();
+        return when == null || when.isAfter(now) ? now : when;
     }
 
     /** Cierra el enlace del celular, si hay uno abierto. */

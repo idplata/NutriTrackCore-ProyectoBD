@@ -157,7 +157,7 @@ public class ApplicationContext implements AutoCloseable {
         this.services = new AppServices(userSession, authenticationService, userService, bmiService,
                 conditionService, foodService, exerciseService, consumptionService, dietPlanService,
                 routineService, userProfileService, allergyService, excludedFoodService, followUpService,
-                queryService, accountDeletionService);
+                queryService, accountDeletionService, foodCaptureService);
     }
 
     /**

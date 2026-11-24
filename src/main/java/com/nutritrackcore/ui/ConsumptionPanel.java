@@ -1,5 +1,6 @@
 package com.nutritrackcore.ui;
 
+import com.nutritrackcore.camera.CameraDialog;
 import com.nutritrackcore.exceptions.NutriTrackException;
 import com.nutritrackcore.exceptions.ValidationException;
 import com.nutritrackcore.model.ConsumptionRecord;
@@ -8,7 +9,6 @@ import com.nutritrackcore.model.DietPlan;
 import com.nutritrackcore.model.DietPlanFood;
 import com.nutritrackcore.model.Food;
 import com.nutritrackcore.model.MealTime;
-import com.nutritrackcore.services.ConsumptionService;
 import com.nutritrackcore.services.NutritionCalculator;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,54 +20,59 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.Insets;
-import java.io.File;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- * Registrar consumo: el usuario elige una comida de su plan (desayuno,
- * almuerzo…), indica cuánto comió y la registra con una foto de su plato.
- * A la derecha ve su día: total frente a la meta y cada comida con su estado.
+ * Registrar consumo: el usuario elige la comida de su plan (desayuno, almuerzo…)
+ * y la registra con una foto de su plato ({@link CameraDialog}). A la derecha,
+ * "Tu día": total frente a la meta y cada comida con su estado.
  */
 public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refreshable {
 
     /** Diferencia (±15 %) con la que una comida se considera "según el plan". */
     private static final double TOLERANCE = 0.15;
-    private static final Color AMBER = new Color(0x9A5B00);
-    private static final Color AMBER_SOFT = new Color(0xFFF1D6);
-    private static final Color BLUE_TEXT = new Color(0x1F4FB8);
+    private static final Color INK = new Color(0x0F1F2A);
+    private static final Color INK_2 = new Color(0x1E2D38);
+    private static final Color MUTED = new Color(0x4F5E6B);
+    private static final Color NOTE = new Color(0x5C6B77);
+    private static final Color GREEN = new Color(0x0B7A69);
+    private static final Color GREEN_DARK = new Color(0x0B5F52);
+    private static final Color BORDER = new Color(0xD6DEE4);
+    private static final Color LINE = new Color(0xEEF2F4);
+    private static final Color ON_GREEN = new Color(0xD9F1EC);
+    private static final DateTimeFormatter HOUR = DateTimeFormatter.ofPattern("h:mm a", ScreenKit.ES_CO);
+
+    /** Porciones de "¿Cuánto comiste?": clave, texto y fracción del plan. */
+    private static final String[][] PORTIONS = {{"todo", "Todo", "1"}, {"mitad", "La mitad", "0.5"},
+        {"poco", "Un poco", "0.25"}};
 
     private final AppServices services;
     private final Consumer<String> navigate;
     private final ScreenKit.ScrollColumn content = new ScreenKit.ScrollColumn();
 
-    /** Comida seleccionada en las pestañas. */
+    /** Comida seleccionada. */
     private MealTime selected;
-    /** Porción elegida en "¿Cuánto comiste?" (100, 50 o 25). */
-    private String portion = "100";
+    /** Porción elegida en "¿Cuánto comiste?". */
+    private String portion = "todo";
 
     /**
      * @param services servicios de la aplicación
@@ -89,8 +94,8 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
         }
         int userId = services.currentUser().getIdUser();
         try {
-            content.add(Proto.left(Proto.pageTitle("Registrar consumo", "Hoy, " + ScreenKit.longDate(LocalDate.now())
-                    + ". Registra cada comida de tu plan con una foto de tu plato.")));
+            content.add(Proto.left(Proto.pageTitle("Registrar consumo",
+                    "Anota tus comidas completas de hoy y mira cómo vas con tu plan.")));
             content.add(Box.createVerticalStrut(24));
 
             Optional<DietPlan> plan = services.dietPlans().getActivePlan(userId);
@@ -102,6 +107,10 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
                 if (selected == null || !meals.containsKey(selected)) {
                     selected = suggestedMeal(meals, eaten);
                 }
+                Map<MealTime, Double> planKcal = new EnumMap<>(MealTime.class);
+                for (Map.Entry<MealTime, List<DietPlanFood>> e : meals.entrySet()) {
+                    planKcal.put(e.getKey(), planKcal(e.getValue()));
+                }
 
                 JPanel grid = new JPanel(new GridBagLayout());
                 grid.setOpaque(false);
@@ -110,17 +119,24 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
                 c.anchor = GridBagConstraints.NORTH;
                 c.fill = GridBagConstraints.HORIZONTAL;
                 c.gridx = 0;
-                c.weightx = 1.25;
-                c.insets = new Insets(0, 0, 0, 20);
-                JPanel left = Proto.column();
-                left.add(Proto.left(mealTabs(meals, eaten)));
-                left.add(Box.createVerticalStrut(16));
-                left.add(Proto.left(mealCard(meals.get(selected), eaten.get(selected))));
-                grid.add(left, c);
-                c.gridx = 1;
                 c.weightx = 1;
+                c.insets = new Insets(0, 0, 0, 22);
+                JPanel left = Proto.column();
+                left.add(Proto.left(mealPicker(meals, eaten, planKcal)));
+                left.add(Box.createVerticalStrut(18));
+                left.add(Proto.left(mealCard(meals.get(selected), planKcal.get(selected), eaten.get(selected))));
+                grid.add(left, c);
+
+                c.gridx = 1;
+                c.weightx = 0;
                 c.insets = new Insets(0, 0, 0, 0);
-                grid.add(todayCard(plan.get(), meals, eaten), c);
+                JPanel aside = Proto.column();
+                aside.add(Proto.left(todayCard(plan.get(), meals, eaten, planKcal)));
+                aside.add(Box.createVerticalStrut(18));
+                aside.add(Proto.left(Proto.wrapped("Cada plato se guarda con sus alimentos, así calculamos tus "
+                        + "calorías y macronutrientes en Mi progreso.", 240, null, 12, Proto.ON_BLUE)));
+                aside.setPreferredSize(new Dimension(344, aside.getPreferredSize().height));
+                grid.add(aside, c);
                 content.add(ScreenKit.fixedHeight(grid));
             }
         } catch (NutriTrackException | IllegalArgumentException | IllegalStateException ex) {
@@ -176,22 +192,15 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
         };
     }
 
-    /** Primera comida pendiente cuya hora ya pasó; si no hay, la primera pendiente. */
+    /** Primera comida pendiente; si todas están registradas, la primera. */
     private static MealTime suggestedMeal(Map<MealTime, List<DietPlanFood>> meals,
                                           Map<MealTime, List<ConsumptionRecord>> eaten) {
-        MealTime now = mealAt(LocalTime.now());
-        MealTime firstPending = null;
         for (MealTime m : meals.keySet()) {
             if (!eaten.containsKey(m)) {
-                if (firstPending == null) {
-                    firstPending = m;
-                }
-                if (m.getDayOrder() <= now.getDayOrder()) {
-                    return m;
-                }
+                return m;
             }
         }
-        return firstPending != null ? firstPending : meals.keySet().iterator().next();
+        return meals.keySet().iterator().next();
     }
 
     private double planKcal(List<DietPlanFood> lines) throws NutriTrackException {
@@ -214,85 +223,122 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
         }
     }
 
-    // ------------------------------------------------------------------ pestañas y tarjeta de la comida
+    /** Estado de una comida registrada frente al plan: "plan", "menos" u "otra". */
+    private static String kind(double kcal, double plan) {
+        if (plan <= 0 || Math.abs(kcal - plan) <= plan * TOLERANCE) {
+            return "plan";
+        }
+        return kcal < plan ? "menos" : "otra";
+    }
 
-    private JComponent mealTabs(Map<MealTime, List<DietPlanFood>> meals,
-                                Map<MealTime, List<ConsumptionRecord>> eaten) throws NutriTrackException {
-        JPanel row = new JPanel(new GridLayout(1, meals.size(), 8, 0));
+    // ------------------------------------------------------------------ ¿Qué comida vas a registrar?
+
+    private JComponent mealPicker(Map<MealTime, List<DietPlanFood>> meals,
+                                  Map<MealTime, List<ConsumptionRecord>> eaten, Map<MealTime, Double> planKcal) {
+        JPanel card = new Proto.Rounded(Color.WHITE, null, 0, 32);
+        card.setLayout(new BorderLayout(0, 12));
+        card.setBorder(BorderFactory.createEmptyBorder(18, 20, 18, 20));
+        card.add(Proto.text("¿Qué comida vas a registrar?", "SemiBold", 17, INK), BorderLayout.NORTH);
+        JPanel row = new JPanel(new GridLayout(1, Math.max(4, meals.size()), 10, 0));
         row.setOpaque(false);
-        for (Map.Entry<MealTime, List<DietPlanFood>> e : meals.entrySet()) {
-            MealTime m = e.getKey();
-            boolean done = eaten.containsKey(m);
-            String sub = done ? ScreenKit.number(eatenKcal(eaten.get(m))) + " kcal"
-                    : "Plan: " + ScreenKit.number(planKcal(e.getValue())) + " kcal";
-            row.add(new MealTab(m.getDisplayName(), sub, done, m == selected, () -> {
+        for (MealTime m : meals.keySet()) {
+            List<ConsumptionRecord> done = eaten.get(m);
+            String sub = done != null ? ScreenKit.number(eatenKcal(done)) + " kcal"
+                    : "Plan: " + ScreenKit.number(planKcal.get(m)) + " kcal";
+            row.add(new MealChip(m.getDisplayName(), sub, done != null, m == selected, () -> {
                 selected = m;
-                portion = "100";
+                portion = "todo";
                 refresh();
             }));
         }
-        row.setPreferredSize(new Dimension(10, 58));
-        return Proto.noStretch(row);
+        for (int i = meals.size(); i < 4; i++) {
+            JPanel empty = new JPanel();
+            empty.setOpaque(false);
+            row.add(empty);
+        }
+        row.setPreferredSize(new Dimension(10, 68));
+        card.add(row, BorderLayout.CENTER);
+        return Proto.noStretch(card);
     }
 
-    private JComponent mealCard(List<DietPlanFood> lines, List<ConsumptionRecord> records)
+    // ------------------------------------------------------------------ tarjeta de la comida
+
+    private JComponent mealCard(List<DietPlanFood> lines, double plan, List<ConsumptionRecord> records)
             throws NutriTrackException {
         JPanel card = new Proto.Rounded(Color.WHITE, null, 0, 32);
         card.setLayout(new BorderLayout());
 
-        double plan = planKcal(lines);
-        Proto.Photo photo = new Proto.Photo(Images.get(mealImage(selected)), 0.5, 0.5, 130, 32, 0).shaded();
+        Proto.Photo photo = new Proto.Photo(Images.get(mealImage(selected)), mealFocusX(selected),
+                mealFocusY(selected), 110, 32, 0).shaded();
         photo.setLayout(new BorderLayout());
-        photo.setBorder(BorderFactory.createEmptyBorder(0, 24, 16, 20));
-        JPanel bottom = new JPanel(new BorderLayout());
+        photo.setBorder(BorderFactory.createEmptyBorder(0, 20, 12, 20));
+        JPanel bottom = new JPanel(new BorderLayout(12, 0));
         bottom.setOpaque(false);
-        bottom.add(Proto.text("Registrando " + selected.getDisplayName(), "Bold", 21, Color.WHITE),
-                BorderLayout.WEST);
-        bottom.add(pill("Plan: " + ScreenKit.number(plan) + " kcal", new Color(255, 255, 255, 235), Proto.GREEN),
-                BorderLayout.EAST);
+        JPanel names = Proto.column();
+        names.add(Proto.left(Proto.text("Registrando", null, 12, new Color(0xE4F2EF))));
+        names.add(Proto.left(Proto.text(selected.getDisplayName(), "Bold", 22, Color.WHITE)));
+        bottom.add(names, BorderLayout.CENTER);
+        JPanel pillHolder = new JPanel(new GridBagLayout());
+        pillHolder.setOpaque(false);
+        GridBagConstraints pc = new GridBagConstraints();
+        pc.anchor = GridBagConstraints.SOUTH;
+        pc.weighty = 1;
+        pillHolder.add(pill("Plan: " + ScreenKit.number(plan) + " kcal", Color.WHITE, GREEN_DARK, "Bold"), pc);
+        bottom.add(pillHolder, BorderLayout.EAST);
         photo.add(bottom, BorderLayout.SOUTH);
         card.add(photo, BorderLayout.NORTH);
 
         JPanel col = Proto.column();
-        col.setBorder(BorderFactory.createEmptyBorder(18, 24, 20, 24));
-        col.add(Proto.left(Proto.text("Lo que dice tu plan", "SemiBold", 15, Proto.INK)));
-        col.add(Box.createVerticalStrut(6));
+        col.setBorder(BorderFactory.createEmptyBorder(16, 20, 18, 20));
+        if (records != null) {
+            JPanel note = new Proto.Rounded(new Color(0xFFF8E1), new Color(0xF3D3A6), 1, 20);
+            note.setLayout(new BorderLayout());
+            note.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
+            note.add(Proto.text("Ya registraste tu " + selected.getDisplayName().toLowerCase()
+                    + ". Si guardas de nuevo, la reemplazas.", null, 12, new Color(0x7A4A00)));
+            col.add(Proto.left(Proto.noStretch(note)));
+            col.add(Box.createVerticalStrut(14));
+        }
         for (DietPlanFood l : lines) {
             Food food = services.foods().getById(l.getFoodId());
-            JPanel r = new JPanel(new BorderLayout(10, 0));
+            JPanel r = new JPanel(new BorderLayout(8, 0));
             r.setOpaque(false);
-            r.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Proto.LINE),
+            r.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, LINE),
                     BorderFactory.createEmptyBorder(8, 0, 8, 0)));
-            r.add(Proto.text(food.getName(), "Medium", 14, Proto.INK_2), BorderLayout.CENTER);
-            r.add(Proto.text(ScreenKit.number(l.getQuantityG()) + " g · "
-                    + ScreenKit.number(kcal(food, l.getQuantityG())) + " kcal", null, 13, Proto.NOTE), BorderLayout.EAST);
+            JPanel texts = Proto.column();
+            texts.add(Proto.left(Proto.text(food.getName(), "Medium", 14, INK)));
+            texts.add(Proto.left(Proto.text(ScreenKit.number(l.getQuantityG()) + " g", null, 12, MUTED)));
+            r.add(texts, BorderLayout.CENTER);
+            JLabel k = Proto.text(ScreenKit.number(kcal(food, l.getQuantityG())) + " kcal", "SemiBold", 13, INK);
+            r.add(k, BorderLayout.EAST);
             col.add(Proto.left(Proto.noStretch(r)));
         }
-        col.add(Box.createVerticalStrut(16));
+        col.add(Box.createVerticalStrut(14));
 
-        col.add(Proto.left(Proto.text("¿Cuánto comiste?", "SemiBold", 15, Proto.INK)));
+        col.add(Proto.left(Proto.text("¿Cuánto comiste?", "SemiBold", 13, INK_2)));
         col.add(Box.createVerticalStrut(8));
-        Proto.ChoiceGrid amount = new Proto.ChoiceGrid(3, Proto.options("100", "Todo", "50", "La mitad", "25",
-                "Un poco"), Proto.GREEN, 13);
-        amount.setValue(portion);
-        amount.onChange(() -> portion = amount.getValue() == null ? "100" : amount.getValue());
-        col.add(Proto.left(amount));
-        col.add(Box.createVerticalStrut(18));
+        JPanel portions = new JPanel(new GridLayout(1, 3, 8, 0));
+        portions.setOpaque(false);
+        for (String[] p : PORTIONS) {
+            double part = Double.parseDouble(p[2]);
+            portions.add(new PortionChip(p[1], ScreenKit.number(plan * part) + " kcal", p[0].equals(portion), () -> {
+                portion = p[0];
+                refresh();
+            }));
+        }
+        portions.setPreferredSize(new Dimension(10, 52));
+        col.add(Proto.left(Proto.noStretch(portions)));
+        col.add(Box.createVerticalStrut(14));
 
         JPanel footer = new JPanel(new BorderLayout(12, 0));
         footer.setOpaque(false);
-        footer.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Proto.LINE),
-                BorderFactory.createEmptyBorder(16, 0, 0, 0)));
-        String hint = records == null ? "Tómale una foto a tu plato para registrarlo"
-                : "Ya registraste esta comida (" + ScreenKit.number(eatenKcal(records)) + " kcal). Puedes agregar otra foto.";
-        footer.add(Proto.wrapped(hint, 250, null, 13, Proto.MUTED), BorderLayout.CENTER);
-        JButton photoButton = Proto.withIcon(Proto.greenButton("Registrar con foto"), Icons.camera(18, Color.WHITE),
-                false);
-        photoButton.addActionListener(e -> takePhoto(lines));
-        JPanel holder = new JPanel(new GridBagLayout());
-        holder.setOpaque(false);
-        holder.add(photoButton);
-        footer.add(holder, BorderLayout.EAST);
+        footer.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, LINE),
+                BorderFactory.createEmptyBorder(14, 0, 0, 0)));
+        footer.add(Proto.text("Tómale una foto a tu plato para registrarlo", "SemiBold", 14, INK_2),
+                BorderLayout.CENTER);
+        JButton photoButton = new CameraButton();
+        photoButton.addActionListener(e -> takePhoto(plan));
+        footer.add(photoButton, BorderLayout.EAST);
         col.add(Proto.left(Proto.noStretch(footer)));
         card.add(col, BorderLayout.CENTER);
         return card;
@@ -303,10 +349,9 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
         card.setLayout(new BorderLayout(16, 0));
         card.setBorder(BorderFactory.createEmptyBorder(22, 24, 22, 24));
         JPanel texts = Proto.column();
-        texts.add(Proto.left(Proto.text("Aún no tienes una dieta", "SemiBold", 18, Proto.INK)));
+        texts.add(Proto.left(Proto.text("Aún no tienes una dieta", "SemiBold", 18, INK)));
         texts.add(Box.createVerticalStrut(4));
-        texts.add(Proto.left(Proto.text("Genera tu dieta para registrar cada comida de tu plan.", null, 14,
-                Proto.MUTED)));
+        texts.add(Proto.left(Proto.text("Genera tu dieta para registrar cada comida de tu plan.", null, 14, MUTED)));
         card.add(texts, BorderLayout.CENTER);
         JButton go = Proto.greenButton("Ir a Mi dieta");
         go.addActionListener(e -> navigate.accept(AppShellPanel.DIET));
@@ -319,257 +364,75 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
 
     // ------------------------------------------------------------------ foto del plato
 
-    /** Pide la foto del plato y abre la revisión de lo que hay en él. */
-    private void takePhoto(List<DietPlanFood> lines) {
-        Image image = choosePhoto();
-        if (image == null) {
-            return;
-        }
-        new PlateDialog(image, lines).setVisible(true);
-    }
-
-    private Image choosePhoto() {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Foto de tu plato");
-        chooser.setFileFilter(new FileNameExtensionFilter("Imágenes (jpg, png)", "jpg", "jpeg", "png"));
-        if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-            return null;
-        }
-        File file = chooser.getSelectedFile();
+    /**
+     * Abre la ventana de la foto. Si se guarda una comida nueva, reemplaza lo que ya
+     * estaba registrado en esa comida y muestra el aviso.
+     */
+    private void takePhoto(double plan) {
+        MealTime meal = selected;
+        int userId = services.currentUser().getIdUser();
         try {
-            Image img = ImageIO.read(file);
-            if (img == null) {
-                Messages.showInfo(this, "Ese archivo no es una imagen válida.");
+            Set<Integer> before = new HashSet<>();
+            List<ConsumptionRecord> old = eatenToday(userId).getOrDefault(meal, List.of());
+            for (ConsumptionRecord r : old) {
+                before.add(r.getRecordId());
             }
-            return img;
-        } catch (java.io.IOException ex) {
-            Messages.showInfo(this, "No se pudo abrir la foto: " + ex.getMessage());
-            return null;
-        }
-    }
-
-    /** Revisión del plato: foto, alimentos con sus gramos, comparación con el plan y guardar. */
-    private final class PlateDialog extends JDialog {
-
-        private final Map<Food, Proto.Stepper> items = new LinkedHashMap<>();
-        private final JPanel rows = Proto.column();
-        private final JLabel compare = new JLabel();
-        private final double plan;
-        private Proto.Photo photo;
-
-        PlateDialog(Image image, List<DietPlanFood> lines) {
-            super(SwingUtilities.getWindowAncestor(ConsumptionPanel.this), "Tu plato",
-                    ModalityType.APPLICATION_MODAL);
-            double factor = Integer.parseInt(portion) / 100.0;
-            double p = 0;
-            for (DietPlanFood l : lines) {
-                try {
-                    Food food = services.foods().getById(l.getFoodId());
-                    p += kcal(food, l.getQuantityG());
-                    addItem(food, Math.max(10, Math.round(l.getQuantityG() * factor / 10.0) * 10));
-                } catch (NutriTrackException ex) {
-                    Messages.showError(ConsumptionPanel.this, ex);
+            CameraDialog.open(SwingUtilities.getWindowAncestor(this), services.camera(), services.session(),
+                    LocalDate.now().atTime(timeOf(meal)), meal.getDisplayName(), Images.get(mealImage(meal)), plan);
+            List<ConsumptionRecord> now = eatenToday(userId).getOrDefault(meal, List.of());
+            ConsumptionRecord added = null;
+            for (ConsumptionRecord r : now) {
+                if (!before.contains(r.getRecordId())) {
+                    added = r;
                 }
             }
-            plan = p;
-
-            JPanel root = new JPanel(new BorderLayout());
-            root.setBackground(Color.WHITE);
-            root.setBorder(BorderFactory.createLineBorder(Proto.FIELD_BORDER));
-
-            photo = new Proto.Photo(image, 0.5, 0.5, 170, 0, 0).shaded();
-            photo.setLayout(new BorderLayout());
-            photo.setBorder(BorderFactory.createEmptyBorder(0, 22, 12, 22));
-            JPanel ptxt = Proto.column();
-            ptxt.add(Proto.left(Proto.text("Tu plato · " + selected.getDisplayName(), null, 12, new Color(0xD5E6EA))));
-            ptxt.add(Proto.left(Proto.text("¿Esto es lo que comiste?", "Bold", 19, Color.WHITE)));
-            photo.add(ptxt, BorderLayout.SOUTH);
-            root.add(photo, BorderLayout.NORTH);
-
-            JPanel col = Proto.column();
-            col.setOpaque(true);
-            col.setBackground(Color.WHITE);
-            col.setBorder(BorderFactory.createEmptyBorder(16, 22, 18, 22));
-            col.add(Proto.left(Proto.wrapped("Revisa que coincida con tu plato y ajusta los gramos.", 440, null, 13,
-                    Proto.MUTED)));
-            col.add(Box.createVerticalStrut(8));
-            JScrollPane scroll = new JScrollPane(rows);
-            scroll.setBorder(null);
-            scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            scroll.getViewport().setBackground(Color.WHITE);
-            scroll.getVerticalScrollBar().setUnitIncrement(16);
-            scroll.setPreferredSize(new Dimension(500, 200));
-            scroll.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
-            col.add(Proto.left(scroll));
-            col.add(Box.createVerticalStrut(10));
-
-            SearchBox<Food> search = new SearchBox<>("Agregar otro alimento (arroz, pollo, banano…)", Food::getName,
-                    food -> {
-                        if (items.keySet().stream().noneMatch(f -> f.getFoodId() == food.getFoodId())) {
-                            addItem(food, 100);
-                            rebuild();
+            if (added != null) {
+                for (ConsumptionRecord r : old) {
+                    services.consumption().delete(r.getRecordId());      // "si guardas de nuevo, la reemplazas"
+                }
+                MealTime next = null;
+                Map<MealTime, List<ConsumptionRecord>> eaten = eatenToday(userId);
+                Optional<DietPlan> active = services.dietPlans().getActivePlan(userId);
+                if (active.isPresent()) {
+                    for (MealTime m : mealsOf(active.get()).keySet()) {
+                        if (next == null && !eaten.containsKey(m)) {
+                            next = m;
                         }
-                    });
-            try {
-                search.setItems(services.foods().listActive());
-            } catch (NutriTrackException ex) {
-                Messages.showError(ConsumptionPanel.this, ex);
-            }
-            col.add(Proto.left(ScreenKit.fixedHeight(search)));
-            col.add(Box.createVerticalStrut(12));
-            compare.setFont(Proto.font("SemiBold", 13));
-            col.add(Proto.left(compare));
-            col.add(Box.createVerticalStrut(14));
-
-            JPanel actions = new JPanel(new BorderLayout(10, 0));
-            actions.setOpaque(false);
-            JButton again = Proto.withIcon(Proto.outlineButton("Tomar otra"), Icons.camera(16, Proto.GREEN), false);
-            again.addActionListener(e -> {
-                Image other = choosePhoto();
-                if (other != null) {
-                    Proto.Photo next = new Proto.Photo(other, 0.5, 0.5, 170, 0, 0).shaded();
-                    next.setLayout(new BorderLayout());
-                    next.setBorder(photo.getBorder());
-                    next.add(ptxt, BorderLayout.SOUTH);
-                    root.remove(photo);
-                    photo = next;
-                    root.add(photo, BorderLayout.NORTH);
-                    root.revalidate();
-                    root.repaint();
+                    }
                 }
-            });
-            JButton cancel = Proto.cancelButton("Cancelar");
-            cancel.addActionListener(e -> dispose());
-            JButton save = Proto.greenButton("Guardar comida");
-            save.addActionListener(e -> save());
-            actions.add(again, BorderLayout.WEST);
-            JPanel end = new JPanel(new GridLayout(1, 2, 10, 0));
-            end.setOpaque(false);
-            end.add(cancel);
-            end.add(save);
-            actions.add(end, BorderLayout.EAST);
-            col.add(Proto.left(Proto.noStretch(actions)));
-            root.add(col, BorderLayout.CENTER);
-
-            setUndecorated(true);
-            setContentPane(root);
-            setSize(560, 630);
-            setLocationRelativeTo(ConsumptionPanel.this);
-            getRootPane().registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke("ESCAPE"),
-                    JComponent.WHEN_IN_FOCUSED_WINDOW);
-            rebuild();
+                selected = next != null ? next : meal;
+                portion = "todo";
+                Toast.show(this, meal.getDisplayName() + " registrado: "
+                        + ScreenKit.number(added.getEstimatedCalories()) + " kcal.");
+            }
+        } catch (NutriTrackException | IllegalArgumentException | IllegalStateException ex) {
+            Messages.showError(this, ex);
         }
-
-        private void addItem(Food food, double grams) {
-            Proto.Stepper s = new Proto.Stepper(grams, 0, 2000, 10, false, Proto.GREEN, Proto.GREEN_SOFT,
-                    "gramos de " + food.getName());
-            s.setPreferredSize(new Dimension(130, 36));
-            s.setMaximumSize(new Dimension(130, 36));
-            s.onChange(this::updateTotals);
-            items.put(food, s);
-        }
-
-        private void rebuild() {
-            rows.removeAll();
-            rows.setOpaque(true);
-            rows.setBackground(Color.WHITE);
-            for (Map.Entry<Food, Proto.Stepper> e : items.entrySet()) {
-                Food food = e.getKey();
-                JPanel r = new JPanel(new BorderLayout(10, 0));
-                r.setOpaque(false);
-                r.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createMatteBorder(0, 0, 1, 0, Proto.LINE),
-                        BorderFactory.createEmptyBorder(6, 0, 6, 0)));
-                r.add(Proto.wrapped(food.getName(), 200, "Medium", 14, Proto.INK_2), BorderLayout.CENTER);
-                JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
-                right.setOpaque(false);
-                right.add(e.getValue());
-                right.add(Proto.text("g", null, 13, Proto.NOTE));
-                JButton remove = new JButton(Icons.trash(16, Proto.DANGER));
-                remove.setContentAreaFilled(false);
-                remove.setBorderPainted(false);
-                remove.setFocusPainted(false);
-                remove.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                remove.setToolTipText("Quitar");
-                remove.getAccessibleContext().setAccessibleName("Quitar " + food.getName());
-                remove.addActionListener(ev -> {
-                    items.remove(food);
-                    rebuild();
-                });
-                right.add(remove);
-                r.add(right, BorderLayout.EAST);
-                rows.add(Proto.left(Proto.noStretch(r)));
-            }
-            if (items.isEmpty()) {
-                rows.add(Proto.left(Proto.text("Agrega lo que hay en tu plato.", null, 13, Proto.MUTED)));
-            }
-            rows.revalidate();
-            rows.repaint();
-            updateTotals();
-        }
-
-        private double total() {
-            double t = 0;
-            for (Map.Entry<Food, Proto.Stepper> e : items.entrySet()) {
-                t += kcal(e.getKey(), e.getValue().getValue());
-            }
-            return t;
-        }
-
-        private void updateTotals() {
-            double t = total();
-            String verdict;
-            Color color;
-            if (plan <= 0 || Math.abs(t - plan) <= plan * TOLERANCE) {
-                verdict = "Se parece a tu plan";
-                color = Proto.GREEN;
-            } else if (t < plan) {
-                verdict = "Menos que tu plan";
-                color = BLUE_TEXT;
-            } else {
-                verdict = "Más de lo planeado";
-                color = AMBER;
-            }
-            compare.setText("Total: " + ScreenKit.number(t) + " kcal de " + ScreenKit.number(plan) + " kcal · "
-                    + verdict);
-            compare.setForeground(color);
-        }
-
-        private void save() {
-            List<ConsumptionRecordByFood> lines = new ArrayList<>();
-            for (Map.Entry<Food, Proto.Stepper> e : items.entrySet()) {
-                if (e.getValue().getValue() > 0) {
-                    lines.add(ConsumptionService.line(e.getKey().getFoodId(), e.getValue().getValue()));
-                }
-            }
-            if (lines.isEmpty()) {
-                Messages.showInfo(this, "Agrega al menos un alimento con gramos.");
-                return;
-            }
-            LocalDateTime when = LocalDate.now().atTime(timeOf(selected));
-            if (when.isAfter(LocalDateTime.now())) {
-                when = LocalDateTime.now();               // no se puede registrar en el futuro
-            }
-            try {
-                services.consumption().registerManual(services.currentUser().getIdUser(), when, lines);
-                dispose();
-                portion = "100";
-                refresh();
-            } catch (NutriTrackException | IllegalArgumentException | IllegalStateException ex) {
-                Messages.showError(this, ex);
-            }
-        }
+        refresh();
     }
 
     // ------------------------------------------------------------------ tu día
 
     private JComponent todayCard(DietPlan plan, Map<MealTime, List<DietPlanFood>> meals,
-                                 Map<MealTime, List<ConsumptionRecord>> eaten) throws NutriTrackException {
+                                 Map<MealTime, List<ConsumptionRecord>> eaten, Map<MealTime, Double> planKcal)
+            throws NutriTrackException {
         JPanel card = new Proto.Rounded(Color.WHITE, null, 0, 32);
         card.setLayout(new BorderLayout());
-        card.setBorder(BorderFactory.createEmptyBorder(20, 24, 20, 24));
+        card.setBorder(BorderFactory.createEmptyBorder(18, 20, 8, 20));
         JPanel col = Proto.column();
-        col.add(Proto.left(Proto.text("Tu día", "SemiBold", 19, Proto.INK)));
+
+        int done = 0;
+        for (MealTime m : meals.keySet()) {
+            if (eaten.containsKey(m)) {
+                done++;
+            }
+        }
+        JPanel head = new JPanel(new BorderLayout());
+        head.setOpaque(false);
+        head.add(Proto.text("Tu día", "SemiBold", 17, INK), BorderLayout.WEST);
+        head.add(Proto.text(done + " de " + meals.size() + (meals.size() == 1 ? " comida" : " comidas"), null, 12,
+                MUTED), BorderLayout.EAST);
+        col.add(Proto.left(Proto.noStretch(head)));
         col.add(Box.createVerticalStrut(10));
 
         double goal = plan.getTargetCalories();
@@ -577,69 +440,101 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
         for (List<ConsumptionRecord> list : eaten.values()) {
             total += eatenKcal(list);
         }
-        JPanel kcalRow = new JPanel(new BorderLayout());
+        JPanel kcalRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         kcalRow.setOpaque(false);
-        kcalRow.add(Proto.text(ScreenKit.number(total) + " kcal", "Bold", 26, Proto.INK), BorderLayout.WEST);
-        JLabel of = Proto.text("de " + ScreenKit.number(goal) + " kcal", null, 13, Proto.NOTE);
-        of.setVerticalAlignment(JLabel.BOTTOM);
-        kcalRow.add(of, BorderLayout.EAST);
-        col.add(Proto.left(Proto.noStretch(kcalRow)));
+        kcalRow.setBorder(BorderFactory.createEmptyBorder(0, -6, 0, 0));
+        kcalRow.add(Proto.text(ScreenKit.number(total), "Bold", 30, INK));
+        JLabel of = Proto.text("/ " + ScreenKit.number(goal) + " kcal", null, 13, MUTED);
+        of.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        kcalRow.add(of);
+        col.add(Proto.left(kcalRow));
         col.add(Box.createVerticalStrut(8));
         col.add(Proto.left(new ProgressBar(goal > 0 ? total / goal : 0)));
-        col.add(Box.createVerticalStrut(6));
+        col.add(Box.createVerticalStrut(8));
         double left = goal - total;
-        col.add(Proto.left(Proto.text(left >= 0 ? "Te quedan " + ScreenKit.number(left) + " kcal"
-                : "Te pasaste " + ScreenKit.number(-left) + " kcal", "Medium", 12,
-                left >= 0 ? Proto.GREEN : Proto.DANGER)));
+        col.add(Proto.left(Proto.text(left >= 0 ? "Te quedan " + ScreenKit.number(left) + " kcal según tu plan"
+                : "Te pasaste " + ScreenKit.number(-left) + " kcal de tu meta", "SemiBold", 12,
+                left >= 0 ? GREEN : Proto.DANGER)));
         col.add(Box.createVerticalStrut(14));
 
-        for (Map.Entry<MealTime, List<DietPlanFood>> e : meals.entrySet()) {
-            col.add(Proto.left(mealRow(e.getKey(), planKcal(e.getValue()), eaten.get(e.getKey()))));
+        for (MealTime m : meals.keySet()) {
+            col.add(Proto.left(logRow(m, planKcal.get(m), eaten.get(m))));
         }
-        // registros fuera de las comidas del plan (por ejemplo, una merienda que el plan no trae)
         for (Map.Entry<MealTime, List<ConsumptionRecord>> e : eaten.entrySet()) {
             if (!meals.containsKey(e.getKey())) {
-                col.add(Proto.left(mealRow(e.getKey(), 0, e.getValue())));
+                col.add(Proto.left(logRow(e.getKey(), 0, e.getValue())));   // comida fuera del plan
             }
         }
         card.add(col, BorderLayout.CENTER);
         return card;
     }
 
-    private JComponent mealRow(MealTime meal, double planKcal, List<ConsumptionRecord> records) {
-        JPanel r = new JPanel(new BorderLayout(10, 0));
-        r.setOpaque(false);
-        r.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Proto.LINE),
-                BorderFactory.createEmptyBorder(10, 0, 10, 0)));
-        JPanel texts = Proto.column();
-        texts.add(Proto.left(Proto.text(meal.getDisplayName(), "SemiBold", 14, Proto.INK_2)));
+    private JComponent logRow(MealTime meal, double planKcal, List<ConsumptionRecord> records)
+            throws NutriTrackException {
+        boolean done = records != null;
         double kcal = eatenKcal(records);
-        texts.add(Proto.left(Proto.text(records == null ? "Plan: " + ScreenKit.number(planKcal) + " kcal"
-                : ScreenKit.number(kcal) + " de " + ScreenKit.number(planKcal) + " kcal", null, 12, Proto.NOTE)));
-        r.add(texts, BorderLayout.CENTER);
+        String[] pill = !done ? new String[]{"Pendiente", "EEF2F4", "5C6B77"}
+                : switch (kind(kcal, planKcal)) {
+                    case "plan" -> new String[]{"Según el plan", "E6F3F0", "0B5F52"};
+                    case "menos" -> new String[]{"Comiste menos", "E3EEF8", "1F5F99"};
+                    default -> new String[]{"Más de lo planeado", "FFF3E3", "7A3E00"};
+                };
+        Color pillFg = new Color(Integer.parseInt(pill[2], 16));
 
-        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-        right.setOpaque(false);
-        if (records == null) {
-            right.add(pill("Pendiente", new Color(0xEEF1F3), Proto.NOTE));
-        } else {
-            if (planKcal <= 0 || Math.abs(kcal - planKcal) <= planKcal * TOLERANCE) {
-                right.add(pill("Según el plan", Proto.GREEN_SOFT, Proto.GREEN));
-            } else if (kcal < planKcal) {
-                right.add(pill("Comiste menos", Proto.ROYAL_SOFT, BLUE_TEXT));
-            } else {
-                right.add(pill("Más de lo planeado", AMBER_SOFT, AMBER));
-            }
-            JButton delete = Proto.link("Borrar", Proto.DANGER, 13);
+        JPanel r = new JPanel(new BorderLayout(12, 0));
+        r.setOpaque(false);
+        r.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, LINE),
+                BorderFactory.createEmptyBorder(12, 0, 12, 0)));
+        JPanel dotHolder = new JPanel(new BorderLayout());
+        dotHolder.setOpaque(false);
+        dotHolder.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+        dotHolder.add(new Dot(done ? pillFg : null), BorderLayout.NORTH);
+        r.add(dotHolder, BorderLayout.WEST);
+
+        JPanel col = Proto.column();
+        JPanel top = new JPanel(new BorderLayout(4, 0));
+        top.setOpaque(false);
+        String time = done ? HOUR.format(records.get(records.size() - 1).getDateTime()).replace('\u202f', ' ')
+                .replace('\u00a0', ' ')
+                : "Plan: " + ScreenKit.number(planKcal) + " kcal";
+        top.add(Proto.text(meal.getDisplayName() + " · " + time, "SemiBold", 11, MUTED), BorderLayout.CENTER);
+        top.add(pill(pill[0], new Color(Integer.parseInt(pill[1], 16)), pillFg, "SemiBold"), BorderLayout.EAST);
+        col.add(Proto.left(Proto.noStretch(top)));
+        col.add(Box.createVerticalStrut(2));
+        col.add(Proto.left(Proto.wrapped(done ? title(records) : "Aún no la registras", 230, "SemiBold", 14,
+                done ? INK : new Color(0x8A97A2))));
+        if (done) {
+            boolean photo = records.stream().anyMatch(x -> x.getEstimationLevel() != null);
+            JPanel detail = new JPanel(new BorderLayout());
+            detail.setOpaque(false);
+            detail.add(Proto.text((photo ? "Desde la foto" : "Registro manual") + " · " + ScreenKit.number(kcal)
+                    + " kcal", null, 12, NOTE), BorderLayout.CENTER);
+            JButton delete = Proto.link("Borrar", Proto.DANGER, 12);
+            delete.setFont(Proto.font("SemiBold", 12));
             delete.getAccessibleContext().setAccessibleName("Borrar " + meal.getDisplayName());
             delete.addActionListener(e -> deleteMeal(meal, records));
-            right.add(delete);
+            detail.add(delete, BorderLayout.EAST);
+            col.add(Box.createVerticalStrut(2));
+            col.add(Proto.left(Proto.noStretch(detail)));
         }
-        JPanel holder = new JPanel(new GridBagLayout());
-        holder.setOpaque(false);
-        holder.add(right);
-        r.add(holder, BorderLayout.EAST);
+        r.add(col, BorderLayout.CENTER);
         return Proto.noStretch(r);
+    }
+
+    /** "Arroz blanco y Pollo apanado y 2 más", con los alimentos registrados en la comida. */
+    private String title(List<ConsumptionRecord> records) throws NutriTrackException {
+        Set<String> names = new LinkedHashSet<>();
+        for (ConsumptionRecord r : records) {
+            for (ConsumptionRecordByFood line : services.consumption().listFoods(r.getRecordId())) {
+                names.add(services.foods().getById(line.getFoodId()).getName());
+            }
+        }
+        List<String> list = new ArrayList<>(names);
+        if (list.isEmpty()) {
+            return "Comida registrada";
+        }
+        String t = String.join(" y ", list.subList(0, Math.min(2, list.size())));
+        return list.size() > 2 ? t + " y " + (list.size() - 2) + " más" : t;
     }
 
     private void deleteMeal(MealTime meal, List<ConsumptionRecord> records) {
@@ -658,7 +553,7 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
 
     // ------------------------------------------------------------------ piezas
 
-    private static String mealImage(MealTime meal) {
+    static String mealImage(MealTime meal) {
         return switch (meal) {
             case BREAKFAST -> Images.MEAL_BREAKFAST;
             case LUNCH -> Images.MEAL_LUNCH;
@@ -667,8 +562,24 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
         };
     }
 
+    static double mealFocusX(MealTime meal) {
+        return switch (meal) {
+            case SNACK -> 0.62;
+            case DINNER -> 0.45;
+            default -> 0.5;
+        };
+    }
+
+    static double mealFocusY(MealTime meal) {
+        return switch (meal) {
+            case BREAKFAST, SNACK -> 0.60;
+            case DINNER -> 0.45;
+            default -> 0.55;
+        };
+    }
+
     /** Píldora de texto con fondo redondeado. */
-    private static JLabel pill(String text, Color bg, Color fg) {
+    private static JLabel pill(String text, Color bg, Color fg, String weight) {
         JLabel l = new JLabel(text) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -679,19 +590,19 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
                 super.paintComponent(g);
             }
         };
-        l.setFont(Proto.font("SemiBold", 12));
+        l.setFont(Proto.font(weight, 10.5f));
         l.setForeground(fg);
-        l.setBorder(BorderFactory.createEmptyBorder(5, 12, 5, 12));
+        l.setBorder(BorderFactory.createEmptyBorder(3, 8, 3, 8));
         return l;
     }
 
-    /** Pestaña de una comida: nombre y kcal (registradas o del plan). */
-    private static final class MealTab extends JButton {
+    /** Botón de una comida: nombre y kcal (registradas con ✓ o del plan). */
+    private static final class MealChip extends JButton {
 
         private final boolean active;
         private final boolean done;
 
-        MealTab(String name, String sub, boolean done, boolean active, Runnable onClick) {
+        MealChip(String name, String sub, boolean done, boolean active, Runnable onClick) {
             this.active = active;
             this.done = done;
             setLayout(new BorderLayout());
@@ -699,15 +610,17 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
             setBorderPainted(false);
             setFocusPainted(false);
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            Color main = active ? Proto.GREEN : Color.WHITE;
+            setBorder(BorderFactory.createEmptyBorder());
+            setMargin(new Insets(0, 0, 0, 0));
             JPanel texts = Proto.column();
-            texts.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-            texts.add(Proto.left(Proto.text(name, "SemiBold", 14, main)));
-            JLabel s = Proto.text(sub, null, 12, active ? Proto.MUTED : Proto.ON_BLUE);
+            texts.setBorder(BorderFactory.createEmptyBorder(11, 14, 11, 10));
+            texts.add(Proto.left(Proto.text(name, "SemiBold", 15, active ? Color.WHITE : INK)));
+            JLabel s = Proto.text(sub, done ? "SemiBold" : null, 12, active ? ON_GREEN : done ? GREEN : MUTED);
             if (done) {
-                s.setIcon(Icons.check(12, active ? Proto.GREEN : new Color(0x7FE3CF)));
+                s.setIcon(Icons.check(11, active ? ON_GREEN : GREEN));
                 s.setIconTextGap(4);
             }
+            texts.add(Box.createVerticalStrut(2));
             texts.add(Proto.left(s));
             add(texts, BorderLayout.CENTER);
             getAccessibleContext().setAccessibleName(name + ", " + sub);
@@ -717,14 +630,130 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = Proto.smooth(g);
+            int w = getWidth() - 1;
+            int h = getHeight() - 1;
             if (active) {
-                g2.setColor(Color.WHITE);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                g2.setColor(GREEN);
+                g2.fillRoundRect(0, 0, w, h, 24, 24);
             } else {
-                g2.setColor(new Color(255, 255, 255, done ? 46 : 28));
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-                g2.setColor(new Color(255, 255, 255, 70));
+                g2.setColor(done ? new Color(0xF2FAF8) : Color.WHITE);
+                g2.fillRoundRect(0, 0, w, h, 24, 24);
+                g2.setColor(done ? new Color(0x9FD3C7) : BORDER);
+                g2.setStroke(new java.awt.BasicStroke(done ? 1.5f : 1f));
+                g2.drawRoundRect(0, 0, w, h, 24, 24);
+            }
+            g2.dispose();
+        }
+    }
+
+    /** Opción de "¿Cuánto comiste?": texto y kcal debajo. */
+    private static final class PortionChip extends JButton {
+
+        private final boolean active;
+
+        PortionChip(String label, String sub, boolean active, Runnable onClick) {
+            this.active = active;
+            setLayout(new GridBagLayout());
+            setContentAreaFilled(false);
+            setBorderPainted(false);
+            setFocusPainted(false);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            setBorder(BorderFactory.createEmptyBorder());
+            setMargin(new Insets(0, 0, 0, 0));
+            JPanel texts = Proto.column();
+            JLabel l = Proto.text(label, active ? "SemiBold" : null, 13, active ? Color.WHITE : INK_2);
+            l.setAlignmentX(CENTER_ALIGNMENT);
+            JLabel s = Proto.text(sub, "Medium", 11, active ? ON_GREEN : NOTE);
+            s.setAlignmentX(CENTER_ALIGNMENT);
+            texts.add(l);
+            texts.add(s);
+            add(texts);
+            getAccessibleContext().setAccessibleName(label + ", " + sub);
+            addActionListener(e -> onClick.run());
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = Proto.smooth(g);
+            if (active) {
+                g2.setColor(GREEN);
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+            } else {
+                g2.setColor(Color.WHITE);
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+                g2.setColor(BORDER);
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
+            }
+            g2.dispose();
+        }
+    }
+
+    /** Botón verde "Registrar con foto" con la cámara dentro de un círculo blanco. */
+    private static final class CameraButton extends JButton {
+
+        CameraButton() {
+            super("Registrar con foto");
+            setFont(Proto.font("Bold", 13));
+            setForeground(Color.WHITE);
+            setContentAreaFilled(false);
+            setBorderPainted(false);
+            setFocusPainted(false);
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            setIcon(new javax.swing.Icon() {
+                @Override
+                public void paintIcon(java.awt.Component c, Graphics g, int x, int y) {
+                    Graphics2D g2 = Proto.smooth(g);
+                    g2.setColor(Color.WHITE);
+                    g2.fillOval(x, y, 26, 26);
+                    g2.dispose();
+                    Icons.camera(15, GREEN).paintIcon(c, g, x + 5, y + 5);
+                }
+
+                @Override
+                public int getIconWidth() {
+                    return 26;
+                }
+
+                @Override
+                public int getIconHeight() {
+                    return 26;
+                }
+            });
+            setIconTextGap(8);
+            setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 20));
+            setPreferredSize(new Dimension(getPreferredSize().width, 44));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = Proto.smooth(g);
+            g2.setColor(getModel().isRollover() ? new Color(0x096A5B) : GREEN);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+            g2.dispose();
+            super.paintComponent(g);
+        }
+    }
+
+    /** Punto del registro: relleno del color del estado, o un aro gris si está pendiente. */
+    private static final class Dot extends JComponent {
+
+        private final Color color;
+
+        Dot(Color color) {
+            this.color = color;
+            setPreferredSize(new Dimension(12, 12));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = Proto.smooth(g);
+            if (color != null) {
+                g2.setColor(color);
+                g2.fillOval(0, 0, 12, 12);
+            } else {
+                g2.setColor(new Color(0xC4CDD3));
+                g2.setStroke(new java.awt.BasicStroke(2f));
+                g2.drawOval(1, 1, 10, 10);
             }
             g2.dispose();
         }
@@ -738,14 +767,14 @@ public class ConsumptionPanel extends ScreenKit.BlueBackground implements Refres
         ProgressBar(double ratio) {
             this.ratio = ratio;
             setOpaque(false);
-            setPreferredSize(new Dimension(300, 10));
+            setPreferredSize(new Dimension(290, 10));
             setMaximumSize(new Dimension(Integer.MAX_VALUE, 10));
         }
 
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = Proto.smooth(g);
-            g2.setColor(new Color(0xE3E9ED));
+            g2.setColor(new Color(0xE6ECEF));
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
             g2.setColor(ratio > 1 ? new Color(0xFF5A1F) : new Color(0x00C46A));
             int w = (int) Math.round(getWidth() * Math.min(1, Math.max(0, ratio)));
