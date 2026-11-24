@@ -1,5 +1,6 @@
 package com.nutritrackcore.ui;
 
+import com.nutritrackcore.camera.FoodCaptureService;
 import com.nutritrackcore.exceptions.AutenticationException;
 import com.nutritrackcore.model.User;
 import com.nutritrackcore.services.AccountDeletionService;
@@ -40,6 +41,7 @@ import com.nutritrackcore.services.UserSession;
  * @param followUps      sesiones registradas de la rutina
  * @param queries        consultas para la pantalla de progreso
  * @param accountDeletion eliminación de la cuenta
+ * @param camera         registro de comidas con foto (cámara del celular y servicio de visión)
  */
 public record AppServices(
         UserSession session,
@@ -57,7 +59,8 @@ public record AppServices(
         ExcludedFoodService excludedFoods,
         RoutineFollowUpService followUps,
         QueryService queries,
-        AccountDeletionService accountDeletion) {
+        AccountDeletionService accountDeletion,
+        FoodCaptureService camera) {
 
     /**
      * Usuario que inició sesión.
