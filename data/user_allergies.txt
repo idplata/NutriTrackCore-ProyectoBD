@@ -1,0 +1,2 @@
+#id_usuario|id_alergia|severidad|observaciones
+1|2|moderada|

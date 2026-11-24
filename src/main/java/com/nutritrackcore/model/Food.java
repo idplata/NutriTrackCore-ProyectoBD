@@ -9,18 +9,51 @@ public class Food {
     private Double carbohydrates100g;
     private Double fats100g;
     private boolean active;
+    private FoodPyramid grupe;
 
     public Food() {}
 
-    public Food(String name, double calories100g, Double proteins100g, Double carbohydrates100g, Double fats100g) {
+   
+    public enum FoodPyramid{
+    
+        DULCES(1, "AZUCARES"),
+        ULTRAPROCESADOS(2, "CARNES ROJAS, EMBUTIDOS Y GRASAS"),
+        GRASA_SALUDABLES(3, "ACEITES VEGETALES, FRUTOS SECOS Y AGUACATE"),
+        PROTEINAS_Y_LACTEOS(4, "CARNES BLANCAS, LACTEOS, PESCADO Y HUEVO"),
+        FRUTAS_Y_VERDURAS(5, "FRUTAS, VERDURAS Y HORTALIZAS"),
+        CARBOHIDRATOS(6, "CEREALES, PAN Y PASTA"),
+        ARROZ(7,"ARROZ");
+        
+        
+        private final int PyramidLevel;
+        private String description;
+        
+        FoodPyramid( int PyramidLevel,String description){
+            this.PyramidLevel = PyramidLevel;
+            this.description = description;
+        }
+        
+        public int getPyramidLevel(){
+            return PyramidLevel;
+        }
+        
+        public String getDescription(){
+            return description;
+        }
+        
+    }
+
+    public Food(String name, double calories100g, Double proteins100g, Double carbohydrates100g, Double fats100g, FoodPyramid grupe) {
         this.name = name;
         this.calories100g = calories100g;
         this.proteins100g = proteins100g;
         this.carbohydrates100g = carbohydrates100g;
         this.fats100g = fats100g;
         this.active = true;
+        this.grupe = grupe;
     }
-
+    
+    
     public int getFoodId() { return foodId; }
     public void setFoodId(int foodId) { this.foodId = foodId; }
 
@@ -45,22 +78,11 @@ public class Food {
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
 
-    // Domain methods required by the architecture
-    public NutritionalIntake calculateIntake(double grams) {
-        double factor = grams / 100.0;
-        return new NutritionalIntake(
-            calories100g * factor,
-            (proteins100g != null ? proteins100g : 0.0) * factor,
-            (carbohydrates100g != null ? carbohydrates100g : 0.0) * factor,
-            (fats100g != null ? fats100g : 0.0) * factor
-        );
+     public FoodPyramid getGrupe() {
+        return grupe;
     }
 
-    public boolean hasDensity() {
-        return densityGCm3 != null && densityGCm3 > 0;
+    public void setGrupe(FoodPyramid grupe) {
+        this.grupe = grupe;
     }
-
-    public double gramsFromVolume(double cm3) {
-        return hasDensity() ? cm3 * densityGCm3 : 0.0;
-    }
-}
+   }

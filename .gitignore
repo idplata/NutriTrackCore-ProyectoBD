@@ -1,3 +1,20 @@
 /target/
 nbactions.xml
 *.zip
+
+# Credenciales de la base de datos
+db.properties
+ml/.venv/
+ml/data/
+ml/weights/
+ml/dist/
+ml/build/
+ml/*.spec
+ml/vision_service/
+__pycache__/
+desktop.ini
+ml/index/
+ml/catalog.csv
+ml/n5k_map.csv
+ml/weights/*.part
+ml/data/**/*.part

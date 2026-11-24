@@ -8,7 +8,7 @@ package com.nutritrackcore.exceptions;
  *
  * @author irind
  */
-public class ValidationException extends Exception{
+public class ValidationException extends NutriTrackException{
     
     public ValidationException(String message) {
     super(message);

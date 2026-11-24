@@ -1,0 +1,16 @@
+# Configuración de NutriTrackCore.
+# Copia este archivo como "db.properties" en la carpeta del proyecto (junto al pom.xml)
+# y pon tus datos. db.properties NO se sube a git (está en .gitignore).
+
+# txt  = archivos de la carpeta data (no necesita PostgreSQL)
+# jdbc = PostgreSQL con pool de conexiones (HikariCP)
+persistencia=jdbc
+
+db.url=jdbc:postgresql://localhost:5432/nutritrackv1
+db.usuario=postgres
+db.contrasena=@Samuel_11111
+
+# Pool de conexiones (opcional; estos son los valores por defecto)
+db.pool.maximo=10
+db.pool.minimo=2
+db.pool.timeout.ms=30000

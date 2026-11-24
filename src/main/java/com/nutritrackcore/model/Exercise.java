@@ -6,14 +6,15 @@ public class Exercise {
     private String muscleGroup;
     private boolean lowImpact;
     private boolean active;
-
+    private boolean need_Equipment;
     public Exercise() {}
 
-    public Exercise(String name, String muscleGroup, boolean lowImpact) {
+    public Exercise(String name, String muscleGroup, boolean lowImpact, boolean need_Equipment) {
         this.name = name;
         this.muscleGroup = muscleGroup;
         this.lowImpact = lowImpact;
         this.active = true;
+        this.need_Equipment = need_Equipment;
     }
 
     public int getExerciseId() { return exerciseId; }
@@ -30,4 +31,11 @@ public class Exercise {
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+    
+    public boolean getNeed_Equipment(){
+        return need_Equipment;
+    }
+    public void setNeed_Equipment(boolean need_Equipment){
+        this.need_Equipment = need_Equipment;
+    }
 }

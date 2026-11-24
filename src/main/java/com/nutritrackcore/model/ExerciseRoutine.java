@@ -1,5 +1,5 @@
 package com.nutritrackcore.model;
-
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,10 +55,14 @@ public class ExerciseRoutine {
     public void setDietPlanId(Integer dietPlanId) { this.dietPlanId = dietPlanId; }
 
     // Creator Methods
-    public void addExercise(int exerciseId, int sets, int repetitions) {
-        this.lines.add(new ExerciseRoutineExercise(this.routineId, exerciseId, sets, repetitions));
+    public void addExerciseByReps(int exerciseId, int sets, int repetitions) {
+        this.lines.add(new ExerciseByReps(this.routineId, exerciseId, sets, repetitions));
     }
 
+    public void addExerciseByTime(int exerciseId, int sets, int durationSeconds) {
+        this.lines.add(new ExerciseByTime(this.routineId, exerciseId, sets, Duration.ofSeconds(durationSeconds)));
+    }
+    
     public void registerCondition(int conditionId, String appliedRestriction) {
         this.consideredConditions.add(new ExerciseRoutineCondition(this.routineId, conditionId, appliedRestriction));
     }

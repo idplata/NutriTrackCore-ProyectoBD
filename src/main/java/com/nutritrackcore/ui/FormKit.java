@@ -40,7 +40,13 @@ public final class FormKit {
      * @param width       ancho del campo
      */
     public static void styleField(JTextField field, String placeholder, Icon icon, int width) {
-        field.setFont(Theme.font(Font.PLAIN, 15));
+        if (field instanceof javax.swing.JPasswordField) {
+            // En contraseñas se usa la fuente lógica del sistema: con Poppins el cursor se corría a la
+            // izquierda de los puntos en pantallas con escala (125 %, 150 %).
+            field.setFont(new Font(Font.DIALOG, Font.PLAIN, 15));
+        } else {
+            field.setFont(Theme.font(Font.PLAIN, 15));
+        }
         field.setForeground(Theme.TEXT);
         if (placeholder != null) {
             field.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, placeholder);

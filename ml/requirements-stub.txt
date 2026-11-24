@@ -1,0 +1,6 @@
+# Librerías del servicio falso (stub). Livianas: sirven para desarrollar la app sin el modelo real.
+fastapi
+uvicorn
+python-multipart
+pillow
+numpy
