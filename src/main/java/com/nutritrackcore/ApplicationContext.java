@@ -38,7 +38,12 @@ import com.nutritrackcore.services.UserService;
 import com.nutritrackcore.services.UserSession;
 import com.nutritrackcore.ui.AppServices;
 import com.nutritrackcore.ui.MainWindow;
-
+import com.nutritrackcore.camera.AiPlateAnalyzer;
+import com.nutritrackcore.camera.AiPortionEstimator;
+import com.nutritrackcore.camera.CameraSettings;
+import com.nutritrackcore.camera.FoodCaptureService;
+import com.nutritrackcore.camera.PhoneUploadServer;
+import com.nutritrackcore.camera.VisionServiceLauncher;
 /**
  * Raíz de composición: el único lugar donde se crean las implementaciones
  * concretas (repositorios, cifrador, reglas, servicios) y se conectan
@@ -68,7 +73,8 @@ public class ApplicationContext implements AutoCloseable {
     private final AllergyService allergyService;
     private final RoutineFollowUpService followUpService;
     private final AccountDeletionService accountDeletionService;
-
+    private final FoodCaptureService foodCaptureService;
+    
     /**
      * Crea todas las piezas de la aplicación.
      *
@@ -127,6 +133,13 @@ public class ApplicationContext implements AutoCloseable {
                 repos.allergies(), repos.userAllergies(), repos.allergyFoods(), repos.excludedFoods());
         this.allergyService = new AllergyService(repos.allergies(), repos.userAllergies(),
                 userRepository, dietPlanService);
+        CameraSettings cameraSettings = CameraSettings.load();
+        AiPlateAnalyzer plateAnalyzer = new AiPlateAnalyzer(cameraSettings);
+        this.foodCaptureService = new FoodCaptureService(cameraSettings, plateAnalyzer,
+                 new AiPortionEstimator(cameraSettings), new PhoneUploadServer(cameraSettings),
+                 new VisionServiceLauncher(cameraSettings, plateAnalyzer::isAvailable),
+                 foodService, consumptionService, allergyService,
+                 repos.allergyFoods(), repos.excludedFoods());
 
         ExerciseRoutineService routineService = new ExerciseRoutineService(routineRepository,
                 exerciseRepository, bmiHistoryRepository, dietPlanRepository, userRepository,
@@ -196,12 +209,17 @@ public class ApplicationContext implements AutoCloseable {
         return accountDeletionService;
     }
 
+     /** @return captura de comidas con la cámara del celular */
+    public FoodCaptureService getFoodCaptureService() {
+         return foodCaptureService;
+    }
     /**
      * Cierra el pool de conexiones, si se está usando la base de datos. Se
      * llama una vez, al salir de la aplicación.
      */
     @Override
     public void close() {
+        foodCaptureService.shutdown();
         if (connectionPool != null) {
             connectionPool.close();
         }
